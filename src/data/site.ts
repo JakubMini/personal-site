@@ -122,7 +122,7 @@ export const journey: Chapter[] = [
     },
     snippet: {
       caption: 'Lean-compensated road gradient (C)',
-      note: 'Assistance follows the road gradient, read from an IMU in the frame. The accelerometer only sees gravity, and when the bike leans into a corner part of that reading moves onto the sensor’s `lat` axis. The `up` share shrinks, so a naive estimate reads every climb steeper than it is. `roadGradient` measures the `lean`, rolls the reading back into the bike’s plane with `rodrigues(fwd, -lean)`, and returns the slope alone.',
+      note: 'Assistance follows the road gradient, read from an IMU in the Skarper unit. The accelerometer only sees gravity and the bike’s speed changes, and when the bike leans into a corner part of the gravity reading moves onto the sensor’s `lat` axis. The `up` share shrinks, so a naive estimate reads every climb steeper than it is. `roadGradient` measures the `lean`, rolls the reading back into the bike’s plane with `rodrigues(fwd, -lean)`, and returns the slope alone. All that while compensating for speed and vibration artefacts.',
       figure: 'lean',
       lang: 'c',
       code: `// Rotation by angle a about unit axis k: R = cos(a) I + sin(a) [k]x + (1 - cos(a)) k k^T

@@ -292,6 +292,8 @@ ul {
 .photo-cutout img {
   object-fit: contain;
   background: none;
+  /* A close contact shadow and a soft one further off, so it sits on the page. */
+  filter: drop-shadow(0 4px 5px rgba(11, 15, 12, 0.16)) drop-shadow(0 26px 30px rgba(11, 15, 12, 0.2));
 }
 
 .photo-square img,
