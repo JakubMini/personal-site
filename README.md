@@ -148,8 +148,8 @@ check `pnpm wrangler whoami` shows the personal account first.
   is drawn still with the collection's label; without JavaScript a plain CSS
   record stands in.
 - **The hobbies are pages, not sections.** `/vinyls` and `/photography` are
-  linked from the About paragraph and the colophon, so the main page's scroll
-  is unchanged. Photography links the Instagram feed; the page is the edit.
+  linked from the top bar (after the sections, past a hairline), the About
+  paragraph and the colophon, so the main page's scroll is unchanged. Photography links the Instagram feed; the page is the edit.
 - **Fonts self-hosted** (Funnel Display and Funnel Sans via Fontsource). No
   request to Google, so no visitor data goes to a third party and no consent
   banner is needed.

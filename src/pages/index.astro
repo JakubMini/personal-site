@@ -36,8 +36,12 @@ const personLd = {
   <header class="hero" id="top">
     <div class="wrap topbar">
       <a class="wordmark" href="#top"><img src="/favicon.svg" alt="" width="28" height="28" />{person.name}</a>
-      <nav class="nav" aria-label="Sections">
+      <nav class="nav" aria-label="Sections and pages">
         {sections.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
+        <span class="nav-pages">
+          <a href="/vinyls">Vinyls</a>
+          <a href="/photography">Photography</a>
+        </span>
         <a class="nav-contact" href="#contact">Contact</a>
       </nav>
     </div>

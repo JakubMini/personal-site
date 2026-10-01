@@ -176,6 +176,25 @@ ul {
   text-underline-offset: 4px;
 }
 
+/* The two pages away from the desk, set off from the sections by a hairline. */
+.nav-pages {
+  position: relative;
+  display: flex;
+  gap: 8px 32px;
+  padding-left: 32px;
+}
+
+.nav-pages::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1em;
+  border-left: 1px solid currentColor;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+
 .pitch {
   max-width: 560px;
   padding: 150px 0 36px;
@@ -2045,6 +2064,15 @@ ul {
     right: var(--gutter);
     padding: 0;
     line-height: 28px;
+  }
+
+  /* The pages join the index as cells of their own, without the hairline. */
+  .nav-pages {
+    display: contents;
+  }
+
+  .nav-pages::before {
+    display: none;
   }
 
   .pitch {
