@@ -23,7 +23,7 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 | Colours, type, spacing | `src/styles/global.css`, tokens at the top |
 | Scroll motion | `src/scripts/motion.ts` |
 | The intro on load | `src/scripts/intro.ts`, `src/components/Intro.astro`; the record is `src/scripts/vinyl.ts` |
-| The hero's circuit board | `src/scripts/signal-chain.ts`; `motion.ts` scrubs it with the scroll |
+| The hero's signal chain | `src/scripts/signal-chain.ts`; `motion.ts` runs its loop and hands it the pointer |
 | The icon and logo mark | `public/favicon.svg` (also the mark beside the name) |
 | The line drawings | `src/components/Machine.astro`; wheels and the e-bikes' rear drive are `MachineWheel.astro` and `MachineDrive.astro` |
 
@@ -103,8 +103,8 @@ check `pnpm wrangler whoami` shows the personal account first.
   build time stands in. Labels are HTML (CSS2DRenderer), so they stay sharp.
 - **No motion under `prefers-reduced-motion`, and no timers.** Every tween is
   scrubbed by the scroll or plays once on entry. Without JavaScript the page is
-  complete and static.
-- **One exception: the intro** (`components/Intro.astro`, `scripts/intro.ts`),
+  complete and static. Two exceptions follow.
+- **The intro** (`components/Intro.astro`, `scripts/intro.ts`),
   about three seconds on every load, after wodniack.dev. On an ink cover a
   glossy black record is cut, spins up to 33⅓ rpm and rolls off, uncovering
   the page. It is drawn in a 2D canvas (`scripts/vinyl.ts`), not three.js, so
@@ -113,11 +113,18 @@ check `pnpm wrangler whoami` shows the personal account first.
   under reduced motion, without JavaScript, and when the address names a
   section (`/#contact`). If the script never arrives, the cover fades by itself
   after six seconds.
-- **The hero's circuit board** (`scripts/signal-chain.ts`) is a 2D canvas, no
-  library, drawn in the page's own ink, green and paper. Scrolling carries a
-  signal from a shunt resistor through the MCU and radio to the cloud and onto
-  a dashboard chart, scrubbed like the rest of the motion. Under reduced
-  motion it is drawn at rest; without JavaScript the band stays plain green.
+- **The hero's signal chain** (`scripts/signal-chain.ts`) is a 2D canvas, no
+  library, drawn in the page's own ink, green and paper. A hub motor's phase
+  current enters a board, crosses a shunt, climbs the sense lines into an
+  amplifier and the MCU, leaves as a train of pulses for the radio, flies off
+  the antenna as a packet, hops broker, function and database in the cloud and
+  lands in a phone as the chart's newest point. It plays by itself and loops,
+  but only while it is on screen and the tab is visible; each run brings one
+  new sample and the charts scroll on. The part under the pointer, or the last
+  one tapped, gets a small loop of its own: the motor spins, the MCU's pins
+  blink, the radio keeps transmitting, the phone's chart goes live. Under
+  reduced motion it is drawn landed and still; without JavaScript the band
+  stays plain green.
 - **Fonts self-hosted** (Funnel Display and Funnel Sans via Fontsource). No
   request to Google, so no visitor data goes to a third party and no consent
   banner is needed.
@@ -148,9 +155,9 @@ Where the build departs from the mockup, on purpose:
   and spun up on ink, rolls off, and the hero builds in behind it.
 - The favicon is a green vinyl record instead of the bike, and the same record
   sits beside the name in the top bar.
-- The hero's bike is replaced by a circuit board the signal crosses as you
-  scroll, from resistor to cloud to dashboard. The bike keeps its place in
-  the Journey bands.
+- The hero's bike is replaced by a signal chain that loops on its own, from a
+  hub motor over a circuit board and the cloud to the app. The bike keeps its
+  place in the Journey bands.
 
 Narrow screens have layouts of their own (`global.css`, Narrow screens), not
 in the mockup:
@@ -161,9 +168,9 @@ in the mockup:
   side.
 - **Phones, under 600px:** one column. The name and Contact share the top
   line, with the sections as a three-column index under them.
-- **The hero board** is drawn at least 840px wide under 900px, so its parts
-  stay legible, and slides along under the signal as you scroll. Under
-  reduced motion it is shown whole.
+- **The hero chain** has a tall drawing under 600px, the chain running down
+  the page at phone size with every part legible. Tablets get the wide
+  drawing at their width.
 - **The TFTP, fleet and OTA figures** are drawn twice, wide and tall
   (`TftpFigure.astro`, `data/fleet.ts`, `data/ota.ts`), and CSS shows the
   tall drawing under 900px. In the tall TFTP figure the board sits under the lab PC, the

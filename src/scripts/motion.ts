@@ -5,19 +5,23 @@
 // Nothing here runs under prefers-reduced-motion; the page is complete without
 // it. Nothing runs on a timer either: every tween is scrubbed by the scroll or
 // plays once as its element enters, so an idle or hidden page does no work.
-// The one exception is the intro (intro.ts), about three seconds on load.
+// Two exceptions: the intro (intro.ts), about three seconds on load, and the
+// hero's signal chain (signal-chain.ts), which loops, but only while it is on
+// screen and the tab is visible.
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { intro } from './intro';
-import { signalChain } from './signal-chain';
+import { signalChain, type Kind } from './signal-chain';
 import { tftpTimeline } from './tftp-figure';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 // Pinning a band is for wide screens; narrow ones scrub as the band passes.
 const WIDE = '(min-width: 900px)';
+// Phones get the hero's tall drawing.
+const PHONE = '(max-width: 599px)';
 
 // Degrees a wheel turns while its drawing travels `distance` CSS px, so it
 // rolls rather than slides. data-wheel is "cx cy r" in viewBox units.
@@ -39,49 +43,63 @@ function wheels(tl: gsap.core.Timeline, svg: SVGSVGElement, distance: () => numb
   });
 }
 
-// The hero's circuit board, drawn at rest whether or not anything moves; the
-// scroll then carries its signal from the shunt to the dashboard.
+// The hero's signal chain, drawn landed whether or not anything moves, in the
+// wide drawing or, on phones, the tall one. It is drawn now, ahead of the
+// fonts, so the intro has something to uncover.
 const chainCanvas = document.querySelector<HTMLCanvasElement>('[data-signal-chain]');
-const chain = chainCanvas ? signalChain(chainCanvas) : null;
+let chain = chainCanvas ? signalChain(chainCanvas, matchMedia(PHONE).matches ? 'tall' : 'wide') : null;
 
-// From the top of the page until the board nears the top of the screen, so the
-// signal lands on the chart while the board is still in view.
-//
-// On a narrow screen the board is drawn wider than the screen (.is-panning in
-// global.css) so its parts stay legible, and it slides under the signal: still
-// until the signal passes the middle, then keeping it in view to the chart.
-function heroChain() {
-  if (!chain) return;
-  const { canvas } = chain;
-  const host = canvas.parentElement!;
-  host.classList.add('is-panning');
-  const pan = (p: number) => {
-    const spare = canvas.clientWidth - host.clientWidth;
-    const x = spare > 0 ? gsap.utils.clamp(-spare, 0, host.clientWidth * 0.45 - chain.at(p) * canvas.clientWidth) : 0;
-    canvas.style.translate = `${x.toFixed(1)}px 0`;
+// With motion the chain plays by itself and loops, on frames that stop while
+// it is off screen or the tab is hidden, and the part under the pointer (or
+// the last one tapped) gets a loop of its own. Returns the stop, which leaves
+// the chain landed.
+function heroChain(kind: Kind, moving: boolean) {
+  if (!chainCanvas) return;
+  if (!chain || chain.kind !== kind) {
+    chain?.stop();
+    chain = signalChain(chainCanvas, kind);
+  }
+  if (!moving) return;
+  const live = chain;
+  const { canvas } = live;
+  let onScreen = false;
+  let raf = 0;
+  let last = 0;
+  const frame = (now: number) => {
+    raf = 0;
+    if (!onScreen || document.hidden) return;
+    live.tick(Math.min(0.1, (now - last) / 1000));
+    last = now;
+    raf = requestAnimationFrame(frame);
   };
-  const state = { p: 0 };
-  gsap.to(state, {
-    p: 1,
-    ease: 'none',
-    onUpdate: () => {
-      chain.draw(state.p);
-      pan(state.p);
+  const run = () => {
+    if (raf || !onScreen || document.hidden) return;
+    last = performance.now();
+    raf = requestAnimationFrame(frame);
+  };
+  const io = new IntersectionObserver(
+    ([entry]) => {
+      onScreen = entry.isIntersecting;
+      run();
     },
-    scrollTrigger: {
-      trigger: canvas,
-      start: 0,
-      end: 'top 70px',
-      scrub: 0.5,
-      invalidateOnRefresh: true,
-      // A resize changes the board's width but maybe not the progress.
-      onRefresh: () => pan(state.p),
-    },
-  });
+    { rootMargin: '120px 0px' },
+  );
+  io.observe(canvas);
+  document.addEventListener('visibilitychange', run);
+  const point = (e: PointerEvent) => live.point(e);
+  const leave = () => live.point(null);
+  canvas.addEventListener('pointermove', point);
+  canvas.addEventListener('pointerdown', point);
+  canvas.addEventListener('pointerleave', leave);
   return () => {
-    host.classList.remove('is-panning');
-    canvas.style.translate = '';
-    chain.draw(0);
+    cancelAnimationFrame(raf);
+    raf = 0;
+    io.disconnect();
+    document.removeEventListener('visibilitychange', run);
+    canvas.removeEventListener('pointermove', point);
+    canvas.removeEventListener('pointerdown', point);
+    canvas.removeEventListener('pointerleave', leave);
+    live.rest();
   };
 }
 
@@ -285,22 +303,22 @@ intro();
 
 // Split lines only once the real fonts are in, or the line breaks are wrong.
 document.fonts.ready.then(() => {
-  // matchMedia only calls back when some condition matches, so ask for motion
-  // being allowed rather than for it being reduced, or narrow screens get none.
+  // matchMedia only calls back when some condition matches, so one that always
+  // does keeps the hero drawn on every screen, moving or not.
   gsap.matchMedia().add(
-    { wide: WIDE, moving: '(prefers-reduced-motion: no-preference)' },
+    { always: '(min-width: 0px)', wide: WIDE, phone: PHONE, moving: '(prefers-reduced-motion: no-preference)' },
     (context) => {
-      const { wide, moving } = context.conditions as { wide: boolean; moving: boolean };
-      if (!moving) return;
+      const { wide, phone, moving } = context.conditions as { wide: boolean; phone: boolean; moving: boolean };
+      const chainStop = heroChain(phone ? 'tall' : 'wide', moving);
+      if (!moving) return () => chainStop?.();
       // Creation order is refresh order: pins first, so everything below them
       // measures its start with the pin spacing already in place.
-      const chainAtRest = heroChain();
       document.querySelectorAll<HTMLElement>('.band').forEach((el) => band(el, wide));
       reveals();
       const stops = [loops(), leanFigures(), tftpFigures()];
       return () => {
         stops.forEach((stop) => stop());
-        chainAtRest?.();
+        chainStop?.();
       };
     },
   );

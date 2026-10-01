@@ -194,9 +194,9 @@ ul {
   letter-spacing: -0.055em;
 }
 
-/* The circuit board the signal crosses as the page scrolls
-   (scripts/signal-chain.ts). Full bleed; the canvas keeps the drawing's
-   1660 × 300 proportions. */
+/* The signal chain, motor to app (scripts/signal-chain.ts). Full bleed; the
+   canvas keeps the drawing's proportions, 1660 × 300 wide or, on phones,
+   390 × 1200 tall. pan-y, so a finger on it still scrolls the page. */
 .hero-chain {
   padding-block: 20px 8px;
   overflow: hidden;
@@ -206,13 +206,13 @@ ul {
   display: block;
   width: 100%;
   aspect-ratio: 1660 / 300;
+  touch-action: pan-y;
 }
 
-/* With motion, a narrow screen gets the board at a legible size, wider than
-   the screen, and scripts/motion.ts slides it along under the signal. At
-   rest it is shown whole. */
-.hero-chain.is-panning canvas {
-  width: max(100%, 840px);
+.hero-chain canvas[data-layout='tall'] {
+  width: min(100%, 440px);
+  margin-inline: auto;
+  aspect-ratio: 390 / 1200;
 }
 
 .hero-facts {
