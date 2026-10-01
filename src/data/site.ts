@@ -52,7 +52,7 @@ export const person = {
 
 export const hero = {
   pitch:
-    "Engineering for electric mobility and energy storage — from the motor controller's first boot to the app in your pocket.",
+    "Embedded, IoT and cloud for green technology — from a board's first boot to a fleet in the field.",
   now: 'Head of Connected Systems, Skarper',
   previously: 'Minimal, Breathe Battery Technologies, Skarper, WeCorp Industries',
   education: 'PhD, Imperial College London',
@@ -67,10 +67,10 @@ export const intro = {
 };
 
 export const about = {
-  draft: true,
-  lead: "I like products that move. For seven years I've taken e-bikes, battery labs and electric cargo vehicles from first boot to fleets in the field.",
+  draft: false,
+  lead: "I want my engineering to cut carbon. For seven years I've built the electronics, firmware and cloud behind battery labs, e-bikes and electric cargo vehicles, from first boot to fleets in the field.",
   body: [
-    'I design the boards, write the firmware, and build the pipelines that keep machines updated long after they leave the factory.',
+    'I design the boards, write the firmware and build the pipelines that keep products updated and measured long after they ship. Batteries, power conversion and connected fleets run through all of it, and they carry over to anything electric: storage, charging, heating, the grid.',
     'Before industry, a PhD at Imperial on reconfigurable analogue circuits. Away from the desk: cycling and touring, Formula 1, photography.',
   ],
   portrait: { src: portrait, alt: 'Jakub Szypicyn, smiling, in a white shirt and striped tie', caption: 'Portrait' } as Photo,
@@ -188,7 +188,7 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
     where: 'Breathe Battery Technologies, London',
     role: 'Embedded Firmware & Data Engineer',
     summary:
-      'Designed an Ethernet/TFTP bootloader for zero-touch updates across the lab’s STM32 assets. Built the GitLab CI/CD and Python microservices that automate battery testing, co-designed the SQL schema and REST layer behind them, and took gRPC services into production on Azure. Modelled a battery pack in Simscape to validate BMS control in the battery-in-the-loop harness.',
+      'Breathe’s software helps lithium-ion batteries charge faster and last longer. Designed an Ethernet/TFTP bootloader for zero-touch updates across the lab’s STM32 assets. Built the GitLab CI/CD and Python microservices that automate battery testing, co-designed the SQL schema and REST layer behind them, and took gRPC services into production on Azure. Modelled a battery pack in Simscape to validate BMS control in the battery-in-the-loop harness.',
     tags: ['Bootloaders', 'GitLab CI', 'Python', 'SQL', 'gRPC', 'Azure', 'Simscape'],
     photo: {
       src: batteryCyclers,
@@ -213,7 +213,7 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
     where: 'Minimal, London',
     role: 'Senior Embedded Firmware & Data Engineer',
     summary:
-      'Firmware and fleet software for an electric cargo vehicle: STM32 body-control, sound, immobiliser and DC-DC ECUs, VESC motor-control work, and a Raspberry Pi telematics stack on balenaOS. Built the CAN bootloader and signed over-the-air updates for 30+ connected vehicles, plus the CI that took builds from half a day to under ten minutes and releases from monthly to weekly. Refactored the core ECUs to MISRA C with GoogleTest, cutting static-analysis findings by 90%, and mentored two engineers.',
+      'Firmware and fleet software for an electric cargo vehicle built to take vans off city streets: STM32 body-control, sound, immobiliser and DC-DC ECUs, VESC motor-control work, and a Raspberry Pi telematics stack on balenaOS. Built the CAN bootloader and signed over-the-air updates for 30+ connected vehicles, plus the CI that took builds from half a day to under ten minutes and releases from monthly to weekly. Refactored the core ECUs to MISRA C with GoogleTest, cutting static-analysis findings by 90%, and mentored two engineers.',
     tags: ['STM32', 'CAN', 'Fleet OTA', 'balenaOS', 'MISRA C', 'EN ISO 13849-1'],
     photo: {
       src: minimalPedal4,
@@ -292,9 +292,9 @@ export const stack = [
   },
   {
     n: '01',
-    layer: 'Hardware',
+    layer: 'Power & hardware',
     items:
-      'PCB design and bring-up, 48V motor drives, BMS, DC-DC conversion, IMUs and encoders, production test and flashing rigs',
+      'BMS, DC-DC conversion, 48V motor drives, PCB design and bring-up, IMUs and encoders, production test and flashing rigs',
   },
   {
     n: 'Compliance',
