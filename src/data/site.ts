@@ -465,7 +465,7 @@ export const vinyls = {
 export const photography = {
   eyebrow: 'Away from the desk',
   title: 'Lens cap off.',
-  lead: '[What you shoot, on what, and since when. One line, two at most.]',
+  lead: 'Street photography on a Canon 750D, since 2022, mostly through a 24–105mm f/4.',
   handle: '@jakub_m_s.jpeg',
   photos: [
     { src: milkyWay, alt: 'The Milky Way across a dark sky, with the streak of a satellite at the lower left', caption: 'A satellite through the Milky Way' },

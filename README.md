@@ -80,8 +80,7 @@ node -e "const s=require('sharp');s('public/favicon.svg',{density:288}).resize(1
 - [ ] A CV cut for the public site (no phone number)
 - [ ] The records (`vinyls.records` in `site.ts`, then `draft: false`), the
       line about the collection, and the facts under it
-- [ ] Places and years for the photographs' captions (`photography.photos`),
-      and the line about what they are
+- [ ] Places and years for the photographs' captions (`photography.photos`)
 
 ## Hosting
 

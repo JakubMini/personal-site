@@ -10,7 +10,7 @@ import { person, photography } from '../data/site';
 const ratio = (p: (typeof photography.photos)[number]) => (p.src ? p.src.width / p.src.height : 1.5);
 ---
 
-<Hobby title="Photography" description={`${person.name}'s photographs, and the feed on Instagram.`} current="photography">
+<Hobby title="Photography" description={`Street photography by ${person.name}, and the feed on Instagram.`} current="photography">
   <header class="wrap grid ph-hero" aria-labelledby="photography-title">
     <p class="label hobby-eyebrow">{photography.eyebrow}</p>
     <h1 class="display" id="photography-title" data-lines>{photography.title}</h1>
