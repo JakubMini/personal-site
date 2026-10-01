@@ -1,8 +1,11 @@
 ---
 // A code snippet as text, highlighted at build time by Shiki (bundled with
-// Astro, no script shipped). Blank until data/site.ts gives it code.
+// Astro, no script shipped). Blank until data/site.ts gives it code. With a
+// note, the snippet reads as one ruled block: the problem (and its figure),
+// then the fix.
 import { Code } from 'astro:components';
 import type { Snippet } from '../data/site';
+import LeanFigure from './LeanFigure.astro';
 
 interface Props {
   snippet: Snippet;
@@ -28,14 +31,27 @@ const paper = {
   ],
 };
 
+// `backticks` in a note mark identifiers from the code; odd pieces are code.
+const noteParts = snippet.note ? snippet.note.split('`') : [];
 const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2, '0'));
 ---
 
 <figure class="snippet">
-  {snippet.note && <p class="snippet-note">{snippet.note}</p>}
+  {
+    snippet.note && (
+      <div class="snippet-head">
+        <div>
+          <p class="snippet-label">The problem</p>
+          <p class="snippet-note">{noteParts.map((part, i) => (i % 2 ? <code>{part}</code> : part))}</p>
+        </div>
+        {snippet.figure === 'lean' && <LeanFigure />}
+      </div>
+    )
+  }
   {
     snippet.code ? (
       <div class="snippet-window">
+        {snippet.note && <p class="snippet-label">The fix</p>}
         <Code code={snippet.code} lang={(snippet.lang ?? 'c') as never} theme={paper} />
       </div>
     ) : (

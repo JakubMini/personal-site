@@ -695,6 +695,77 @@ ul {
   font-size: 15px;
 }
 
+/* ---- Snippet head: the problem, its figure, then the fix -------------- */
+
+.snippet-head {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
+  gap: var(--gap);
+  align-items: start;
+  padding: 20px 0 28px;
+  border-top: 1px solid var(--rule);
+}
+
+.snippet-label {
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.snippet-window .snippet-label {
+  margin: 16px 0 0;
+}
+
+.snippet-note code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--ink);
+  background: var(--slot);
+  padding: 0 0.3em;
+  border-radius: 3px;
+}
+
+/* ---- Lean figure ----------------------------------------------------- */
+
+.lean-figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--mono);
+  font-size: 15px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lean-figure .lf-road { stroke: var(--ink); stroke-width: 1; fill: rgba(11, 15, 12, 0.035); }
+.lean-figure .lf-guide { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 4; }
+.lean-figure .lf-arc { stroke: var(--muted); stroke-width: 1.2; }
+.lean-figure .lf-bike { stroke: var(--ink); stroke-width: 1.6; }
+.lean-figure .lf-axis { stroke: #1d6a86; stroke-width: 1.4; }
+.lean-figure .lf-lateral { stroke: #b0305c; stroke-width: 2.2; }
+.lean-figure .lf-accel { stroke: var(--ink); stroke-width: 2.4; }
+.lean-figure .lf-upright { stroke: #146b37; stroke-width: 2.6; }
+
+.lean-figure .lf-head-axis path { fill: #1d6a86; }
+.lean-figure .lf-head-lateral path { fill: #b0305c; }
+.lean-figure .lf-head-accel path { fill: var(--ink); }
+.lean-figure .lf-head-upright path { fill: #146b37; }
+
+/* Labels sit on a paper halo so lines passing behind them stay readable. */
+.lean-figure text {
+  stroke: var(--paper);
+  stroke-width: 4px;
+  paint-order: stroke;
+}
+
+.lean-figure .lf-t-axis { fill: #1d6a86; }
+.lean-figure .lf-t-accel { fill: var(--ink); font-weight: 600; }
+.lean-figure .lf-t-lateral { fill: #b0305c; }
+.lean-figure .lf-t-upright { fill: #146b37; font-weight: 600; }
+.lean-figure .lf-t-guide { fill: var(--muted); }
+.lean-figure .lf-readout { fill: var(--text); font-variant-numeric: tabular-nums; }
+
 /* ---- Motion ---------------------------------------------------------- */
 
 /* SplitText clips each line in a .line-mask while it rises. Display type sets
@@ -801,6 +872,10 @@ ul {
   .stack .row,
   .pub {
     gap: 4px;
+  }
+
+  .snippet-head {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .pub {

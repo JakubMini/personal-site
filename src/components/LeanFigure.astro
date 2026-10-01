@@ -1,0 +1,79 @@
+---
+// The lean-compensation figure, drawn here as one still frame; scripts/motion.ts
+// animates it (scripts/lean-figure.ts) while it is on screen.
+import { FIGURE_SIZE, leanScene, STILL } from '../scripts/lean-figure';
+
+const f = leanScene(STILL.lean, STILL.yaw);
+
+// [key, class, arrowhead colour or null], back to front.
+const strokes: [string, string, string | null][] = [
+  ['road', 'lf-road', null],
+  ['centreLine', 'lf-guide', null],
+  ['level', 'lf-guide', null],
+  ['gradientArc', 'lf-arc', null],
+  ['bike', 'lf-bike', null],
+  ['plumb', 'lf-guide', null],
+  ['leanArc', 'lf-arc', null],
+  ['fwd', 'lf-axis', 'axis'],
+  ['up', 'lf-axis', 'axis'],
+  ['lat', 'lf-axis', 'axis'],
+  ['lateral', 'lf-lateral', 'lateral'],
+  ['accel', 'lf-accel', 'accel'],
+  ['upright', 'lf-upright', 'upright'],
+];
+
+// [key, text, class]
+const labels: [string, string, string][] = [
+  ['fwd', 'fwd', 'lf-t-axis'],
+  ['up', 'up', 'lf-t-axis'],
+  ['lat', 'lat', 'lf-t-axis'],
+  ['accel', 'accel', 'lf-t-accel'],
+  ['lateral', 'lateral share', 'lf-t-lateral'],
+  ['upright', 'R(−lean)·accel', 'lf-t-upright'],
+  ['lean', 'lean', 'lf-t-guide'],
+  ['gradient', 'θ', 'lf-t-guide'],
+];
+
+const heads = ['axis', 'lateral', 'accel', 'upright'];
+---
+
+<svg
+  class="lean-figure"
+  viewBox={`0 0 ${FIGURE_SIZE.width} ${FIGURE_SIZE.height}`}
+  role="img"
+  aria-labelledby="lean-figure-title lean-figure-desc"
+  data-lean-figure
+>
+  <title id="lean-figure-title">Why leaning corrupts a gradient reading</title>
+  <desc id="lean-figure-desc">
+    A bike on an 8 degree climb leans into a corner. The accelerometer reading, accel, stays vertical while the bike's
+    up and lat axes roll with the lean, so part of the reading lands on lat and the gradient reads steeper than it is.
+    Rolling the reading back by the lean, R(minus lean) times accel, returns it to the bike's plane and recovers the
+    true 8 degrees.
+  </desc>
+  <defs>
+    {
+      heads.map((h) => (
+        <marker id={`lf-head-${h}`} class={`lf-head-${h}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M0 0 L10 5 L0 10 Z" />
+        </marker>
+      ))
+    }
+  </defs>
+  {
+    strokes.map(([k, cls, head]) => (
+      <path data-k={k} class={cls} d={f.d[k]} marker-end={head ? `url(#lf-head-${head})` : undefined} opacity={k === 'lateral' ? f.lateralOpacity.toFixed(2) : undefined} />
+    ))
+  }
+  {
+    labels.map(([k, text, cls]) => (
+      <text data-k={`label-${k}`} class={cls} x={f.at[k].x.toFixed(1)} y={f.at[k].y.toFixed(1)} text-anchor={f.at[k].anchor} opacity={k === 'lateral' ? f.lateralOpacity.toFixed(2) : undefined}>
+        {text}
+      </text>
+    ))
+  }
+  <text class="lf-readout" x="12" y={FIGURE_SIZE.height - 14}>
+    gradient read naively <tspan data-k="read-naive" class="lf-t-lateral">{f.naive.toFixed(1)}°</tspan>{'  ·  '}after R(−lean){' '}
+    <tspan data-k="read-fixed" class="lf-t-upright">{f.corrected.toFixed(1)}°</tspan>
+  </text>
+</svg>

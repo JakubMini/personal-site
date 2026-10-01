@@ -9,6 +9,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
+import { animateLeanFigure } from './lean-figure';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -202,7 +203,8 @@ document.fonts.ready.then(() => {
       heroBike();
       document.querySelectorAll<HTMLElement>('.band').forEach((el) => band(el, wide));
       reveals();
-      return loops();
+      const stops = [loops(), ...[...document.querySelectorAll<SVGSVGElement>('svg[data-lean-figure]')].map(animateLeanFigure)];
+      return () => stops.forEach((stop) => stop());
     },
   );
 });
