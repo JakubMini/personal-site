@@ -459,15 +459,33 @@ ul {
 .snippet pre,
 .snippet-blank {
   margin: 0;
-  padding: 20px 0;
-  border-block: 1px solid var(--rule);
   font-family: var(--mono);
   font-size: 14px;
   line-height: 1.6;
 }
 
-.snippet pre {
-  overflow-x: auto;
+.snippet-blank,
+.snippet-window {
+  border-block: 1px solid var(--rule);
+}
+
+.snippet-blank {
+  padding: 20px 0;
+}
+
+/* A ten-line window that scrolls. The bottom line fades to say there is more;
+   the matching bottom padding lets the last line clear the fade at the end. */
+.snippet-window pre {
+  max-height: calc(16px + 10 * 1.6em);
+  padding: 16px 0 1.6em;
+  overflow: auto;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.6em), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 1.6em), transparent);
+}
+
+.snippet-window pre:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
 }
 
 .snippet-note {

@@ -10,17 +10,21 @@ interface Props {
 
 const { snippet } = Astro.props;
 
-// Two inks on paper, like the rest of the page: keywords set bold, strings
-// and numbers in a dark green that holds 5.9:1, comments muted.
+// Syntax colours on the page's paper. Every one holds at least 5.4:1 against
+// #f3f2ec (WCAG AA for body text), so colour adds meaning without costing legibility.
 const paper = {
   name: 'paper',
   type: 'light' as const,
   colors: { 'editor.background': '#f3f2ec', 'editor.foreground': '#0b0f0c' },
   tokenColors: [
     { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#5a5e58', fontStyle: 'italic' } },
-    { scope: ['keyword.control', 'keyword.other', 'storage.type', 'storage.modifier', 'keyword.operator.new'], settings: { fontStyle: 'bold' } },
-    { scope: ['string', 'constant.numeric', 'constant.language', 'constant.character'], settings: { foreground: '#146b37' } },
-    { scope: ['entity.name.function', 'support.function'], settings: { foreground: '#0b0f0c', fontStyle: '' } },
+    { scope: ['keyword', 'storage.modifier', 'keyword.operator.sizeof'], settings: { foreground: '#b0305c' } },
+    { scope: ['storage.type', 'support.type', 'entity.name.type'], settings: { foreground: '#1d6a86' } },
+    { scope: ['entity.name.function', 'support.function'], settings: { foreground: '#6440a8' } },
+    { scope: ['constant.numeric', 'constant.language', 'constant.character', 'constant.other', 'variable.other.constant', 'keyword.other.unit'], settings: { foreground: '#8a4b14' } },
+    { scope: ['string', 'punctuation.definition.string'], settings: { foreground: '#146b37' } },
+    { scope: ['meta.preprocessor', 'entity.name.function.preprocessor'], settings: { foreground: '#a1371b' } },
+    { scope: ['keyword.operator', 'punctuation'], settings: { foreground: '#3c403a' } },
   ],
 };
 
@@ -31,7 +35,9 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
   {snippet.note && <p class="snippet-note">{snippet.note}</p>}
   {
     snippet.code ? (
-      <Code code={snippet.code} lang={(snippet.lang ?? 'c') as never} theme={paper} />
+      <div class="snippet-window">
+        <Code code={snippet.code} lang={(snippet.lang ?? 'c') as never} theme={paper} />
+      </div>
     ) : (
       <div class="snippet-blank" aria-hidden="true">
         {blankLines.map((n) => <span>{n}</span>)}
