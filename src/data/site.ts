@@ -26,7 +26,10 @@ export interface Snippet {
   lang?: string;
   code?: string;
   // The problem the code solves, in a sentence or two, shown above it.
+  // `backticks` set identifiers from the code in code type.
   note?: string;
+  // An animated figure beside the note (components/LeanFigure.astro).
+  figure?: 'lean';
 }
 
 export const person = {
@@ -109,7 +112,49 @@ export const journey: Chapter[] = [
       'Second hire. Architected the 48V drive system — motor controller, VCU, UI and BMS — and wrote the first firmware for every board. Bring-up to mass production: 2,000+ units shipped, PCB BOM cost cut by more than half.',
     tags: ['48V drives', 'BMS', 'EN 15194', 'MISRA C', 'Production test'],
     photo: { alt: 'E-bike drive system', caption: 'Drive system' },
-    snippet: { caption: '[Code snippet]' },
+    snippet: {
+      caption: 'Lean-compensated road gradient (C)',
+      note: 'Assistance follows the road gradient, read from an IMU in the frame. The accelerometer only sees gravity, and when the bike leans into a corner part of that reading moves onto the sensor’s `lat` axis. The `up` share shrinks, so a naive estimate reads every climb steeper than it is. `roadGradient` measures the `lean`, rolls the reading back into the bike’s plane with `rodrigues(fwd, -lean)`, and returns the slope alone.',
+      figure: 'lean',
+      lang: 'c',
+      code: `// Rotation by angle a about unit axis k: R = cos(a) I + sin(a) [k]x + (1 - cos(a)) k k^T
+static mat3_t rodrigues(const vec3_t k, const float32_t a)
+{
+    assert_param(fabsf(vec3_dot(k, k) - 1.0f) < 1e-3f);  // axis must be a unit vector
+    assert_param(isfinite(a));
+
+    const float32_t c = cosf(a), s = sinf(a), t = 1.0f - c;
+    return (mat3_t){ .m = {
+        { c + t * k.x * k.x,       t * k.x * k.y - s * k.z, t * k.x * k.z + s * k.y },
+        { t * k.y * k.x + s * k.z, c + t * k.y * k.y,       t * k.y * k.z - s * k.x },
+        { t * k.z * k.x - s * k.y, t * k.z * k.y + s * k.x, c + t * k.z * k.z       },
+    } };
+}
+
+// Road gradient (rad) from an accelerometer sample (g) and wheel acceleration (m/s^2)
+float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
+{
+    // A NaN would poison every filter downstream; out-of-range values are clamped below
+    assert_param(isfinite(accel.x) && isfinite(accel.y) && isfinite(accel.z));
+    assert_param(isfinite(wheelAccel));
+    assert_param(fabsf(Mount.pitch) < (float32_t) M_PI_4);  // calibration sanity
+
+    // The IMU is mounted pitched, so the bike's forward and up axes are not the sensor's
+    const float32_t cp = cosf(Mount.pitch), sp = sinf(Mount.pitch);
+    const vec3_t fwd = {  cp, sp, 0.0f };
+    const vec3_t up  = { -sp, cp, 0.0f };
+
+    // Leaning in a corner reads as slope: measure the lean, roll gravity back upright
+    const float32_t lean = atan2f(accel.z, vec3_dot(accel, up));
+    const vec3_t    g    = mat3_mul_vec3(rodrigues(fwd, -lean), accel);
+
+    // Remove the bike's own acceleration and clamp what no road can produce
+    const float32_t along = constrainf32(vec3_dot(g, fwd) - wheelAccel / G_MPS2, -3.0f, 3.0f);
+    const float32_t above = constrainf32(vec3_dot(g, up), 0.0f, 2.0f);
+
+    return atan2f(along, above);
+}`,
+    },
   },
   {
     label: 'Batteries',
