@@ -7,6 +7,7 @@ import propellerRigPoster from '../assets/photos/propeller-rig-poster.jpg';
 import propellerRig from '../assets/video/propeller-rig.mp4';
 import driveUnit from '../assets/photos/skarper-drive-unit.jpg';
 import batteryCyclers from '../assets/photos/battery-cyclers.webp';
+import minimalPedal4 from '../assets/photos/minimal-pedal-4.jpg';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
@@ -214,7 +215,12 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
     summary:
       'Firmware and fleet software for an electric cargo vehicle: STM32 body-control, sound, immobiliser and DC-DC ECUs, VESC motor-control work, and a Raspberry Pi telematics stack on balenaOS. Built the CAN bootloader and signed over-the-air updates for 30+ connected vehicles, plus the CI that took builds from half a day to under ten minutes and releases from monthly to weekly. Refactored the core ECUs to MISRA C with GoogleTest, cutting static-analysis findings by 90%, and mentored two engineers.',
     tags: ['STM32', 'CAN', 'Fleet OTA', 'balenaOS', 'MISRA C', 'EN ISO 13849-1'],
-    photo: { alt: 'Electric cargo vehicle fleet', caption: 'Cargo fleet' },
+    photo: {
+      src: minimalPedal4,
+      whole: true,
+      alt: 'The Minimal Pedal 4: an electric cargo quadricycle with a white box body behind an open cab',
+      caption: 'Minimal Pedal 4',
+    },
     snippet: {
       caption: 'A release out to the fleet, and the data back.',
       noteLabel: 'The architecture',
