@@ -58,23 +58,26 @@ repositories in the same organisations are not claimed.
 - [ ] Code for the snippet slots, or delete the ones not wanted
 - [ ] A CV cut for the public site (no phone number)
 - [ ] Rewrite the About draft, then set `about.draft` to `false`
-- [ ] Buy the domain and set `site` in `astro.config.mjs` (turns on canonical and og:url)
+- [ ] Buy `jakubszypicyn.dev` (`site` in `astro.config.mjs` already points at it)
 - [ ] A mobile design: below 900px the page is a stacked fallback, not a designed layout
 
 ## Hosting
 
-Cloudflare Workers static assets (`wrangler.jsonc`), deployed by Cloudflare's
-Git integration, so no Cloudflare token is stored in GitHub. One-time setup:
+Cloudflare Workers static assets (`wrangler.jsonc`) on Jakub's personal
+Cloudflare account, not the Skarper one, deployed by Cloudflare's Git
+integration, so no Cloudflare token is stored in GitHub. One-time setup:
 
 1. Cloudflare dashboard → Workers & Pages → Create → Import a repository →
-   `JakubMini/personal-site`.
+   `JakubMini/personal-site`. The Worker name must stay `personal-site`, as in
+   `wrangler.jsonc`, or the build fails.
 2. Build command `pnpm build`, deploy command `npx wrangler deploy`,
    production branch `main`.
-3. Domain: buy it with Cloudflare Registrar (no markup on renewal), then on the
-   Worker: Settings → Domains & Routes → Add custom domain.
+3. Domain: `jakubszypicyn.dev`, bought with Cloudflare Registrar (no markup on
+   renewal). On the Worker: Settings → Domains & Routes → Add custom domain.
 
 After that a push to `main` deploys, and other branches get preview URLs.
-By hand: `pnpm build && pnpm wrangler deploy` after `pnpm wrangler login`.
+By hand: `pnpm build && pnpm wrangler deploy` after `pnpm wrangler login`;
+check `pnpm wrangler whoami` shows the personal account first.
 
 ## Decisions
 
