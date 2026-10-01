@@ -1784,20 +1784,31 @@ ul {
   color: var(--muted);
 }
 
+/* Justified rows: each photo keeps its own shape (--ar, width over height)
+   and the row's photos grow in proportion to it, so they share one height
+   and fill the width. --row is the height a row aims for; the last row keeps
+   it rather than stretching, which is what the ::after is for. */
 .ph-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  --row: 420px;
+  display: flex;
+  flex-wrap: wrap;
   gap: 40px var(--gap);
   padding-block: 48px 140px;
 }
 
-.shot {
-  grid-column: var(--c);
+.ph-grid::after {
+  content: '';
+  flex-grow: 1000000;
 }
 
-.ph-grid .photo img,
-.ph-grid .photo video,
-.ph-grid .photo .photo-slot {
+.shot {
+  flex: calc(var(--ar) * 1000) 1 calc(var(--ar) * var(--row));
+  min-width: 0;
+}
+
+.shot .photo img,
+.shot .photo video,
+.shot .photo .photo-slot {
   aspect-ratio: var(--ar);
 }
 
@@ -2176,6 +2187,10 @@ ul {
     margin-top: 16px;
   }
 
+  .ph-grid {
+    --row: 300px;
+  }
+
   .hobby-foot .contact-links {
     margin-bottom: 48px;
   }
@@ -2315,17 +2330,13 @@ ul {
     overflow-wrap: anywhere;
   }
 
+  /* One photo to a row, at its own shape. */
   .ph-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 28px;
     padding-block: 32px 80px;
   }
 
   .shot {
-    grid-column: span 2;
-  }
-
-  .shot-half {
-    grid-column: span 1;
+    flex-basis: 100%;
   }
 }

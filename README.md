@@ -34,6 +34,12 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 `site.ts`, and set it as that photo's `src`. Astro resizes it at build time.
 Until then the slot is a grey box with its caption.
 
+**Photographs** (`photography.photos`) are shown whole, in justified rows at
+each photo's own shape, in the order listed; add one by importing it and
+adding a line with its alt text and caption. A white frame baked into an
+export should be cut off first (`sharp(file).trim()`); the files are kept at
+about 2000px on the long edge, as Instagram exports them.
+
 **Looping clips.** A photo can carry a short silent `video` that plays like a
 GIF while on screen (paused off screen, in a hidden tab and under reduced
 motion), with the photo `src` as its poster. Square, 640px, H.264, no audio:
@@ -73,7 +79,7 @@ node -e "const s=require('sharp');s('public/favicon.svg',{density:288}).resize(1
 - [ ] A CV cut for the public site (no phone number)
 - [ ] The records (`vinyls.records` in `site.ts`, then `draft: false`), the
       line about the collection, and the facts under it
-- [ ] The photographs (`photography.photos`), each with a place and a year,
+- [ ] Places and years for the photographs' captions (`photography.photos`),
       and the line about what they are
 
 ## Hosting
@@ -201,8 +207,7 @@ in the mockup:
   example.com riders, laps of a park. Never the hosted project.
 - **The vinyls page** on phones puts the hero text, the record and the facts
   on one ink band, and a now-playing bar with a small record sticks to the
-  top while the crate scrolls. The photographs run two to a row for the
-  squares and full width otherwise.
+  top while the crate scrolls. The photographs run one to a row.
 - **Code** swipes sideways on touch screens, and the hint reads "tap to
   scroll".
 - Above 1440px, the hero name and the band labels line up with the centred

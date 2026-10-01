@@ -8,6 +8,23 @@ import propellerRig from '../assets/video/propeller-rig.mp4';
 import driveUnit from '../assets/photos/skarper-drive-unit.jpg';
 import batteryCyclers from '../assets/photos/battery-cyclers.webp';
 import minimalPedal4 from '../assets/photos/minimal-pedal-4.jpg';
+// The photographs (pages/photography.astro).
+import milkyWay from '../assets/photos/milky-way.jpg';
+import buffalo from '../assets/photos/buffalo.jpg';
+import cactusFlower from '../assets/photos/cactus-flower.jpg';
+import lionCub from '../assets/photos/lion-cub.jpg';
+import makingFire from '../assets/photos/making-fire.jpg';
+import pavementArtist from '../assets/photos/pavement-artist.jpg';
+import balconyShadow from '../assets/photos/balcony-shadow.jpg';
+import kittenUnderTheSofa from '../assets/photos/kitten-under-the-sofa.jpg';
+import kitten from '../assets/photos/kitten.jpg';
+import lighthouse from '../assets/photos/lighthouse.jpg';
+import parkCrescent from '../assets/photos/park-crescent.jpg';
+import yellow from '../assets/photos/yellow.jpg';
+import bollards from '../assets/photos/bollards.jpg';
+import throughTheWindow from '../assets/photos/through-the-window.jpg';
+import underTheBridge from '../assets/photos/under-the-bridge.jpg';
+import piccadillyCircus from '../assets/photos/piccadilly-circus.jpg';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
@@ -441,30 +458,30 @@ export const vinyls = {
   ] as Vinyl[],
 };
 
-// A photograph on the photography page: placed on the twelve-column grid
-// (`column`, as CSS grid-column) at its own shape (`aspect`); `half` ones sit
-// two to a row on phones. Without `src` it is a grey slot (Photo.astro).
-export interface Shot extends Photo {
-  column: string;
-  aspect: string;
-  half?: boolean;
-}
-
+// The photography page: the photos in this order, in justified rows at each
+// photo's own shape (nothing is cropped), with a short caption under each.
+// Without `src` a photo is a grey slot (Photo.astro).
 export const photography = {
   eyebrow: 'Away from the desk',
   title: 'Lens cap off.',
   lead: '[What you shoot, on what, and since when. One line, two at most.]',
   handle: '@jakub_m_s.jpeg',
   photos: [
-    { column: '1 / span 7', aspect: '3 / 2', alt: '', caption: '[Place, year]' },
-    { column: '8 / span 5', aspect: '4 / 5', alt: '', caption: '[Place, year]' },
-    { column: '1 / span 4', aspect: '1 / 1', half: true, alt: '', caption: '[Place, year]' },
-    { column: '5 / span 4', aspect: '1 / 1', half: true, alt: '', caption: '[Place, year]' },
-    { column: '9 / span 4', aspect: '4 / 5', alt: '', caption: '[Place, year]' },
-    { column: '1 / span 12', aspect: '21 / 9', alt: '', caption: '[Place, year]' },
-    { column: '1 / span 5', aspect: '4 / 5', alt: '', caption: '[Place, year]' },
-    { column: '6 / span 7', aspect: '3 / 2', alt: '', caption: '[Place, year]' },
-    { column: '1 / span 6', aspect: '3 / 2', alt: '', caption: '[Place, year]' },
-    { column: '7 / span 6', aspect: '3 / 2', alt: '', caption: '[Place, year]' },
-  ] as Shot[],
+    { src: milkyWay, alt: 'The Milky Way across a dark sky, with the streak of a meteor at the lower left', caption: 'A meteor through the Milky Way' },
+    { src: makingFire, alt: 'A Maasai man in red, crouching and blowing on a bundle of smoking kindling', caption: 'Making fire' },
+    { src: balconyShadow, alt: 'Black and white: a wrought-iron balcony throws a slatted shadow across a white wall and a sash window with flower boxes', caption: 'Balcony shadow' },
+    { src: buffalo, alt: 'A Cape buffalo standing in tall golden grass, the herd grazing behind it', caption: 'Buffalo in the long grass' },
+    { src: lionCub, alt: 'A lion cub from behind, walking towards tall grass, with hazy mountains and a lone acacia beyond', caption: 'A lion cub, heading for the grass' },
+    { src: cactusFlower, alt: 'A hand reaching towards a single red flower on a tall, spiny cactus', caption: 'The one flower on the cactus' },
+    { src: parkCrescent, alt: 'Black and white: a couple walks along a curved colonnade, half of it in shadow', caption: 'Park Crescent, London' },
+    { src: bollards, alt: 'Black and white: a person in silhouette walks between two bollards on a paved square, the shadows long', caption: 'Between the bollards' },
+    { src: underTheBridge, alt: 'Black and white: a woman walks under the cable anchorage of a bridge, the cables striping the ground with shadow', caption: 'Under the bridge' },
+    { src: throughTheWindow, alt: 'Black and white: a person with long hair, seen from behind through a frosted window', caption: 'Through the window' },
+    { src: lighthouse, alt: 'A white lighthouse and its cottages on a green headland above cliffs and dark water, a person in a yellow jacket blurred in the foreground', caption: 'The lighthouse' },
+    { src: kitten, alt: 'A grey kitten lying low with its paws forward and its eyes wide, against a dark background', caption: 'Caught' },
+    { src: kittenUnderTheSofa, alt: 'A grey kitten peering out from under a sofa, eyes wide', caption: 'Under the sofa' },
+    { src: piccadillyCircus, alt: 'A woman coming up the steps of Piccadilly Circus station, seen through the brass handrails', caption: 'Piccadilly Circus, London' },
+    { src: pavementArtist, alt: 'A pavement artist in headphones kneeling over a chalk portrait, boxes of pastels around him', caption: 'Pastels on the pavement' },
+    { src: yellow, alt: 'A bright yellow timber structure of curved walls against a deep blue sky', caption: 'Yellow on blue' },
+  ] as Photo[],
 };

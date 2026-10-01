@@ -1,9 +1,13 @@
 ---
-// The photographs, a dozen of them, and the feed on Instagram. Copy and photos
-// are in data/site.ts; a photo without a file is a grey slot until it has one.
+// The photographs, and the feed on Instagram. Copy and photos are in
+// data/site.ts; the photos run in justified rows, each at its own shape, so
+// nothing is cropped. A photo without a file is a grey slot until it has one.
 import Hobby from '../layouts/Hobby.astro';
 import Photo from '../components/Photo.astro';
 import { person, photography } from '../data/site';
+
+// Width over height, for the row layout (global.css, .ph-grid).
+const ratio = (p: (typeof photography.photos)[number]) => (p.src ? p.src.width / p.src.height : 1.5);
 ---
 
 <Hobby title="Photography" description={`${person.name}'s photographs, and the feed on Instagram.`} current="photography">
@@ -21,7 +25,7 @@ import { person, photography } from '../data/site';
     <div class="ph-grid">
       {
         photography.photos.map((p) => (
-          <div class:list={['shot', { 'shot-half': p.half }]} style={`--c: ${p.column}; --ar: ${p.aspect}`} data-rise>
+          <div class="shot" style={`--ar: ${ratio(p).toFixed(4)}`} data-rise>
             <Photo photo={p} />
           </div>
         ))
