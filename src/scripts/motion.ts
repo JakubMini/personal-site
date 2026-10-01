@@ -108,6 +108,9 @@ function reveals() {
       type: 'lines',
       mask: 'lines',
       linesClass: 'line',
+      // The default puts aria-label on the element and hides the lines, and
+      // aria-label is not allowed on <p>. Split lines still read as the text.
+      aria: 'none',
       autoSplit: true,
       onSplit: (self) =>
         gsap.from(self.lines, {
@@ -144,11 +147,13 @@ function reveals() {
 
 // Split lines only once the real fonts are in, or the line breaks are wrong.
 document.fonts.ready.then(() => {
+  // matchMedia only calls back when some condition matches, so ask for motion
+  // being allowed rather than for it being reduced, or narrow screens get none.
   gsap.matchMedia().add(
-    { wide: WIDE, still: '(prefers-reduced-motion: reduce)' },
+    { wide: WIDE, moving: '(prefers-reduced-motion: no-preference)' },
     (context) => {
-      const { wide, still } = context.conditions as { wide: boolean; still: boolean };
-      if (still) return;
+      const { wide, moving } = context.conditions as { wide: boolean; moving: boolean };
+      if (!moving) return;
       // Creation order is refresh order: pins first, so everything below them
       // measures its start with the pin spacing already in place.
       heroBike();

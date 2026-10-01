@@ -37,9 +37,9 @@ const year = new Date().getFullYear();
         <div class="fact-previously"><div class="fact-label">Previously</div>{hero.previously}</div>
         <div class="fact-education"><div class="fact-label">Education</div>{hero.education}</div>
         <div class="fact-links">
-          <a href={mail}>Email ↗</a>
-          <a href={person.linkedin} rel="me">LinkedIn ↗</a>
-          {person.cv && <a href={person.cv} download>CV ↓</a>}
+          <a href={mail}>Email <span aria-hidden="true">↗</span></a>
+          <a href={person.linkedin} rel="me">LinkedIn <span aria-hidden="true">↗</span></a>
+          {person.cv && <a href={person.cv} download>CV <span aria-hidden="true">↓</span></a>}
         </div>
       </div>
     </div>
@@ -178,8 +178,8 @@ const year = new Date().getFullYear();
       </div>
     </div>
   </footer>
-</Layout>
 
-<script>
-  import '../scripts/motion';
-</script>
+  <script>
+    import '../scripts/motion';
+  </script>
+</Layout>

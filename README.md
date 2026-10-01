@@ -35,7 +35,7 @@ Until then the slot is a grey box with its caption.
 
 - [ ] Portrait and the five chapter photos
 - [ ] The three paper titles and links (`publications` in `site.ts`)
-- [ ] A public CV: no phone number, no "seeking a new role" line
+- [ ] A CV cut for the public site (no phone number)
 - [ ] Rewrite the About draft, then set `about.draft` to `false`
 - [ ] Buy the domain and set `site` in `astro.config.mjs` (turns on canonical and og:url)
 - [ ] A mobile design: below 900px the page is a stacked fallback, not a designed layout

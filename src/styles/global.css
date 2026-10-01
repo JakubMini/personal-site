@@ -45,8 +45,12 @@ body {
   font-family: var(--sans);
   font-size: 18px;
   line-height: 1.5;
-  /* Drawings and sliding rows start outside the viewport; clip, not hidden,
-     so no scroll container is created and pinning keeps working. */
+}
+
+/* Stack rows slide in from outside the viewport. Clip them here, not on body:
+   body's overflow is handed to the viewport, which phones widen instead of
+   clipping. clip, not hidden, so no scroll container breaks the pinning. */
+main {
   overflow-x: clip;
 }
 
@@ -196,7 +200,7 @@ ul {
 }
 
 .fact-label {
-  opacity: 0.6;
+  opacity: 0.7; /* 6.1:1 on the green; 0.6 fails AA */
 }
 
 .fact-now {
@@ -641,10 +645,11 @@ ul {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* !important because the desktop spans (.stack .row-key and the like) are
+     more specific, and every one of them must collapse here. */
   .grid > *,
-  .degree + .degree,
   .pub > * {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1 !important;
   }
 
   .pitch {
