@@ -1,6 +1,7 @@
 ---
-// The lean-compensation figure, drawn here as one still frame; scripts/motion.ts
-// animates it (scripts/lean-figure.ts) while it is on screen.
+// The lean-compensation figure. The SVG is a still frame drawn at build time
+// (scripts/lean-figure.ts), shown without JS and under reduced motion; with
+// motion, scripts/motion.ts loads the rendered 3D scene into the same box.
 import { FIGURE_SIZE, leanScene, STILL } from '../scripts/lean-figure';
 
 const f = leanScene(STILL.lean, STILL.yaw);
@@ -37,20 +38,9 @@ const labels: [string, string, string][] = [
 const heads = ['axis', 'lateral', 'accel', 'upright'];
 ---
 
-<svg
-  class="lean-figure"
-  viewBox={`0 0 ${FIGURE_SIZE.width} ${FIGURE_SIZE.height}`}
-  role="img"
-  aria-labelledby="lean-figure-title lean-figure-desc"
-  data-lean-figure
->
-  <title id="lean-figure-title">Why leaning corrupts a gradient reading</title>
-  <desc id="lean-figure-desc">
-    A bike on an 8 degree climb leans into a corner. The accelerometer reading, accel, stays vertical while the bike's
-    up and lat axes roll with the lean, so part of the reading lands on lat and the gradient reads steeper than it is.
-    Rolling the reading back by the lean, R(minus lean) times accel, returns it to the bike's plane and recovers the
-    true 8 degrees.
-  </desc>
+<div class="lean-block">
+<div class="lean-host" data-lean-figure role="img" aria-labelledby="lean-figure-title" aria-describedby="lean-figure-desc">
+<svg class="lean-figure" viewBox={`0 0 ${FIGURE_SIZE.width} ${FIGURE_SIZE.height}`} aria-hidden="true">
   <defs>
     {
       heads.map((h) => (
@@ -72,8 +62,23 @@ const heads = ['axis', 'lateral', 'accel', 'upright'];
       </text>
     ))
   }
-  <text class="lf-readout" x="12" y={FIGURE_SIZE.height - 14}>
-    gradient read naively <tspan data-k="read-naive" class="lf-t-lateral">{f.naive.toFixed(1)}°</tspan>{'  ·  '}after R(−lean){' '}
-    <tspan data-k="read-fixed" class="lf-t-upright">{f.corrected.toFixed(1)}°</tspan>
-  </text>
 </svg>
+</div>
+<p class="sr-only" id="lean-figure-title">Why leaning corrupts a gradient reading.</p>
+<p class="sr-only" id="lean-figure-desc">
+  A bike on an 8 degree climb leans into a corner. The accelerometer reading, accel, stays vertical while the bike's up
+  and lat axes roll with the lean, so part of the reading lands on lat and the gradient reads steeper than it is.
+  Rolling the reading back by the lean, R(minus lean) times accel, returns it to the bike's plane and recovers the true
+  8 degrees.
+</p>
+<ul class="lean-legend" aria-hidden="true">
+  <li class="lg-accel"><b>accel</b> what the sensor reads</li>
+  <li class="lg-lateral"><b>lateral share</b> lost to the lean</li>
+  <li class="lg-upright"><b>R(−lean)·accel</b> back in the bike’s plane</li>
+</ul>
+<p class="lean-readout">
+  At <b data-read-lean>{Math.round(f.leanDegrees)}°</b> of lean the gradient reads{' '}
+  <b class="rd-naive" data-read-naive>{f.naive.toFixed(1)}°</b> naively,{' '}
+  <b class="rd-fixed" data-read-fixed>{f.corrected.toFixed(1)}°</b> after R(−lean).
+</p>
+</div>

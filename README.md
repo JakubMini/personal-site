@@ -88,6 +88,11 @@ check `pnpm wrangler whoami` shows the personal account first.
   licence, which is not OSI open source. Costs about 48 KB gzipped. CSS
   scroll-driven animations could replace it once pinning and line splitting are
   dependable across browsers without it.
+- **three.js for the lean figure** (the 3D render beside the Skarper snippet).
+  The standard WebGL library; about 135 KB gzipped, in its own chunk that
+  loads only as the figure nears the viewport, so the page's first load is
+  unchanged. Without JavaScript or under reduced motion an SVG still drawn at
+  build time stands in. Labels are HTML (CSS2DRenderer), so they stay sharp.
 - **No motion under `prefers-reduced-motion`, and no timers.** Every tween is
   scrubbed by the scroll or plays once on entry. Without JavaScript the page is
   complete and static.

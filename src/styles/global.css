@@ -764,7 +764,110 @@ ul {
 .lean-figure .lf-t-lateral { fill: #b0305c; }
 .lean-figure .lf-t-upright { fill: #146b37; font-weight: 600; }
 .lean-figure .lf-t-guide { fill: var(--muted); }
-.lean-figure .lf-readout { fill: var(--text); font-variant-numeric: tabular-nums; }
+
+/* The still and the 3D render share one box; the render fades in over the still. */
+.lean-host {
+  position: relative;
+  aspect-ratio: 520 / 400;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.lean-host .lean-figure,
+.lf3-canvas,
+.lf3-labels {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.lf3-labels {
+  pointer-events: none;
+}
+
+.lf3-canvas {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.lean-host.is-3d .lf3-canvas {
+  opacity: 1;
+}
+
+.lean-host.is-3d .lean-figure {
+  visibility: hidden;
+}
+
+.lf3-label {
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(243, 242, 236, 0.86);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.lf3-accel { color: var(--ink); font-weight: 600; }
+.lf3-upright { color: #146b37; font-weight: 600; }
+.lf3-lateral { color: #b0305c; }
+.lf3-axis { color: #1d6a86; }
+.lf3-guide { color: var(--muted); }
+
+.lean-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Each entry: a swatch and the vector's name in its own colour, then what it means. */
+.lean-legend li::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-radius: 2px;
+  background: var(--swatch);
+}
+
+.lean-legend b {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--swatch);
+}
+
+.lg-accel { --swatch: var(--ink); }
+.lg-lateral { --swatch: #b0305c; }
+.lg-upright { --swatch: #146b37; }
+
+.lean-readout {
+  margin-top: 8px;
+  font-size: 15px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.lean-readout b {
+  font-family: var(--mono);
+}
+
+.lean-readout .rd-naive { color: #b0305c; }
+.lean-readout .rd-fixed { color: #146b37; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 /* ---- Motion ---------------------------------------------------------- */
 

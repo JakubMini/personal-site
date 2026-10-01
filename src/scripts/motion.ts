@@ -9,7 +9,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
-import { animateLeanFigure } from './lean-figure';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -189,6 +188,42 @@ function loops() {
   };
 }
 
+// The 3D lean figure. three.js is a large download, so it loads only as the
+// figure nears the viewport; until then (and without motion) the SVG still shows.
+function leanFigures() {
+  const stops: (() => void)[] = [];
+  let stopped = false;
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.unobserve(e.target);
+        const host = e.target as HTMLElement;
+        const block = host.closest('.lean-block');
+        import('./lean-scene-3d')
+          .then(({ mountLeanScene }) => {
+            if (stopped) return;
+            stops.push(
+              mountLeanScene(host, {
+                naive: block?.querySelector('[data-read-naive]') ?? null,
+                fixed: block?.querySelector('[data-read-fixed]') ?? null,
+                lean: block?.querySelector('[data-read-lean]') ?? null,
+              }),
+            );
+          })
+          .catch(() => {}); // a failed download leaves the still in place
+      }
+    },
+    { rootMargin: '600px 0px' },
+  );
+  document.querySelectorAll('[data-lean-figure]').forEach((h) => io.observe(h));
+  return () => {
+    stopped = true;
+    io.disconnect();
+    stops.forEach((stop) => stop());
+  };
+}
+
 // Split lines only once the real fonts are in, or the line breaks are wrong.
 document.fonts.ready.then(() => {
   // matchMedia only calls back when some condition matches, so ask for motion
@@ -203,7 +238,7 @@ document.fonts.ready.then(() => {
       heroBike();
       document.querySelectorAll<HTMLElement>('.band').forEach((el) => band(el, wide));
       reveals();
-      const stops = [loops(), ...[...document.querySelectorAll<SVGSVGElement>('svg[data-lean-figure]')].map(animateLeanFigure)];
+      const stops = [loops(), leanFigures()];
       return () => stops.forEach((stop) => stop());
     },
   );

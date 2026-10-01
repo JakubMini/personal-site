@@ -1,6 +1,7 @@
-// The lean-compensation figure: a bike on a gradient, leaning, with the vectors
-// from the snippet drawn at its IMU. An orthographic projection to SVG paths,
-// shared by the build (one still frame in the HTML) and the browser (animation).
+// The lean figure's still frame: a bike on a gradient, leaning, with the vectors
+// from the snippet drawn at its IMU, as an orthographic projection to SVG paths.
+// Drawn at build time; it is what shows without JS and under reduced motion.
+// With motion, scripts/lean-scene-3d.ts replaces it with the rendered scene.
 
 type V3 = readonly [number, number, number];
 type Pt = readonly [number, number];
@@ -12,7 +13,7 @@ const DEG = 180 / Math.PI;
 
 // World axes: x along the road's heading, y up, z to the bike's right.
 // The slope the snippet recovers, set steep enough for the error to show.
-const GRADIENT = 8 / DEG;
+export const GRADIENT = 8 / DEG;
 
 // The e-bike from components/Machine.astro, in its SVG units (y down, ground at 186).
 const FRAME: readonly (readonly number[])[] = [
@@ -63,6 +64,7 @@ export interface Frame {
   at: Record<string, Label>;
   naive: number;
   corrected: number;
+  leanDegrees: number;
   // How visible the lateral share is: 0 upright, 1 from about 12 degrees of lean.
   lateralOpacity: number;
 }
@@ -140,6 +142,7 @@ export function leanScene(lean: number, yaw: number): Frame {
       gradient: label(add(rear, [1.25, 0.07, 0])),
     },
     lateralOpacity: Math.min(1, Math.abs(dot(accel, lat)) * 5),
+    leanDegrees: Math.abs(lean) * DEG,
     naive: Math.atan2(dot(accel, fwd), dot(accel, up)) * DEG,
     corrected: Math.atan2(dot(accel, fwd), above) * DEG,
   };
@@ -150,54 +153,3 @@ export const FIGURE_SIZE = { width: W, height: H } as const;
 // The still frame the page ships with: mid-lean, so the problem is visible
 // without JavaScript and under reduced motion.
 export const STILL = { lean: 0.6, yaw: 0.75 } as const;
-
-// Animate a rendered figure while it is on screen and the tab is visible.
-// Returns the stop, for when motion is switched off.
-export function animateLeanFigure(svg: SVGSVGElement): () => void {
-  const els = new Map<string, Element>();
-  svg.querySelectorAll('[data-k]').forEach((el) => els.set(el.getAttribute('data-k')!, el));
-
-  let raf = 0;
-  let onScreen = false;
-  const t0 = performance.now();
-
-  const draw = (now: number) => {
-    const t = (now - t0) / 1000;
-    const lean = 0.7 * Math.sin((2 * Math.PI * t) / 7); // ±40°, every 7 s
-    const yaw = STILL.yaw + 0.15 * Math.sin((2 * Math.PI * t) / 17); // a slow drift of the camera
-    const f = leanScene(lean, yaw);
-    for (const [k, d] of Object.entries(f.d)) els.get(k)?.setAttribute('d', d);
-    for (const [k, { x, y, anchor }] of Object.entries(f.at)) {
-      const el = els.get(`label-${k}`);
-      el?.setAttribute('x', x.toFixed(1));
-      el?.setAttribute('y', y.toFixed(1));
-      el?.setAttribute('text-anchor', anchor);
-    }
-    for (const k of ['lateral', 'label-lateral']) els.get(k)?.setAttribute('opacity', f.lateralOpacity.toFixed(2));
-    els.get('read-naive')!.textContent = `${f.naive.toFixed(1)}°`;
-    els.get('read-fixed')!.textContent = `${f.corrected.toFixed(1)}°`;
-    raf = requestAnimationFrame(draw);
-  };
-  const run = () => {
-    if (onScreen && !document.hidden && !raf) raf = requestAnimationFrame(draw);
-  };
-  const halt = () => {
-    cancelAnimationFrame(raf);
-    raf = 0;
-  };
-
-  const io = new IntersectionObserver(([e]) => {
-    onScreen = e.isIntersecting;
-    if (onScreen) run();
-    else halt();
-  });
-  io.observe(svg);
-  const onVisibility = () => (document.hidden ? halt() : run());
-  document.addEventListener('visibilitychange', onVisibility);
-
-  return () => {
-    halt();
-    io.disconnect();
-    document.removeEventListener('visibilitychange', onVisibility);
-  };
-}
