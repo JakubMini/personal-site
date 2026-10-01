@@ -93,7 +93,6 @@ export const journey: Chapter[] = [
       alt: 'A drone motor spinning a propeller on the test rig',
       caption: 'Propeller test rig',
     },
-    snippet: { caption: '[Code snippet]' },
   },
   {
     label: 'E-bikes',
