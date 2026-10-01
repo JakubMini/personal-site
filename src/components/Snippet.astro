@@ -6,6 +6,7 @@
 import { Code } from 'astro:components';
 import type { Snippet } from '../data/site';
 import LeanFigure from './LeanFigure.astro';
+import TftpFigure from './TftpFigure.astro';
 
 interface Props {
   snippet: Snippet;
@@ -39,12 +40,19 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
 <figure class="snippet">
   {
     snippet.note && (
-      <div class="snippet-head">
+      <div class:list={['snippet-head', { 'snippet-head-wide': snippet.figure === 'tftp' }]}>
         <div class="snippet-explain">
-          <p class="snippet-label">The problem</p>
+          <p class="snippet-label">{snippet.noteLabel ?? 'The problem'}</p>
           <p class="snippet-note">{noteParts.map((part, i) => (i % 2 ? <code>{part}</code> : part))}</p>
         </div>
         {snippet.figure === 'lean' && <LeanFigure />}
+        {
+          snippet.figure === 'tftp' && (
+            <div class="tftp-host">
+              <TftpFigure />
+            </div>
+          )
+        }
       </div>
     )
   }
@@ -55,9 +63,11 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
         <Code code={snippet.code} lang={(snippet.lang ?? 'c') as never} theme={paper} />
       </div>
     ) : (
-      <div class="snippet-blank" aria-hidden="true">
-        {blankLines.map((n) => <span>{n}</span>)}
-      </div>
+      !snippet.figure && (
+        <div class="snippet-blank" aria-hidden="true">
+          {blankLines.map((n) => <span>{n}</span>)}
+        </div>
+      )
     )
   }
   <figcaption>{snippet.caption}</figcaption>

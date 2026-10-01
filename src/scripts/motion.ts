@@ -9,6 +9,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
+import { tftpTimeline } from './tftp-figure';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -188,6 +189,22 @@ function loops() {
   };
 }
 
+// The TFTP bootloader figure: its timeline plays only while the figure is on
+// screen. Stopping jumps it to the end, which is the still in the markup.
+function tftpFigures() {
+  const timelines = [...document.querySelectorAll<SVGSVGElement>('svg[data-tftp-figure]')].map((svg) => {
+    const tl = tftpTimeline(svg);
+    ScrollTrigger.create({
+      trigger: svg,
+      start: 'top 85%',
+      end: 'bottom 15%',
+      onToggle: (self) => (self.isActive ? tl.play() : tl.pause()),
+    });
+    return tl;
+  });
+  return () => timelines.forEach((tl) => tl.progress(1, false).kill());
+}
+
 // The 3D lean figure. three.js is a large download, so it loads only as the
 // figure nears the viewport; until then (and without motion) the SVG still shows.
 function leanFigures() {
@@ -245,7 +262,7 @@ document.fonts.ready.then(() => {
       heroBike();
       document.querySelectorAll<HTMLElement>('.band').forEach((el) => band(el, wide));
       reveals();
-      const stops = [loops(), leanFigures()];
+      const stops = [loops(), leanFigures(), tftpFigures()];
       return () => stops.forEach((stop) => stop());
     },
   );

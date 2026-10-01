@@ -32,8 +32,11 @@ export interface Snippet {
   // The problem the code solves, in a sentence or two, shown above it.
   // `backticks` set identifiers from the code in code type.
   note?: string;
-  // An animated figure beside the note (components/LeanFigure.astro).
-  figure?: 'lean';
+  // The note's heading; 'The problem' unless set.
+  noteLabel?: string;
+  // An animated figure: 'lean' beside the note (components/LeanFigure.astro),
+  // 'tftp' full width under it (components/TftpFigure.astro).
+  figure?: 'lean' | 'tftp';
 }
 
 export const person = {
@@ -178,7 +181,12 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
       'An Ethernet/TFTP bootloader for zero-touch updates across STM32 lab assets, CI/CD and Python services automating battery lab testing, and a Simscape pack model for BMS validation.',
     tags: ['Bootloaders', 'GitLab CI', 'Azure', 'gRPC', 'Simscape'],
     photo: { alt: 'Battery test lab', caption: 'Battery lab' },
-    snippet: { caption: '[Code snippet]' },
+    snippet: {
+      caption: 'Ethernet bootloader, one update end to end. Addresses and sizes are illustrative.',
+      noteLabel: 'How it works',
+      note: 'Zero-touch updates for the battery lab’s STM32 controllers: no programmer cable, no visit to the rig. An AT command over UART asks the running application to hand over to the bootloader, which brings Ethernet up, takes an address over DHCP and accepts the image from any standard TFTP client on `UDP :69`. Every 512-byte block is programmed, read back and checked against its `CRC32`. Built on ST’s lwIP in-application-programming example, extended with the AT interface, boot flags shared with the application, and per-block verification.',
+      figure: 'tftp',
+    },
   },
   {
     label: 'Four-wheel cargo',

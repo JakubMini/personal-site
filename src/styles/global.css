@@ -930,6 +930,107 @@ ul {
   white-space: nowrap;
 }
 
+/* ---- TFTP bootloader figure ----------------------------------------- */
+
+.snippet-head-wide {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'note' 'figure';
+  grid-template-rows: none;
+}
+
+.snippet-head-wide .snippet-note {
+  max-width: 88ch;
+}
+
+.tftp-host {
+  grid-area: figure;
+  margin-top: 20px;
+}
+
+.tftp-figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--sans);
+}
+
+.tftp-figure text { fill: var(--ink); }
+.tf-panel { fill: #faf9f5; stroke: var(--rule); }
+.tf-div { stroke: var(--rule); }
+.tf-h { font-size: 15px; font-weight: 600; }
+.tftp-figure .tf-sub, .tftp-figure .tf-key, .tftp-figure .tf-map, .tftp-figure .tf-lane-label { fill: var(--muted); font-size: 12.5px; }
+.tftp-figure .tf-lane-label { font-family: var(--mono); font-size: 12px; }
+.tf-lane { stroke: var(--ink); stroke-width: 1.5; }
+.tftp-figure .tf-port { fill: var(--muted); font-family: var(--mono); font-size: 12px; }
+
+.tf-log { font-family: var(--mono); font-size: 12.5px; }
+.tftp-figure .tf-log-sent { fill: #1d6a86; }
+.tftp-figure .tf-log-reply { fill: var(--ink); font-weight: 600; }
+.tftp-figure .tf-log-cmd { fill: var(--ink); }
+.tftp-figure .tf-log-tftp { fill: #146b37; }
+.tftp-figure .tf-log-warn { fill: #b0305c; }
+.tftp-figure .tf-log-ok { fill: #146b37; font-weight: 600; }
+.tftp-figure .tf-log-note { fill: var(--muted); font-style: italic; }
+
+.tf-timeout { fill: none; stroke: #b0305c; stroke-width: 2; stroke-dasharray: 18 52; }
+.tf-lost path { stroke: #b0305c; stroke-width: 3; stroke-linecap: round; }
+.tf-speed rect { fill: var(--ink); }
+.tftp-figure .tf-speed text { fill: var(--paper); font-size: 11px; font-family: var(--mono); }
+
+/* Packets: colour by kind. */
+.tf-pkt rect { stroke-width: 1.5; }
+.tftp-figure .tf-pkt text { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.tf-pkt.is-at rect { fill: #faf9f5; stroke: #1d6a86; }
+.tftp-figure .tf-pkt.is-at text { fill: #1d6a86; }
+.tf-pkt.is-reply rect { fill: #1d6a86; stroke: #1d6a86; }
+.tftp-figure .tf-pkt.is-reply text { fill: #faf9f5; }
+.tf-pkt.is-dhcp rect { fill: #faf9f5; stroke: #8a4b14; }
+.tftp-figure .tf-pkt.is-dhcp text { fill: #8a4b14; }
+.tf-pkt.is-wrq rect { fill: var(--ink); stroke: var(--ink); }
+.tftp-figure .tf-pkt.is-wrq text { fill: var(--green); }
+.tf-pkt.is-data rect { fill: var(--green); stroke: #146b37; }
+.tftp-figure .tf-pkt.is-data text { fill: var(--ink); }
+.tf-pkt.is-ack rect { fill: #faf9f5; stroke: #146b37; }
+.tftp-figure .tf-pkt.is-ack text { fill: #146b37; }
+.tf-pkt.is-lost rect { fill: #b0305c; stroke: #b0305c; }
+.tftp-figure .tf-pkt.is-lost text { fill: #faf9f5; }
+
+/* The board. */
+.tf-led { fill: #1c8a4a; }
+.tf-led.is-boot { fill: #c98a1b; }
+.tf-badge { fill: var(--ink); }
+.tf-badge.is-boot { fill: #c98a1b; }
+.tftp-figure .tf-badge-text { fill: var(--paper); font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.tftp-figure .tf-val { font-family: var(--mono); font-size: 12.5px; }
+.tftp-figure .tf-status { font-family: var(--mono); font-size: 13px; font-weight: 600; fill: #146b37; }
+.tftp-figure .tf-addr { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
+.tf-boot { fill: #c9c7bd; }
+.tf-cell { fill: var(--slot); }
+.tf-old { fill: #9a9d96; }
+.tf-fill { fill: var(--green); }
+.tf-cell-line { stroke: rgba(11, 15, 12, 0.18); }
+.tf-flags { fill: #d8d3c0; }
+.tf-bar { fill: none; stroke: var(--ink); stroke-width: 1.2; }
+.tf-flag circle { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.tf-flag.is-on circle { fill: #c98a1b; stroke: #c98a1b; }
+.tftp-figure .tf-flag text { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
+.tftp-figure .tf-flag.is-on text { fill: var(--ink); font-weight: 600; }
+
+.tf-pipe-bg { fill: none; stroke: var(--rule); }
+.tf-pipe-on { fill: var(--green); }
+.tftp-figure .tf-pipe text { font-family: var(--mono); font-size: 11.5px; }
+.tftp-figure .tf-key-row .tf-pkt .tf-key-what { font-family: var(--sans); font-size: 11.5px; font-weight: 400; fill: var(--muted); }
+.tftp-figure .tf-key-row text { font-size: 11px; }
+
+/* Steps. */
+.tf-step rect { fill: none; stroke: var(--rule); }
+.tftp-figure .tf-step text { fill: var(--muted); font-size: 13px; }
+.tf-step.is-done rect { stroke: var(--ink); }
+.tftp-figure .tf-step.is-done text { fill: var(--ink); }
+.tf-step.is-active rect { fill: var(--ink); stroke: var(--ink); }
+.tftp-figure .tf-step.is-active text { fill: var(--green); font-weight: 600; }
+.tftp-figure .tf-caption { font-size: 15px; fill: var(--text); }
+
 /* ---- Motion ---------------------------------------------------------- */
 
 /* SplitText clips each line in a .line-mask while it rises. Display type sets
@@ -1047,6 +1148,14 @@ ul {
   .lean-host {
     aspect-ratio: 520 / 400;
     min-height: 0;
+  }
+
+  .tftp-host {
+    overflow-x: auto;
+  }
+
+  .tftp-figure {
+    min-width: 900px;
   }
 
   .pub {
