@@ -1,0 +1,34 @@
+---
+// The photographs, a dozen of them, and the feed on Instagram. Copy and photos
+// are in data/site.ts; a photo without a file is a grey slot until it has one.
+import Hobby from '../layouts/Hobby.astro';
+import Photo from '../components/Photo.astro';
+import { person, photography } from '../data/site';
+---
+
+<Hobby title="Photography" description={`${person.name}'s photographs, and the feed on Instagram.`} current="photography">
+  <header class="wrap grid ph-hero" aria-labelledby="photography-title">
+    <p class="label hobby-eyebrow">{photography.eyebrow}</p>
+    <h1 class="display" id="photography-title" data-lines>{photography.title}</h1>
+    <p class="ph-lead" data-lines>{photography.lead}</p>
+    <p class="ph-ig" data-rise>
+      <a href={person.instagram} rel="me">{photography.handle} <span aria-hidden="true">↗</span></a>
+      <span class="ph-ig-on">the full feed, on Instagram</span>
+    </p>
+  </header>
+
+  <div class="wrap ruled">
+    <div class="ph-grid">
+      {
+        photography.photos.map((p) => (
+          <div class:list={['shot', { 'shot-half': p.half }]} style={`--c: ${p.column}; --ar: ${p.aspect}`} data-rise>
+            <Photo photo={p} />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <a slot="elsewhere" href={person.instagram} rel="me">Instagram <span aria-hidden="true">↗</span></a>
+  <a slot="elsewhere" href="/vinyls">Vinyls</a>
+</Hobby>

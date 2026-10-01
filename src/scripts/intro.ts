@@ -29,7 +29,7 @@ function timeline(cover: HTMLElement) {
   // CSS sizes the record; it is drawn at the screen's density, two at most.
   const radius = record.clientWidth / 2;
   record.width = record.height = Math.round(radius * 2 * Math.min(2, devicePixelRatio || 1));
-  const draw = vinyl(record, JSON.parse(record.dataset.label!));
+  const { frame: draw } = vinyl(record, JSON.parse(record.dataset.label!));
 
   // Spin is the record turning on the spot; rolling adds a turn for every
   // radius it travels, so it rolls rather than slides.

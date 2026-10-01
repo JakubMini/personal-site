@@ -1,7 +1,8 @@
 # personal-site
 
-Jakub Szypicyn's personal site: one static page that works as a business card,
-with the career told as five machines you scroll past.
+Jakub Szypicyn's personal site: a static page that works as a business card,
+with the career told as five machines you scroll past, and two pages away
+from the desk, the records and the photographs.
 
 ## Run it
 
@@ -26,6 +27,8 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 | The hero's signal chain | `src/scripts/signal-chain.ts`; `motion.ts` runs its loop and hands it the pointer |
 | The icon and logo mark | `public/favicon.svg` (also the mark beside the name) |
 | The line drawings | `src/components/Machine.astro`; wheels and the e-bikes' rear drive are `MachineWheel.astro` and `MachineDrive.astro` |
+| The vinyls and photography pages | `src/pages/vinyls.astro` and `photography.astro` on `src/layouts/Hobby.astro`; their copy, records and photos are `vinyls` and `photography` in `site.ts` |
+| The vinyls page's turntable | `src/scripts/crate.ts`; the record itself is `vinyl.ts` |
 
 **Photos.** Put the file in `src/assets/photos/`, import it at the top of
 `site.ts`, and set it as that photo's `src`. Astro resizes it at build time.
@@ -68,6 +71,10 @@ node -e "const s=require('sharp');s('public/favicon.svg',{density:288}).resize(1
 - [ ] The three paper titles and links (`publications` in `site.ts`)
 - [ ] Code for the snippet slots, or delete the ones not wanted
 - [ ] A CV cut for the public site (no phone number)
+- [ ] The records (`vinyls.records` in `site.ts`, then `draft: false`), the
+      line about the collection, and the facts under it
+- [ ] The photographs (`photography.photos`), each with a place and a year,
+      and the line about what they are
 
 ## Hosting
 
@@ -103,7 +110,7 @@ check `pnpm wrangler whoami` shows the personal account first.
   build time stands in. Labels are HTML (CSS2DRenderer), so they stay sharp.
 - **No motion under `prefers-reduced-motion`, and no timers.** Every tween is
   scrubbed by the scroll or plays once on entry. Without JavaScript the page is
-  complete and static. Two exceptions follow.
+  complete and static. Three exceptions follow.
 - **The intro** (`components/Intro.astro`, `scripts/intro.ts`),
   about three seconds on every load, after wodniack.dev. On an ink cover a
   glossy black record is cut, spins up to 33⅓ rpm and rolls off, uncovering
@@ -125,6 +132,17 @@ check `pnpm wrangler whoami` shows the personal account first.
   blink, the radio keeps transmitting, the phone's chart goes live. Under
   reduced motion it is drawn landed and still; without JavaScript the band
   stays plain green.
+- **The vinyls page's turntable** (`scripts/crate.ts`) is the intro's record
+  again, with a label for each record in the crate and a tonearm. It stays
+  put while the crate scrolls past: the needle drops on the first record, the
+  label changes to the record under the stylus, and the arm tracks from the
+  rim to the lead-out across the list. It turns at 33⅓ while on screen and
+  the tab is visible, and a scroll gives it a flick. Under reduced motion it
+  is drawn still with the collection's label; without JavaScript a plain CSS
+  record stands in.
+- **The hobbies are pages, not sections.** `/vinyls` and `/photography` are
+  linked from the About paragraph and the colophon, so the main page's scroll
+  is unchanged. Photography links the Instagram feed; the page is the edit.
 - **Fonts self-hosted** (Funnel Display and Funnel Sans via Fontsource). No
   request to Google, so no visitor data goes to a third party and no consent
   banner is needed.
@@ -158,6 +176,9 @@ Where the build departs from the mockup, on purpose:
 - The hero's bike is replaced by a signal chain that loops on its own, from a
   hub motor over a circuit board and the cloud to the app. The bike keeps its
   place in the Journey bands.
+- Two pages the mockup does not have, `/vinyls` and `/photography`, in the
+  same language: the vinyls page's hero is the site's one ink hero, the
+  record's home from the intro.
 
 Narrow screens have layouts of their own (`global.css`, Narrow screens), not
 in the mockup:
@@ -178,6 +199,10 @@ in the mockup:
 - **The dashboard screenshots** (Skarper, 2026) are of a local copy of the
   platform on its own ports, loaded with demo data: `DEMO-` serials,
   example.com riders, laps of a park. Never the hosted project.
+- **The vinyls page** on phones puts the hero text, the record and the facts
+  on one ink band, and a now-playing bar with a small record sticks to the
+  top while the crate scrolls. The photographs run two to a row for the
+  squares and full width otherwise.
 - **Code** swipes sideways on touch screens, and the hint reads "tap to
   scroll".
 - Above 1440px, the hero name and the band labels line up with the centred

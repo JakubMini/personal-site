@@ -1,0 +1,56 @@
+---
+// A page away from the desk (pages/vinyls.astro, pages/photography.astro):
+// the top bar with the hobby pages and Home, the page, and a short green
+// footer. `ink` sets the top bar on ink, for a page whose hero is.
+import Layout from './Layout.astro';
+import { person } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  current: 'vinyls' | 'photography';
+  ink?: boolean;
+}
+
+const { title, description, current, ink = false } = Astro.props;
+const pages = [
+  ['vinyls', 'Vinyls', '/vinyls'],
+  ['photography', 'Photography', '/photography'],
+] as const;
+const mail = `mailto:${person.email}`;
+const year = new Date().getFullYear();
+---
+
+<Layout title={`${title} — ${person.name}`} description={description}>
+  <div class:list={['hobby', { 'hobby-ink': ink }]} id="top">
+    <div class="hobby-top">
+      <div class="wrap topbar">
+        <a class="wordmark" href="/"><img src="/favicon.svg" alt="" width="28" height="28" />{person.name}</a>
+        <nav class="nav" aria-label="Pages">
+          {pages.map(([id, label, href]) => <a href={href} aria-current={id === current ? 'page' : undefined}>{label}</a>)}
+          <a href="/">Home</a>
+        </nav>
+      </div>
+    </div>
+    <main>
+      <slot />
+    </main>
+    <footer class="hobby-foot">
+      <div class="wrap">
+        <p class="label">Elsewhere</p>
+        <p class="contact-links">
+          <slot name="elsewhere" />
+          <a href="/">Home</a>
+          <a href={mail}>{person.email}</a>
+        </p>
+        <div class="colophon">
+          <span>© {year} {person.name}</span>
+          <span>{person.location}</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script>
+    import '../scripts/motion';
+  </script>
+</Layout>

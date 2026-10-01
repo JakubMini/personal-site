@@ -1,0 +1,89 @@
+---
+// The record collection. The record on the right stays while the crate
+// scrolls past, and plays whichever record is under the needle
+// (scripts/crate.ts). Copy and records are in data/site.ts.
+import Hobby from '../layouts/Hobby.astro';
+import { intro, person, vinyls } from '../data/site';
+
+const n = vinyls.records.length;
+---
+
+<Hobby title="Vinyls" description={`${person.name}'s records, with the one under the needle.`} current="vinyls" ink>
+  <section class="deck" aria-labelledby="vinyls-title">
+    <div class="wrap grid">
+      <header class="deck-hero">
+        <p class="label hobby-eyebrow">{vinyls.eyebrow}</p>
+        <h1 class="display hobby-title" id="vinyls-title" data-lines>{vinyls.title}</h1>
+        <p class="hobby-lead" data-lines>{vinyls.lead}</p>
+      </header>
+
+      <aside class="deck-side" aria-hidden="true">
+        <div class="player" data-player>
+          <div class="disc">
+            <canvas data-record width="2" height="2" data-label={JSON.stringify(intro.label)}></canvas>
+            <svg viewBox="0 0 1000 1000">
+              <g class="arm-rest"><rect x="812" y="548" width="22" height="16" rx="4"></rect></g>
+              <g transform="translate(860 140)">
+                <g data-arm transform="rotate(95)">
+                  <line class="arm-under" x1="-82" y1="0" x2="600" y2="0"></line>
+                  <line class="arm-tube" x1="-82" y1="0" x2="600" y2="0"></line>
+                  <circle class="arm-part" cx="-82" cy="0" r="24"></circle>
+                  <rect class="arm-part" x="538" y="-13" width="64" height="26" rx="7"></rect>
+                  <circle class="arm-stylus" cx="603" cy="0" r="5"></circle>
+                </g>
+                <circle class="arm-part" r="18"></circle>
+              </g>
+            </svg>
+          </div>
+          <p class="readout"><span>33⅓ rpm</span><span data-readout>— / {n}</span></p>
+        </div>
+      </aside>
+
+      <div class="deck-facts">
+        <div class="hobby-facts">
+          <div><div class="fact-label">Records</div>{n}</div>
+          <div><div class="fact-label">Since</div>{vinyls.since}</div>
+          <div><div class="fact-label">Turntable</div>{vinyls.turntable}</div>
+          <div><div class="fact-label">Most played</div>{vinyls.mostPlayed}</div>
+        </div>
+      </div>
+
+      <div class="deck-crate">
+        <div class="now-bar" data-now-bar aria-hidden="true">
+          <canvas data-record-mini width="2" height="2"></canvas>
+          <span><span class="now-key">Now playing</span><span class="now-title" data-now-title>{intro.label.bottom}</span></span>
+        </div>
+        <div class="crate-head" data-rise>
+          <p class="label">The crate</p>
+          <p class="crate-count">{vinyls.draft ? 'Example records, until mine are in' : `${n} records`}</p>
+        </div>
+        <ol class="crate" data-crate>
+          {
+            vinyls.records.map((r, i) => (
+              <li class="rec" data-rise data-artist={r.artist} data-title={r.title} data-year={String(r.year)} data-scheme={r.scheme ?? 'green'}>
+                <span class="rec-n">
+                  <span>{String(i + 1).padStart(2, '0')}</span>
+                </span>
+                <span class="rec-main">
+                  <span class="rec-artist">{r.artist}</span>
+                  <span class="rec-title">{r.title}</span>
+                </span>
+                <span class="rec-meta">
+                  {r.year} · {r.label}
+                </span>
+                {r.note && <span class="rec-note">{r.note}</span>}
+              </li>
+            ))
+          }
+        </ol>
+        <p class="crate-end" data-rise><span>End of side.</span><a href="#top">Flip it over <span aria-hidden="true">↑</span></a></p>
+      </div>
+    </div>
+  </section>
+
+  <a slot="elsewhere" href="/photography">Photography</a>
+
+  <script>
+    import '../scripts/crate';
+  </script>
+</Hobby>

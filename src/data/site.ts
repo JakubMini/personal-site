@@ -46,6 +46,7 @@ export const person = {
   name: 'Jakub Szypicyn',
   email: 'jakub.m.szypicyn@gmail.com',
   linkedin: 'https://linkedin.com/in/szypicynjakub',
+  instagram: 'https://www.instagram.com/jakub_m_s.jpeg/',
   // A path under public/, e.g. '/jakub-szypicyn-cv.pdf'. null hides every CV link.
   cv: null as string | null,
   location: 'London',
@@ -70,9 +71,10 @@ export const intro = {
 export const about = {
   draft: false,
   lead: "I want my engineering to cut carbon. For seven years I've built the electronics, firmware and cloud behind battery labs, e-bikes and electric cargo vehicles, from first boot to fleets in the field.",
+  // [text](href) in a paragraph renders as a link.
   body: [
     'I design the boards, write the firmware and build the pipelines that keep products updated and measured long after they ship. Batteries, power conversion and connected fleets run through all of it, and they carry over to anything electric: storage, charging, heating, the grid.',
-    'Before industry, a PhD at Imperial on reconfigurable analogue circuits. Away from the desk: collecting vinyls, touring, Formula 1, photography.',
+    'Before industry, a PhD at Imperial on reconfigurable analogue circuits. Away from the desk: [collecting vinyls](/vinyls), touring, Formula 1, [photography](/photography).',
   ],
   portrait: { src: portrait, alt: 'Jakub Szypicyn, smiling, in a white shirt and striped tie', caption: 'Portrait' } as Photo,
 };
@@ -393,3 +395,76 @@ export const publications: { venue: string; title: string | null; href: string |
   { venue: 'IEEE MEMRISYS', title: null, href: null },
   { venue: 'IEEE CAS', title: null, href: null },
 ];
+
+// ---- Away from the desk: pages/vinyls.astro and pages/photography.astro ----
+
+// What a record's label looks like on the turntable: the intro's green,
+// paper, or ink with green lettering (scripts/vinyl.ts).
+export type LabelScheme = 'green' | 'paper' | 'ink';
+
+export interface Vinyl {
+  artist: string;
+  title: string;
+  year: number;
+  label: string;
+  // The pressing, or where it came from; shown under the title.
+  note?: string;
+  // Green unless set.
+  scheme?: LabelScheme;
+}
+
+// The vinyls page. The record on the right plays through the crate as the
+// page scrolls (scripts/crate.ts), in the order the records are listed here.
+export const vinyls = {
+  eyebrow: 'Away from the desk',
+  title: 'Needle down.',
+  lead: '[A line about the collection: what you dig for, where, and what the turntable sees most.] Scroll, and the needle tracks across the side.',
+  since: '[2016]',
+  turntable: '[Rega Planar 3]',
+  mostPlayed: '[Kind of Blue]',
+  // While true the crate says these are examples. Replace them with Jakub's
+  // own records and set it false.
+  draft: true,
+  records: [
+    { artist: 'Miles Davis', title: 'Kind of Blue', year: 1959, label: 'Columbia', note: 'Mono reissue, 180 g', scheme: 'paper' },
+    { artist: 'Nick Drake', title: 'Pink Moon', year: 1972, label: 'Island' },
+    { artist: 'Kraftwerk', title: 'Trans-Europe Express', year: 1977, label: 'Kling Klang', note: '2009 remaster', scheme: 'ink' },
+    { artist: 'Fleetwood Mac', title: 'Rumours', year: 1977, label: 'Warner Bros.', note: 'Original UK pressing', scheme: 'paper' },
+    { artist: 'Portishead', title: 'Dummy', year: 1994, label: 'Go! Beat' },
+    { artist: 'Boards of Canada', title: 'Music Has the Right to Children', year: 1998, label: 'Warp', note: '2 LP, gatefold', scheme: 'ink' },
+    { artist: 'Daft Punk', title: 'Discovery', year: 2001, label: 'Virgin', scheme: 'paper' },
+    { artist: 'Radiohead', title: 'In Rainbows', year: 2007, label: 'XL' },
+    { artist: 'Bonobo', title: 'Black Sands', year: 2010, label: 'Ninja Tune', scheme: 'ink' },
+    { artist: 'Jon Hopkins', title: 'Immunity', year: 2013, label: 'Domino', note: '2 LP', scheme: 'paper' },
+    { artist: 'Khruangbin', title: 'Con Todo El Mundo', year: 2018, label: 'Dead Oceans' },
+    { artist: 'Nils Frahm', title: 'All Melody', year: 2018, label: 'Erased Tapes', note: '2 LP, clear vinyl', scheme: 'ink' },
+  ] as Vinyl[],
+};
+
+// A photograph on the photography page: placed on the twelve-column grid
+// (`column`, as CSS grid-column) at its own shape (`aspect`); `half` ones sit
+// two to a row on phones. Without `src` it is a grey slot (Photo.astro).
+export interface Shot extends Photo {
+  column: string;
+  aspect: string;
+  half?: boolean;
+}
+
+export const photography = {
+  eyebrow: 'Away from the desk',
+  title: 'Lens cap off.',
+  lead: '[What you shoot, on what, and since when. One line, two at most.]',
+  handle: '@jakub_m_s.jpeg',
+  photos: [
+    { column: '1 / span 7', aspect: '3 / 2', alt: '', caption: '[Place, year]' },
+    { column: '8 / span 5', aspect: '4 / 5', alt: '', caption: '[Place, year]' },
+    { column: '1 / span 4', aspect: '1 / 1', half: true, alt: '', caption: '[Place, year]' },
+    { column: '5 / span 4', aspect: '1 / 1', half: true, alt: '', caption: '[Place, year]' },
+    { column: '9 / span 4', aspect: '4 / 5', alt: '', caption: '[Place, year]' },
+    { column: '1 / span 12', aspect: '21 / 9', alt: '', caption: '[Place, year]' },
+    { column: '1 / span 5', aspect: '4 / 5', alt: '', caption: '[Place, year]' },
+    { column: '6 / span 7', aspect: '3 / 2', alt: '', caption: '[Place, year]' },
+    { column: '1 / span 6', aspect: '3 / 2', alt: '', caption: '[Place, year]' },
+    { column: '7 / span 6', aspect: '3 / 2', alt: '', caption: '[Place, year]' },
+  ] as Shot[],
+};

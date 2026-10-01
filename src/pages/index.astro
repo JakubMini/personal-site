@@ -17,6 +17,8 @@ const sections = [
 ];
 const mail = `mailto:${person.email}`;
 const year = new Date().getFullYear();
+// [text](href) in a paragraph of copy renders as a link.
+const links = (text: string) => text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a class="in-text" href="$2">$1</a>');
 // Tells search engines whose page this is, for a search on the name.
 const personLd = {
   '@context': 'https://schema.org',
@@ -24,7 +26,7 @@ const personLd = {
   name: person.name,
   url: Astro.site?.href,
   description: hero.pitch,
-  sameAs: [person.linkedin],
+  sameAs: [person.linkedin, person.instagram],
 };
 ---
 
@@ -69,7 +71,7 @@ const personLd = {
       <div class="about-main">
         <p class="lead" data-lines>{about.lead}</p>
         <div class="about-body">
-          {about.body.map((p) => <p data-rise>{p}</p>)}
+          {about.body.map((p) => <p data-rise set:html={links(p)} />)}
         </div>
       </div>
     </section>
@@ -232,6 +234,11 @@ const personLd = {
       </p>
       <div class="colophon">
         <span>© {year} {person.name}</span>
+        <span class="colophon-links">
+          <a href="/vinyls">Vinyls</a>
+          <span aria-hidden="true">·</span>
+          <a href="/photography">Photography</a>
+        </span>
         <span>{person.location}</span>
       </div>
     </div>

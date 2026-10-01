@@ -1,8 +1,8 @@
-// The intro's vinyl record: a glossy black disc with a green label, drawn in
-// a 2D canvas so it costs no library. What turns with the record (lacquer,
-// grooves, label) is drawn once; each frame turns it and adds what stays put
-// relative to the light: the streaks the grooves throw back, the gloss on the
-// lacquer, and a white and a green rim light.
+// The vinyl record of the intro and the vinyls page: a glossy black disc with
+// a lettered label, drawn in a 2D canvas so it costs no library. What turns
+// with the record (lacquer, grooves, label) is drawn once; each frame turns it
+// and adds what stays put relative to the light: the streaks the grooves throw
+// back, the gloss on the lacquer, and a white and a green rim light.
 
 const TAU = Math.PI * 2;
 
@@ -12,6 +12,9 @@ const GROOVES_IN = 0.36;
 const LABEL = 0.33;
 const HOLE = 0.022;
 const TRACK_GAPS = [0.5, 0.61, 0.72, 0.84];
+
+// Where the grooves run, for a stylus to track (scripts/crate.ts).
+export const GROOVES = { out: GROOVES_OUT, in: GROOVES_IN };
 
 // The light comes from the top left: the groove streaks lie along that axis.
 const LIGHT = -Math.PI * 0.75;
@@ -26,10 +29,14 @@ const VINYL = {
   sheen: 0.3,
 };
 
+// The label's colour: the intro's green, paper, or ink with green lettering.
+export type LabelScheme = 'green' | 'paper' | 'ink';
+
 export interface Label {
   top: string;
   bottom: string;
   monogram: string;
+  scheme?: LabelScheme;
 }
 
 export interface Pose {
@@ -86,15 +93,31 @@ function grooves(g: CanvasRenderingContext2D, r: number) {
 }
 
 // Letters set round a circle: over the top reading clockwise, or along the
-// bottom reading anticlockwise, both upright from outside.
-function round(g: CanvasRenderingContext2D, text: string, r: number, top: boolean, tracking: number) {
+// bottom reading anticlockwise, both upright from outside. Text that would
+// run past `maxArc` radians is set smaller, down to 60%, then loses its tail.
+function round(g: CanvasRenderingContext2D, text: string, r: number, top: boolean, weight: number, family: string, size: number, tracking: number, maxArc: number) {
   g.textAlign = 'center';
   g.textBaseline = 'middle';
-  const letters = [...text];
-  const widths = letters.map((l) => g.measureText(l).width + tracking);
-  const total = widths.reduce((a, b) => a + b, 0);
+  let letters = [...text];
+  let at = size;
+  const measure = () => {
+    g.font = `${weight} ${at}px ${family}`;
+    return letters.map((l) => g.measureText(l).width + (tracking * at) / size);
+  };
+  const total = (w: number[]) => w.reduce((a, b) => a + b, 0);
+  let widths = measure();
+  while (total(widths) / r > maxArc && at > size * 0.6) {
+    at *= 0.95;
+    widths = measure();
+  }
+  const kept = [...letters];
+  while (total(widths) / r > maxArc && kept.length > 3) {
+    kept.pop();
+    letters = [...kept, '…'];
+    widths = measure();
+  }
   const dir = top ? 1 : -1;
-  let a = top ? -Math.PI / 2 - total / (2 * r) : Math.PI / 2 + total / (2 * r);
+  let a = top ? -Math.PI / 2 - total(widths) / (2 * r) : Math.PI / 2 + total(widths) / (2 * r);
   letters.forEach((l, i) => {
     a += (dir * widths[i]) / (2 * r);
     g.save();
@@ -109,15 +132,31 @@ function label(g: CanvasRenderingContext2D, r: number, text: Label, css: CSSStyl
   const rl = r * LABEL;
   const green = css.getPropertyValue('--green').trim();
   const ink = css.getPropertyValue('--ink').trim();
-  const paper = g.createRadialGradient(-rl * 0.35, -rl * 0.35, rl * 0.1, 0, 0, rl);
-  paper.addColorStop(0, '#8affbb'); // --green, lit
-  paper.addColorStop(1, green);
-  g.fillStyle = paper;
+  const paper = css.getPropertyValue('--paper').trim();
+  // Each scheme: the label's colour lit and plain, its lettering, and a rim
+  // where the label would otherwise vanish into the record.
+  const schemes = {
+    green: { fill: ['#8affbb', green], text: ink, rim: null },
+    paper: { fill: ['#ffffff', paper], text: ink, rim: null },
+    ink: { fill: ['#2b312d', ink], text: green, rim: 'rgba(243, 242, 236, 0.55)' },
+  } as const;
+  const scheme = schemes[text.scheme ?? 'green'];
+  const fill = g.createRadialGradient(-rl * 0.35, -rl * 0.35, rl * 0.1, 0, 0, rl);
+  fill.addColorStop(0, scheme.fill[0]);
+  fill.addColorStop(1, scheme.fill[1]);
+  g.fillStyle = fill;
   g.beginPath();
   g.arc(0, 0, rl, 0, TAU);
   g.fill();
+  if (scheme.rim) {
+    g.strokeStyle = scheme.rim;
+    g.lineWidth = Math.max(0.8, rl * 0.02);
+    g.beginPath();
+    g.arc(0, 0, rl * 0.985, 0, TAU);
+    g.stroke();
+  }
 
-  g.fillStyle = g.strokeStyle = ink;
+  g.fillStyle = g.strokeStyle = scheme.text;
   g.globalAlpha = 0.5;
   g.lineWidth = Math.max(0.6, rl * 0.012);
   g.beginPath();
@@ -126,11 +165,11 @@ function label(g: CanvasRenderingContext2D, r: number, text: Label, css: CSSStyl
   g.globalAlpha = 1;
 
   const sans = css.getPropertyValue('--sans');
-  g.font = `600 ${rl * 0.15}px ${sans}`;
-  round(g, text.top.toUpperCase(), rl * 0.72, true, rl * 0.035);
-  g.font = `400 ${rl * 0.11}px ${sans}`;
-  round(g, text.bottom.toUpperCase(), rl * 0.74, false, rl * 0.02);
+  round(g, text.top.toUpperCase(), rl * 0.72, true, 600, sans, rl * 0.15, rl * 0.035, 3.2);
+  round(g, text.bottom.toUpperCase(), rl * 0.74, false, 400, sans, rl * 0.11, rl * 0.02, 2.9);
   g.font = `600 ${rl * 0.24}px ${css.getPropertyValue('--display')}`;
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
   g.fillText(text.monogram, 0, -rl * 0.3);
 }
 
@@ -150,8 +189,8 @@ function sheen(g: CanvasRenderingContext2D, r: number, a: number) {
 }
 
 // Draws into `canvas`, square and already sized in device pixels. Returns the
-// frame function; it blurs the label by however far it turned since the last
-// frame, as a camera shutter would.
+// frame function, which blurs the label by however far it turned since the
+// last frame, as a camera shutter would, and a way to put another label on.
 export function vinyl(canvas: HTMLCanvasElement, text: Label) {
   const size = canvas.width;
   const r = size / 2;
@@ -164,7 +203,11 @@ export function vinyl(canvas: HTMLCanvasElement, text: Label) {
   const g = canvas.getContext('2d')!;
   let last = 0;
 
-  return ({ turn, cut, label: shown }: Pose) => {
+  const setLabel = (next: Label) => {
+    turning.label = layer(size, (g, r) => label(g, r, next, css));
+  };
+
+  const frame = ({ turn, cut, label: shown }: Pose) => {
     const rOut = r * GROOVES_OUT;
     const rCut = rOut - (rOut - r * GROOVES_IN) * cut;
     let moved = turn - last;
@@ -247,4 +290,6 @@ export function vinyl(canvas: HTMLCanvasElement, text: Label) {
     g.fill();
     g.globalCompositeOperation = 'source-over';
   };
+
+  return { frame, setLabel };
 }
