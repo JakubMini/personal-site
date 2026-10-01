@@ -611,6 +611,54 @@ ul {
   background: rgba(47, 242, 124, 0.1);
 }
 
+/* Says it can be clicked, in the window's bar; and until the first click one
+   hotspot pulses (scripts/dash-demo.ts). */
+.dash-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(47, 242, 124, 0.12);
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.dash-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.dash:not(.is-live) .dash-badge {
+  display: none;
+}
+
+/* "tap" on touch screens, "click" with a mouse. */
+.dash-tap {
+  display: none;
+}
+
+@media (hover: none) {
+  .dash-click { display: none; }
+  .dash-tap { display: inline; }
+}
+
+.dash-spot.is-invite {
+  outline-color: var(--green);
+  animation: dash-invite 1.6s ease-out infinite;
+}
+
+@keyframes dash-invite {
+  0% { box-shadow: 0 0 0 0 rgba(47, 242, 124, 0.55); }
+  70%, 100% { box-shadow: 0 0 0 14px rgba(47, 242, 124, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-spot.is-invite { animation: none; }
+}
+
 .dash:not(.is-live) .dash-spot,
 .dash:not(.is-live) .dash-back,
 .dash:not(.is-live) .dash-hint {

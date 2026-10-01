@@ -1,8 +1,9 @@
 // The dashboard click-through (components/DashDemo.astro). A click on a hotspot
 // shows the screen it names; a click anywhere else lights every hotspot for a
-// moment, so the clickable parts are easy to find. Tall screens scroll inside
-// the window only once it has been clicked, so scrolling past the page never
-// gets caught in it.
+// moment, so the clickable parts are easy to find. Until the first click, one
+// hotspot (Watch live) pulses as an invitation. Tall screens scroll inside the
+// window only once it has been clicked, so scrolling past the page never gets
+// caught in it.
 
 const HINT = 900; // ms the hotspots stay lit
 
@@ -18,6 +19,9 @@ export function initDash(root: HTMLElement) {
   let hint = 0;
 
   root.classList.add('is-live');
+  // The invitation: the last hotspot on the first screen that opens the live ride.
+  const invite = [...screens.get(current)!.querySelectorAll<HTMLElement>('[data-to="ride-live"]')].pop();
+  invite?.classList.add('is-invite');
 
   const flash = () => {
     root.classList.add('is-hinting');
@@ -41,6 +45,7 @@ export function initDash(root: HTMLElement) {
     const target = e.target as HTMLElement;
     const spot = target.closest<HTMLElement>('[data-to]');
     root.classList.add('is-engaged');
+    invite?.classList.remove('is-invite');
     if (spot) {
       history.push(current);
       show(spot.dataset.to!);
