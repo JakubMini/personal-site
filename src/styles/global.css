@@ -506,8 +506,12 @@ ul {
 
 /* ---- Dashboard click-through (DashDemo.astro) ------------------------ */
 
+/* Narrow enough that the window, its bar and caption fit the screen top to
+   bottom: the view keeps its 1440 x 900 shape, so its width follows the
+   height left over. */
 .dash {
-  margin: 0;
+  max-width: calc((100svh - 150px) * 1440 / 900);
+  margin: 0 auto;
 }
 
 .dash-window {
