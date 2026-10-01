@@ -25,7 +25,7 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 | The intro on load | `src/scripts/intro.ts`, `src/components/Intro.astro`; the record is `src/scripts/vinyl.ts` |
 | The hero's circuit board | `src/scripts/signal-chain.ts`; `motion.ts` scrubs it with the scroll |
 | The icon and logo mark | `public/favicon.svg` (also the mark beside the name) |
-| The line drawings | `src/components/Machine.astro` |
+| The line drawings | `src/components/Machine.astro`; wheels and the e-bikes' rear drive are `MachineWheel.astro` and `MachineDrive.astro` |
 
 **Photos.** Put the file in `src/assets/photos/`, import it at the top of
 `site.ts`, and set it as that photo's `src`. Astro resizes it at build time.
@@ -137,7 +137,11 @@ https://claude.ai/artifact/21hnSUGqUa9g2yCiCzwbzg
 
 Where the build departs from the mockup, on purpose:
 
-- Wheels have faint spokes, otherwise a turning circle looks like a sliding one.
+- The machines are drawn in more detail than the mockup's outlines: laced
+  wheels with tyres that have depth (spokes show a wheel rolling rather than
+  sliding), a strapped battery and gimbal on the drone, a drivetrain and a
+  rear hub drive on the e-bikes, straps and a BMS on the battery pack, and a
+  cockpit with pedals on the cargo quad.
 - The cargo vehicle drives right to left, because the drawing faces left.
 - A battery's cells fill as it crosses; the drone's rotors spin; the last
   bike's signal arcs appear as it rides.

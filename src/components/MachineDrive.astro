@@ -1,0 +1,26 @@
+---
+// The e-bikes' rear drive, after Skarper's clip-on unit: a disc clamped over
+// the hub with its arm along the chainstay and a status light. It is fixed to
+// the frame, so it sits outside the wheel that rolls beneath it.
+interface Props {
+  cx: number;
+  cy: number;
+}
+
+const { cx, cy } = Astro.props;
+---
+
+<circle cx={cx} cy={cy} r="19" fill="currentColor" fill-opacity="0.16" stroke-width="2.2" />
+<circle cx={cx} cy={cy} r="11" stroke-width="1.2" stroke-opacity="0.6" />
+<rect
+  x={cx + 16}
+  y={cy - 6}
+  width="30"
+  height="10"
+  rx="5"
+  fill="currentColor"
+  fill-opacity="0.16"
+  stroke-width="1.8"
+  transform={`rotate(5 ${cx + 31} ${cy - 1})`}
+/>
+<circle cx={cx + 8} cy={cy - 9} r="2" fill="currentColor" stroke="none" />

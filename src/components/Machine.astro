@@ -1,8 +1,13 @@
 ---
-// The line drawings from the design, one per chapter. Stroke is currentColor,
-// so whatever contains the drawing sets its colour.
-// data-wheel="cx cy r" (viewBox units) is what scripts/motion.ts rolls.
+// The line drawings, one per chapter. Stroke is currentColor, so whatever
+// contains the drawing sets its colour; depth comes from fills of the same
+// colour at low opacity, so they read on the green bands and the ink one.
+// What scripts/motion.ts moves: data-wheel groups roll (MachineWheel), the
+// drone's .rotor discs spin, the battery's .cell circles fill a column at a
+// time, and the connected bike's .signal arcs appear.
 import type { Machine } from '../data/site';
+import MachineDrive from './MachineDrive.astro';
+import MachineWheel from './MachineWheel.astro';
 
 interface Props {
   kind: Machine;
@@ -19,13 +24,13 @@ const viewBox: Record<Machine, string> = {
   cargo: '0 0 420 200',
 };
 
-// Column by column, top cell first, so a stagger fills the pack left to right.
-const cells = [52, 92, 132, 172, 212, 252].flatMap((cx) => [cx, cx]).map((cx, i) => ({
-  cx,
-  cy: i % 2 === 0 ? 58 : 98,
-}));
-
-const isBike = kind === 'ebike' || kind === 'connected-ebike';
+// The battery's twelve cells, column by column, top cell first, so a stagger
+// fills the pack left to right. Each column's pair is in parallel, the
+// columns in series: nickel straps join neighbours, alternately along the top
+// and the bottom, with a tab down to each cell.
+const columns = [42, 78, 114, 150, 186, 222];
+const cells = columns.flatMap((cx) => [66, 104].map((cy) => ({ cx, cy })));
+const straps = columns.slice(0, -1).map((x, i) => (i % 2 === 0 ? { x, y: 44, tab: 50 } : { x, y: 126, tab: 120 }));
 ---
 
 <svg
@@ -42,74 +47,173 @@ const isBike = kind === 'ebike' || kind === 'connected-ebike';
   {
     kind === 'drone' && (
       <Fragment>
-        <ellipse class="rotor" cx="50" cy="30" rx="42" ry="7" />
-        <ellipse class="rotor" cx="270" cy="30" rx="42" ry="7" />
-        <path d="M50 30 V48 M270 30 V48 M50 48 L120 68 H200 L270 48" />
-        <rect x="120" y="58" width="80" height="34" rx="10" />
-        <circle cx="160" cy="104" r="10" />
-        <path d="M132 92 L118 128 M188 92 L202 128 M104 128 H130 M190 128 H216" />
+        {/* The rear pair, behind and fainter */}
+        <path d="M140 72 L96 54 M180 72 L224 54" stroke-width="2.4" stroke-opacity="0.45" />
+        <rect x="88" y="46" width="16" height="9" rx="2" stroke-width="1.4" stroke-opacity="0.5" />
+        <rect x="216" y="46" width="16" height="9" rx="2" stroke-width="1.4" stroke-opacity="0.5" />
+        <ellipse class="rotor" cx="96" cy="42" rx="34" ry="4" stroke-width="1.2" stroke-opacity="0.45" />
+        <ellipse class="rotor" cx="224" cy="42" rx="34" ry="4" stroke-width="1.2" stroke-opacity="0.45" />
+        {/* Front arms, bell motors with cooling slots, rotor discs and blades */}
+        <path d="M130 78 L54 58 M190 78 L266 58" stroke-width="3.6" />
+        <circle cx="70" cy="62" r="2" fill="currentColor" stroke="none" />
+        <circle cx="250" cy="62" r="2" fill="currentColor" stroke="none" />
+        <rect x="42" y="44" width="24" height="14" rx="3" fill="currentColor" fill-opacity="0.16" stroke-width="1.8" />
+        <rect x="254" y="44" width="24" height="14" rx="3" fill="currentColor" fill-opacity="0.16" stroke-width="1.8" />
+        <path d="M48 48V54M54 48V54M60 48V54M260 48V54M266 48V54M272 48V54" stroke-width="1" stroke-opacity="0.6" />
+        <path d="M54 44V38M266 44V38" stroke-width="1.6" />
+        <ellipse class="rotor" cx="54" cy="36" rx="48" ry="6.5" fill="currentColor" fill-opacity="0.06" stroke-width="1.4" />
+        <ellipse class="rotor" cx="54" cy="36" rx="46" ry="1.8" stroke-width="1.6" stroke-opacity="0.5" />
+        <ellipse class="rotor" cx="266" cy="36" rx="48" ry="6.5" fill="currentColor" fill-opacity="0.06" stroke-width="1.4" />
+        <ellipse class="rotor" cx="266" cy="36" rx="46" ry="1.8" stroke-width="1.6" stroke-opacity="0.5" />
+        <circle cx="54" cy="36" r="2.6" fill="currentColor" stroke="none" />
+        <circle cx="266" cy="36" r="2.6" fill="currentColor" stroke="none" />
+        {/* Body, strapped battery, GPS mast */}
+        <rect x="124" y="64" width="72" height="32" rx="12" fill="currentColor" fill-opacity="0.14" stroke-width="2.4" />
+        <path d="M134 71 Q160 62 186 71" stroke-width="1.2" stroke-opacity="0.55" />
+        <rect x="136" y="52" width="48" height="12" rx="3" fill="currentColor" fill-opacity="0.22" stroke-width="1.8" />
+        <path d="M147 52V64M173 52V64" stroke-width="1.2" />
+        <path d="M180 52L186 36" stroke-width="1.4" />
+        <circle cx="187" cy="33" r="4" fill="currentColor" fill-opacity="0.2" stroke-width="1.4" />
+        {/* Camera gimbal and landing skids */}
+        <path d="M150 96V104H170V96" stroke-width="1.6" />
+        <circle cx="160" cy="112" r="10" fill="currentColor" fill-opacity="0.16" stroke-width="2" />
+        <circle cx="160" cy="112" r="4.5" stroke-width="1.6" />
+        <circle cx="160" cy="112" r="1.6" fill="currentColor" stroke="none" />
+        <path d="M137 94L118 128M183 94L202 128" stroke-width="2.4" />
+        <path d="M104 128H132M188 128H216" stroke-width="3.2" />
       </Fragment>
     )
   }
   {
-    isBike && (
+    kind === 'ebike' && (
       <Fragment>
-        <g data-wheel="80 140 46">
-          <circle cx="80" cy="140" r="46" />
-          <circle cx="80" cy="140" r="14" />
-          <path class="spokes" d="M80 126 V94 M92.1 147 L119.8 163 M67.9 147 L40.2 163" />
-        </g>
-        <g data-wheel="300 140 46">
-          <circle cx="300" cy="140" r="46" />
-          <circle cx="300" cy="140" r="4" />
-          <path class="spokes" d="M300 136 V94 M303.5 142 L339.8 163 M296.5 142 L260.2 163" />
-        </g>
-        <path d="M80 140 L175 144 L155 66 Z M175 144 L150 50 M134 48 H166 M155 68 L262 62 M175 144 L268 86 M262 54 L270 86 L300 140 M262 54 L258 42 L282 38" />
-        <rect x="188" y="100" width="70" height="14" rx="6" transform="rotate(-31 223 107)" />
-        <circle cx="175" cy="144" r="9" />
-        <path d="M175 144 L188 160" />
+        <MachineWheel cx={80} cy={140} r={46} />
+        <MachineWheel cx={300} cy={140} r={46} />
+        {/* A drop-bar bike: chain, stays, tubes, fork, saddle, bars */}
+        <path d="M176 133L84 131M176 163L84 149" stroke-width="1.1" stroke-opacity="0.5" />
+        <path d="M159 70L80 140" stroke-width="2.4" />
+        <path d="M176 148L80 140" stroke-width="2.6" />
+        <path d="M158 66L262 60" stroke-width="3.2" />
+        <path d="M272 92L176 148" stroke-width="3.8" />
+        <path d="M176 148L156 58" stroke-width="3.2" />
+        <path d="M271 92Q285 117 300 140" stroke-width="2.8" />
+        <path d="M261 57L272 94" stroke-width="5" />
+        <path d="M286 50C272 66 270 76 262 96" stroke-width="0.9" stroke-opacity="0.5" />
+        <path d="M156 58L151 40" stroke-width="2.6" />
+        <path d="M132 40Q150 33 172 37Q174 41 169 43Q152 41 137 45Q131 44 132 40Z" fill="currentColor" fill-opacity="0.2" stroke-width="1.6" />
+        <path d="M261 57L265 50L281 47" stroke-width="2.6" />
+        <path d="M281 47Q299 46 301 58Q303 72 291 77" stroke-width="2.6" />
+        <path d="M293 48Q300 54 298 64" stroke-width="1.6" />
+        <path d="M86 146L92 158L84 163" stroke-width="1.4" />
+        <circle cx="176" cy="148" r="15" stroke-width="1.6" />
+        <circle cx="176" cy="148" r="5" stroke-width="1.4" />
+        <path d="M176 148L189 169" stroke-width="3.2" />
+        <path d="M183 171H196" stroke-width="3" />
+        <MachineDrive cx={80} cy={140} />
       </Fragment>
     )
   }
   {
     kind === 'connected-ebike' && (
       <Fragment>
-        <path class="signal" d="M286 24 A16 16 0 0 1 302 40" />
-        <path class="signal" d="M286 10 A30 30 0 0 1 316 40" />
+        <MachineWheel cx={80} cy={140} r={46} />
+        <MachineWheel cx={300} cy={140} r={46} />
+        {/* A flat-bar commuter: mudguards, a battery in the down tube, a chain guard */}
+        <path d="M31.1 122.2A52 52 0 0 1 106 95M266.6 100.2A52 52 0 0 1 345 114" stroke-width="2.2" />
+        <path d="M258 98L192 140" stroke-width="13" stroke-opacity="0.16" />
+        <path d="M168 136Q124 130 92 134" stroke-width="6" stroke-opacity="0.14" />
+        <path d="M163 78L80 140" stroke-width="2.4" />
+        <path d="M178 148L80 140" stroke-width="2.6" />
+        <path d="M162 76L256 66" stroke-width="3.2" />
+        <path d="M266 96L178 148" stroke-width="3.8" />
+        <path d="M178 148L160 64" stroke-width="3.2" />
+        <path d="M265 96L300 140" stroke-width="2.8" />
+        <path d="M255 63L266 98" stroke-width="5" />
+        {/* Rack, lights, saddle, bars and the display the signal rises from */}
+        <path d="M40 94H104M44 90H100" stroke-width="2" />
+        <path d="M60 94L80 140M100 94L128 104" stroke-width="1.8" />
+        <rect x="35" y="88" width="7" height="10" rx="2" fill="currentColor" fill-opacity="0.6" stroke-width="1.2" />
+        <rect x="267" y="74" width="9" height="7" rx="2" fill="currentColor" fill-opacity="0.5" stroke-width="1.2" />
+        <path d="M160 64L156 48" stroke-width="2.6" />
+        <path d="M134 46Q155 38 176 44Q177 50 168 50Q154 47 139 52Q132 50 134 46Z" fill="currentColor" fill-opacity="0.2" stroke-width="1.6" />
+        <path d="M255 63L259 50L270 48" stroke-width="2.6" />
+        <path d="M264 44L292 40" stroke-width="2.6" />
+        <path d="M285 41L296 39.5" stroke-width="4.5" stroke-opacity="0.85" />
+        <rect x="268" y="31" width="16" height="10" rx="2.5" fill="currentColor" fill-opacity="0.22" stroke-width="1.4" />
+        <path class="signal" d="M270.3 24.3A8 8 0 0 1 281.7 24.3" stroke-width="1.8" />
+        <path class="signal" d="M266.1 20.1A14 14 0 0 1 285.9 20.1" stroke-width="1.8" />
+        <path class="signal" d="M261.9 15.9A20 20 0 0 1 290.1 15.9" stroke-width="1.8" />
+        <circle cx="178" cy="148" r="14" stroke-width="1.6" />
+        <circle cx="178" cy="148" r="5" stroke-width="1.4" />
+        <path d="M178 148L190 168" stroke-width="3.2" />
+        <path d="M184 170H197" stroke-width="3" />
+        <path d="M150 145.7L140 176" stroke-width="2" />
+        <MachineDrive cx={80} cy={140} />
       </Fragment>
     )
   }
   {
     kind === 'battery' && (
       <Fragment>
-        <rect x="14" y="24" width="270" height="130" rx="12" />
+        {/* A pack with the lid off: case, cells end-on, straps, BMS, leads */}
+        <rect x="10" y="26" width="248" height="120" rx="10" fill="currentColor" fill-opacity="0.06" stroke-width="2.6" />
+        <rect x="18" y="34" width="232" height="104" rx="6" stroke-width="1" stroke-opacity="0.35" />
         {cells.map(({ cx, cy }) => (
-          <circle class="cell" cx={cx} cy={cy} r="14" fill="currentColor" fill-opacity="0" />
+          <circle class="cell" cx={cx} cy={cy} r="16" fill="currentColor" fill-opacity="0" stroke-width="2" />
         ))}
-        <path d="M38 134 H266 M60 24 V8 H120 V24" />
-        <rect x="284" y="56" width="18" height="22" rx="3" />
-        <rect x="284" y="100" width="18" height="22" rx="3" />
+        {cells.map(({ cx, cy }) => (
+          <Fragment>
+            <circle cx={cx} cy={cy} r="11.5" stroke-width="0.9" stroke-opacity="0.4" />
+            <circle cx={cx} cy={cy} r="4.5" fill="currentColor" fill-opacity="0.25" stroke-width="1.2" />
+          </Fragment>
+        ))}
+        {straps.map(({ x, y, tab }) => (
+          <Fragment>
+            <path d={`M${x - 4} ${y}H${x + 40}`} stroke-width="4" stroke-opacity="0.5" />
+            <path d={`M${x} ${y}V${tab}M${x + 36} ${y}V${tab}`} stroke-width="1.6" stroke-opacity="0.5" />
+          </Fragment>
+        ))}
+        <path d="M114 44V38H266M186 44V36H266" stroke-width="0.9" stroke-opacity="0.5" />
+        <rect x="266" y="34" width="30" height="104" rx="3" fill="currentColor" fill-opacity="0.1" stroke-width="1.6" />
+        <rect x="272" y="48" width="18" height="14" rx="1.5" fill="currentColor" fill-opacity="0.35" stroke="none" />
+        <rect x="272" y="70" width="8" height="6" rx="1" fill="currentColor" fill-opacity="0.3" stroke="none" />
+        <rect x="283" y="70" width="7" height="6" rx="1" fill="currentColor" fill-opacity="0.3" stroke="none" />
+        <rect x="272" y="84" width="18" height="6" rx="1" fill="currentColor" fill-opacity="0.25" stroke="none" />
+        <rect x="274" y="118" width="14" height="12" rx="1.5" stroke-width="1.4" />
+        <path d="M296 108C306 108 308 120 316 122" stroke-width="3" />
+        <path d="M296 120C304 120 306 132 316 134" stroke-width="3" stroke-opacity="0.6" />
+        <circle cx="316" cy="122" r="2.6" stroke-width="1.4" />
+        <circle cx="316" cy="134" r="2.6" stroke-width="1.4" stroke-opacity="0.6" />
       </Fragment>
     )
   }
   {
     kind === 'cargo' && (
       <Fragment>
-        <circle cx="104" cy="162" r="30" stroke-opacity="0.4" />
-        <circle cx="334" cy="162" r="30" stroke-opacity="0.4" />
-        <g data-wheel="90 168 30">
-          <circle cx="90" cy="168" r="30" />
-          <circle cx="90" cy="168" r="4" />
-          <path class="spokes" d="M90 164 V138 M93.5 170 L116 183 M86.5 170 L64 183" />
-        </g>
-        <g data-wheel="320 168 30">
-          <circle cx="320" cy="168" r="30" />
-          <circle cx="320" cy="168" r="4" />
-          <path class="spokes" d="M320 164 V138 M323.5 170 L346 183 M316.5 170 L294 183" />
-        </g>
-        <path d="M60 150 H392" />
-        <rect x="212" y="46" width="180" height="104" rx="6" />
-        <path d="M232 72 H372 M232 98 H372 M96 150 L112 34 H204 V150 M150 110 H186 L192 92 M112 84 L96 82" />
+        {/* A four-wheel cargo e-bike, facing left; the far wheels show faintly */}
+        <circle cx="110" cy="162" r="28" stroke-width="1.6" stroke-opacity="0.3" />
+        <circle cx="344" cy="162" r="28" stroke-width="1.6" stroke-opacity="0.3" />
+        <MachineWheel cx={96} cy={168} r={28} spokes={12} />
+        <MachineWheel cx={330} cy={168} r={28} spokes={12} />
+        <path d="M64 156.4A34 34 0 0 1 128 156.4M298 156.4A34 34 0 0 1 362 156.4" stroke-width="2" />
+        <path d="M128 150H298M362 150H404" stroke-width="2.6" />
+        {/* The cargo box: roof rail, ribs, door seam, handle, rear light */}
+        <rect x="178" y="40" width="226" height="110" rx="8" fill="currentColor" fill-opacity="0.07" stroke-width="2.6" />
+        <path d="M186 48H396" stroke-width="1" stroke-opacity="0.45" />
+        <path d="M186 74H286M298 74H396M186 104H286M298 104H396M186 132H286M298 132H396" stroke-width="1" stroke-opacity="0.15" />
+        <path d="M292 46V146" stroke-width="1.2" stroke-opacity="0.55" />
+        <rect x="298" y="90" width="6" height="14" rx="2" fill="currentColor" fill-opacity="0.35" stroke="none" />
+        <rect x="400" y="110" width="6" height="24" rx="2" fill="currentColor" fill-opacity="0.4" stroke-width="1.2" />
+        {/* The cockpit: canopy, windscreen, seat, tiller, pedals, headlight */}
+        <path d="M178 56H122Q105 56 99 71L84 110Q81 118 75 121L67 132Q62 141 66 150H64" stroke-width="2.6" />
+        <path d="M112 62L92 112" stroke-width="1.2" stroke-opacity="0.5" />
+        <path d="M160 92L166 140M134 140H168" stroke-width="3" />
+        <path d="M120 140L108 108L98 104" stroke-width="2.4" />
+        <path d="M96 105L103 101" stroke-width="4" stroke-opacity="0.8" />
+        <circle cx="146" cy="146" r="8" stroke-width="1.6" />
+        <circle cx="146" cy="146" r="2.4" fill="currentColor" stroke="none" />
+        <path d="M146 146L136 160M131 162H141" stroke-width="2.6" />
+        <circle cx="69" cy="131" r="3.5" fill="currentColor" fill-opacity="0.35" stroke-width="1.2" />
       </Fragment>
     )
   }

@@ -415,9 +415,11 @@ ul {
   color: var(--green);
 }
 
+/* Fine laced spokes (components/MachineWheel.astro): they show the wheel
+   turning, so it rolls rather than slides. */
 .spokes {
-  stroke-width: 1.5;
-  stroke-opacity: 0.45;
+  stroke-width: 0.9;
+  stroke-opacity: 0.55;
 }
 
 /* ---- Journey: roles -------------------------------------------------- */

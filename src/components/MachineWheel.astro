@@ -1,0 +1,42 @@
+---
+// A spoked wheel for the machine drawings: a tyre with depth and a knobbled
+// tread, a rim, crossed spokes and a hub. The group is what scripts/motion.ts
+// rolls, about the axle that data-wheel names ("cx cy r", viewBox units).
+interface Props {
+  cx: number;
+  cy: number;
+  r: number;
+  spokes?: number;
+}
+
+const { cx, cy, r, spokes = 16 } = Astro.props;
+const f = (n: number) => +n.toFixed(2);
+const TAU = Math.PI * 2;
+
+const depth = r * 0.13;
+const rim = r - depth;
+const inner = rim - r * 0.065;
+const hub = Math.max(3.5, r * 0.11);
+const ring = (rad: number) =>
+  `M${f(cx - rad)} ${cy}a${f(rad)} ${f(rad)} 0 1 0 ${f(rad * 2)} 0a${f(rad)} ${f(rad)} 0 1 0 ${f(-rad * 2)} 0Z`;
+
+// Each spoke leaves the hub at one angle and meets the rim further round,
+// alternately ahead and behind, the way a laced wheel crosses.
+let lace = '';
+for (let i = 0; i < spokes; i++) {
+  const a = (i / spokes) * TAU;
+  const b = a + (i % 2 ? 1 : -1) * (TAU / spokes) * 2.2;
+  lace += `M${f(cx + hub * Math.cos(a))} ${f(cy + hub * Math.sin(a))}L${f(cx + inner * Math.cos(b))} ${f(cy + inner * Math.sin(b))}`;
+}
+---
+
+<g data-wheel={`${cx} ${cy} ${r}`}>
+  <path d={ring(r) + ring(rim)} fill="currentColor" fill-opacity="0.14" stroke="none" fill-rule="evenodd" />
+  <circle cx={cx} cy={cy} r={f(r - 1.4)} stroke-width="2.2" stroke-dasharray="1.6 3.2" stroke-opacity="0.55" />
+  <circle cx={cx} cy={cy} r={r} stroke-width="2.4" />
+  <circle cx={cx} cy={cy} r={f(rim)} stroke-width="1.2" />
+  <circle cx={cx} cy={cy} r={f(inner)} stroke-width="0.9" stroke-opacity="0.5" />
+  <path class="spokes" d={lace} />
+  <circle cx={cx} cy={cy} r={f(hub)} stroke-width="1.5" fill="currentColor" fill-opacity="0.14" />
+  <circle cx={cx} cy={cy} r="1.6" fill="currentColor" stroke="none" />
+</g>
