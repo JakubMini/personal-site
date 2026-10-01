@@ -2,12 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 import Machine from '../components/Machine.astro';
 import Photo from '../components/Photo.astro';
-import { about, education, hero, journey, person, publications, stack } from '../data/site';
+import Snippet from '../components/Snippet.astro';
+import { about, ai, education, hero, journey, person, publications, stack } from '../data/site';
 
 const sections = [
   ['about', 'About'],
   ['journey', 'Journey'],
   ['stack', 'Stack'],
+  ['ai', 'AI'],
   ['education', 'Education'],
   ['publications', 'Publications'],
 ];
@@ -95,6 +97,11 @@ const year = new Date().getFullYear();
                 <div class="role-photo" data-rise>
                   <Photo photo={c.photo} />
                 </div>
+                {c.snippet && (
+                  <div class="role-snippet" data-rise>
+                    <Snippet snippet={c.snippet} />
+                  </div>
+                )}
               </div>
             </article>
           );
@@ -119,6 +126,32 @@ const year = new Date().getFullYear();
             ))
           }
         </ul>
+      </div>
+    </section>
+
+    <section id="ai" class="ruled" aria-labelledby="ai-title">
+      <div class="wrap grid section-head">
+        <p class="label">AI</p>
+        <h2 class="display" id="ai-title" data-lines>{ai.title}</h2>
+        <p class="ai-lead" data-lines>{ai.lead}</p>
+      </div>
+      <div class="wrap">
+        <ul class="rows stack ai-rows">
+          {
+            ai.practices.map((p) => (
+              <li class="grid row" data-slide>
+                <span class="row-key">{p.n}</span>
+                <span class="row-title">{p.title}</span>
+                <span class="row-detail">{p.detail}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="wrap grid ai-snippet">
+        <div class="role-snippet" data-rise>
+          <Snippet snippet={ai.snippet} />
+        </div>
       </div>
     </section>
 

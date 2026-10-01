@@ -11,6 +11,15 @@ export interface Photo {
   caption: string;
 }
 
+// Code is shown as text, highlighted at build time, never as a screenshot.
+// Without `code` the slot renders blank, with faint line numbers.
+export interface Snippet {
+  caption: string;
+  // A Shiki language id: 'c', 'cpp', 'python', 'sql', 'ts', 'yaml', ...
+  lang?: string;
+  code?: string;
+}
+
 export const person = {
   name: 'Jakub Szypicyn',
   email: 'jakub.m.szypicyn@gmail.com',
@@ -54,6 +63,7 @@ export interface Chapter {
   summary: string;
   tags: string[];
   photo: Photo;
+  snippet?: Snippet;
 }
 
 export const journey: Chapter[] = [
@@ -70,6 +80,7 @@ export const journey: Chapter[] = [
       'Built an STM32 drone-propeller test rig with C++ firmware and a Python DAQ GUI, and a field-oriented motor controller that cut power losses by 5%.',
     tags: ['STM32', 'C++', 'FOC', 'Python DAQ'],
     photo: { alt: 'Drone-propeller test rig', caption: 'Propeller test rig' },
+    snippet: { caption: '[Code snippet]' },
   },
   {
     label: 'E-bikes',
@@ -84,6 +95,7 @@ export const journey: Chapter[] = [
       'Second hire. Architected the 48V drive system — motor controller, VCU, UI and BMS — and wrote the first firmware for every board. Bring-up to mass production: 2,000+ units shipped, PCB BOM cost cut by more than half.',
     tags: ['48V drives', 'BMS', 'EN 15194', 'MISRA C', 'Production test'],
     photo: { alt: 'E-bike drive system', caption: 'Drive system' },
+    snippet: { caption: '[Code snippet]' },
   },
   {
     label: 'Batteries',
@@ -98,6 +110,7 @@ export const journey: Chapter[] = [
       'An Ethernet/TFTP bootloader for zero-touch updates across STM32 lab assets, CI/CD and Python services automating battery lab testing, and a Simscape pack model for BMS validation.',
     tags: ['Bootloaders', 'GitLab CI', 'Azure', 'gRPC', 'Simscape'],
     photo: { alt: 'Battery test lab', caption: 'Battery lab' },
+    snippet: { caption: '[Code snippet]' },
   },
   {
     label: 'Four-wheel cargo',
@@ -112,6 +125,7 @@ export const journey: Chapter[] = [
       'A CAN bootloader and fleet OTA for 30+ connected vehicles. Firmware builds went from half a day to under ten minutes, releases from monthly to weekly.',
     tags: ['CAN', 'Fleet OTA', 'BalenaOS', 'MISRA C', 'EN ISO 13849-1'],
     photo: { alt: 'Electric cargo vehicle fleet', caption: 'Cargo fleet' },
+    snippet: { caption: '[Code snippet]' },
   },
   {
     label: 'Back on e-bikes',
@@ -123,46 +137,110 @@ export const journey: Chapter[] = [
     where: 'Skarper, London',
     role: 'Head of Connected Systems',
     summary:
-      'Rejoined to lead engineering: secure OTA with MCUboot and signed A/B images, a connected product platform from firmware to app, product cybersecurity and the EU Battery Passport.',
-    tags: ['MCUboot', 'BLE GATT', 'Supabase', 'Expo', 'EU Battery Passport'],
+      'Rejoined to lead embedded engineering: secure OTA with MCUboot and signed A/B images, a connected product platform from firmware to app, product cybersecurity and the EU Battery Passport.',
+    tags: ['MCUboot', 'BLE GATT', 'Supabase', 'Expo', 'EU Battery Passport', 'AI agents'],
     photo: { alt: 'Connected e-bike', caption: 'Today' },
+    snippet: { caption: '[Code snippet]' },
   },
 ];
 
+// Only what Jakub's own commits or CV show; colleagues' repos are not claimed.
+// Top of the list is closest to the user, the bottom closest to the silicon.
 export const stack = [
   {
-    n: '05',
+    n: '08',
+    layer: 'AI',
+    items:
+      'Claude Code, agent and skill design, MCP servers, the Anthropic API, AI review on pull requests',
+  },
+  {
+    n: '07',
     layer: 'App & cloud',
-    items: 'Supabase, PostgreSQL, Cloudflare, Expo / EAS, AWS, Azure, FastAPI',
+    items:
+      'Supabase (PostgreSQL, row-level security, Auth with MFA, Deno edge functions), React Native and Expo / EAS, React and Vite, MapLibre, AWS IoT Core, IoT Jobs, S3 and CodeArtifact, Azure, Cloudflare, FastAPI',
+  },
+  {
+    n: '06',
+    layer: 'Edge & data',
+    items:
+      'Raspberry Pi gateways in Python, MQTT, cellular and GNSS over ModemManager, balenaOS fleets, Protobuf, gRPC, pandas, NumPy, Plotly, Streamlit, Simscape',
+  },
+  {
+    n: '05',
+    layer: 'OTA & release',
+    items:
+      'MCUboot with signed A/B images and rollback, Ed25519-signed CAN flashing, CAN and TFTP bootloaders, BLE firmware update, fleet manifests to AWS IoT Jobs, GitHub Actions, GitLab CI',
   },
   {
     n: '04',
-    layer: 'OTA & release',
+    layer: 'Firmware',
     items:
-      'MCUboot, signed A/B images with rollback, CAN and TFTP bootloaders, GitHub Actions, GitLab CI',
+      'C and C++, STM32 (F4, G0, L4, WB55), Nordic nRF52, FreeRTOS, ChibiOS, bare metal, VESC and LispBM, FOC, PID and Kalman estimation, CMake, PlatformIO',
   },
   {
     n: '03',
-    layer: 'Firmware',
-    items: 'C, C++, STM32, Nordic nRF52, FreeRTOS, ChibiOS, bare metal',
+    layer: 'Test & quality',
+    items:
+      'GoogleTest, Ceedling with Unity and CMock, pytest, pgTAP, Jest, Renode and Robot Framework emulation, cppcheck and PC-lint Plus, gcov',
   },
   {
     n: '02',
     layer: 'Interfaces',
-    items: 'CAN, BLE with custom GATT profiles, SPI, I2C, Ethernet, MQTT',
+    items:
+      'CAN and CAN FD, DBC tooling, UDS over ISO-TP, XCP, SocketCAN, BLE GATT as peripheral and central, NFC (ISO 14443A), SPI, I2C, I2S, UART, Ethernet',
   },
   {
     n: '01',
     layer: 'Hardware',
-    items: 'PCB design and bring-up, 48V motor drives, FOC, BMS, production test',
+    items:
+      'PCB design and bring-up, 48V motor drives, BMS, DC-DC conversion, IMUs and encoders, production test and flashing rigs',
   },
   {
     n: 'Compliance',
     layer: 'Standards',
     items:
-      'EN 15194, EN ISO 13849-1, EN 17860, MISRA C:2023, EU Battery Passport, product cybersecurity',
+      'EN 15194, EN ISO 13849-1, EN 17860, MISRA C:2012 and 2023, IEC 60730 Class B, EU Cyber Resilience Act, UK PSTI, EU Battery Passport, product cybersecurity',
   },
 ];
+
+// How AI is part of the engineering, stated without naming internals.
+export const ai = {
+  title: 'AI in the loop.',
+  lead: 'AI agents are part of how I engineer: each with one job and only the tools that job needs, arguing over the decisions that are expensive to undo, and never trusted with the last word.',
+  practices: [
+    {
+      n: '01',
+      title: 'Agents with roles',
+      detail:
+        'Architect, reviewer, database, research and red-team agents, each fenced to its own tools. The ones that review cannot write what they judge.',
+    },
+    {
+      n: '02',
+      title: 'Adversarial review',
+      detail:
+        'Schema, keys, wire formats and the boot path get two agents in parallel, one making the case and one trying to break it. The decision is recorded with what would change it.',
+    },
+    {
+      n: '03',
+      title: 'Release gates',
+      detail:
+        'AI review on every pull request, and nothing reaches production until an independent red-team pass has tried to break it. Confirmed findings block the release.',
+    },
+    {
+      n: '04',
+      title: 'Skills and context',
+      detail:
+        'Agent instructions and skills written into firmware and platform repos; Claude skills that turn test-rig telemetry into range reports and flag tickets that no longer tell the truth; Jira and Confluence over MCP, and an MCP server I wrote for Basecamp.',
+    },
+    {
+      n: '05',
+      title: 'Models in software',
+      detail:
+        'A briefing agent on the Anthropic API: deterministic rules first, the model only returns strict JSON with no tools, and the prompt is hardened against injection.',
+    },
+  ],
+  snippet: { caption: '[Code snippet]' } as Snippet,
+};
 
 export const education = [
   {

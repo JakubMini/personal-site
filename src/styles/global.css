@@ -13,6 +13,7 @@
 
   --display: 'Funnel Display Variable', 'Helvetica Neue', sans-serif;
   --sans: 'Funnel Sans Variable', 'Helvetica Neue', sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   --gutter: clamp(20px, 3.9vw, 56px);
   --gap: 24px;
@@ -434,6 +435,39 @@ ul {
   grid-column: 10 / span 3;
 }
 
+.role-snippet {
+  grid-column: 4 / span 9;
+  margin-top: 40px;
+}
+
+/* ---- Code snippets --------------------------------------------------- */
+
+.snippet pre,
+.snippet-blank {
+  margin: 0;
+  padding: 20px 0;
+  border-block: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.snippet pre {
+  overflow-x: auto;
+}
+
+.snippet-blank {
+  display: flex;
+  flex-direction: column;
+  color: var(--rule);
+}
+
+.snippet figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 /* ---- Rows: stack and publications ------------------------------------ */
 
 .rows {
@@ -482,6 +516,24 @@ ul {
 .stack .row-detail {
   grid-column: 7 / span 6;
   color: var(--text);
+}
+
+#ai {
+  padding-bottom: 140px;
+}
+
+.ai-lead {
+  grid-column: 4 / span 8;
+  margin-top: 40px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(24px, 2.2vw, 32px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.ai-snippet {
+  margin-top: 16px;
 }
 
 .education,

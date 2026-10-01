@@ -31,10 +31,19 @@ Until then the slot is a grey box with its caption.
 **CV.** Put the PDF in `public/` and set `person.cv` to its path. While it is
 `null` every CV link is hidden rather than dead.
 
+**Code snippets.** Each chapter and the AI section have a `snippet`: set its
+`code`, `lang` and `caption` in `site.ts`. It renders as text, highlighted at
+build time by Shiki (bundled with Astro), never as a screenshot. Without `code`
+the slot is blank; delete a chapter's `snippet` to remove the slot.
+
+**Stack.** Every item is backed by Jakub's own commits or his CV. Colleagues'
+repositories in the same organisations are not claimed.
+
 ## Before it goes live
 
 - [ ] Portrait and the five chapter photos
 - [ ] The three paper titles and links (`publications` in `site.ts`)
+- [ ] Code for the snippet slots, or delete the ones not wanted
 - [ ] A CV cut for the public site (no phone number)
 - [ ] Rewrite the About draft, then set `about.draft` to `false`
 - [ ] Buy the domain and set `site` in `astro.config.mjs` (turns on canonical and og:url)

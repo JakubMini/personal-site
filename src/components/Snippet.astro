@@ -1,0 +1,41 @@
+---
+// A code snippet as text, highlighted at build time by Shiki (bundled with
+// Astro, no script shipped). Blank until data/site.ts gives it code.
+import { Code } from 'astro:components';
+import type { Snippet } from '../data/site';
+
+interface Props {
+  snippet: Snippet;
+}
+
+const { snippet } = Astro.props;
+
+// Two inks on paper, like the rest of the page: keywords set bold, strings
+// and numbers in a dark green that holds 5.9:1, comments muted.
+const paper = {
+  name: 'paper',
+  type: 'light' as const,
+  colors: { 'editor.background': '#f3f2ec', 'editor.foreground': '#0b0f0c' },
+  tokenColors: [
+    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#5a5e58', fontStyle: 'italic' } },
+    { scope: ['keyword.control', 'keyword.other', 'storage.type', 'storage.modifier', 'keyword.operator.new'], settings: { fontStyle: 'bold' } },
+    { scope: ['string', 'constant.numeric', 'constant.language', 'constant.character'], settings: { foreground: '#146b37' } },
+    { scope: ['entity.name.function', 'support.function'], settings: { foreground: '#0b0f0c', fontStyle: '' } },
+  ],
+};
+
+const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2, '0'));
+---
+
+<figure class="snippet">
+  {
+    snippet.code ? (
+      <Code code={snippet.code} lang={(snippet.lang ?? 'c') as never} theme={paper} />
+    ) : (
+      <div class="snippet-blank" aria-hidden="true">
+        {blankLines.map((n) => <span>{n}</span>)}
+      </div>
+    )
+  }
+  <figcaption>{snippet.caption}</figcaption>
+</figure>
