@@ -392,8 +392,8 @@ export const education = [
   },
 ];
 
-// A null title renders as "[Paper title]"; a null href renders the row without a link.
-export const publications: { venue: string; title: string | null; href: string | null }[] = [
+// A null href renders the row without a link.
+export const publications: { venue: string; title: string; href: string | null }[] = [
   {
     venue: 'Patent, 2022',
     title: 'US11421527B2, co-inventor',
@@ -409,8 +409,6 @@ export const publications: { venue: string; title: string | null; href: string |
     title: 'Memristor-enabled reconfigurable integrated circuits',
     href: 'https://spiral.imperial.ac.uk/entities/publication/12b492f5-dc43-497a-aed7-2d24a2bce300',
   },
-  { venue: 'IEEE MEMRISYS', title: null, href: null },
-  { venue: 'IEEE CAS', title: null, href: null },
 ];
 
 // ---- Away from the desk: pages/vinyls.astro and pages/photography.astro ----

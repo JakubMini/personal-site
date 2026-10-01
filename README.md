@@ -74,7 +74,6 @@ node -e "const s=require('sharp');s('public/favicon.svg',{density:288}).resize(1
 ## Before it goes live
 
 - [ ] Portrait and the five chapter photos
-- [ ] The three paper titles and links (`publications` in `site.ts`)
 - [ ] Code for the snippet slots, or delete the ones not wanted
 - [ ] A CV cut for the public site (no phone number)
 - [ ] The records (`vinyls.records` in `site.ts`, then `draft: false`), the
