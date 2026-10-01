@@ -9,7 +9,6 @@ import LeanFigure from './LeanFigure.astro';
 import TftpFigure from './TftpFigure.astro';
 import FleetFigure from './FleetFigure.astro';
 import OtaFigure from './OtaFigure.astro';
-import Photo from './Photo.astro';
 
 interface Props {
   snippet: Snippet;
@@ -67,13 +66,6 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
           snippet.figure === 'ota' && (
             <div class="tftp-host">
               <OtaFigure />
-            </div>
-          )
-        }
-        {
-          snippet.shots && (
-            <div class="snippet-shots">
-              {snippet.shots.map((s) => <Photo photo={s} sizes="(min-width: 900px) 70vw, 100vw" />)}
             </div>
           )
         }

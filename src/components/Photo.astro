@@ -9,19 +9,15 @@ interface Props {
   photo: Photo;
   // The portrait carries its label inside the box; chapter photos caption below.
   portrait?: boolean;
-  // How wide the image shows, for picking a width; a chapter photo by default.
-  sizes?: string;
 }
 
-const { photo, portrait = false, sizes = '(min-width: 600px) 40vw, 100vw' } = Astro.props;
+const { photo, portrait = false } = Astro.props;
 // Never ask for a width the source does not have; the original is the ceiling.
 const widths = photo.src ? [...new Set([400, 800, photo.src.width].filter((w) => w <= photo.src!.width))] : [];
 const poster = photo.video && photo.src ? await getImage({ src: photo.src, format: 'webp' }) : null;
-// A screenshot links to itself at full size, for reading the small print.
-const full = photo.screen && photo.src ? await getImage({ src: photo.src, format: 'webp' }) : null;
 ---
 
-<figure class:list={['photo', { 'photo-portrait': portrait, 'photo-square': photo.square, 'photo-whole': photo.whole, 'photo-screen': photo.screen }]}>
+<figure class:list={['photo', { 'photo-portrait': portrait, 'photo-square': photo.square, 'photo-whole': photo.whole }]}>
   {
     photo.video ? (
       <video
@@ -34,22 +30,12 @@ const full = photo.screen && photo.src ? await getImage({ src: photo.src, format
         aria-label={photo.alt}
         data-loop
       />
-    ) : photo.src && full ? (
-      <a href={full.src} target="_blank" rel="noopener">
-        <Image
-          src={photo.src}
-          alt={photo.alt}
-          widths={widths}
-          sizes={sizes}
-          style={photo.whole ? `aspect-ratio: ${photo.src.width} / ${photo.src.height}` : undefined}
-        />
-      </a>
     ) : photo.src ? (
       <Image
         src={photo.src}
         alt={photo.alt}
         widths={widths}
-        sizes={sizes}
+        sizes="(min-width: 600px) 40vw, 100vw"
         style={photo.whole ? `aspect-ratio: ${photo.src.width} / ${photo.src.height}` : undefined}
       />
     ) : (

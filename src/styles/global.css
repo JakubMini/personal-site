@@ -338,21 +338,6 @@ ul {
   color: var(--muted);
 }
 
-/* A screenshot: rounded like a window, linking to itself at full size. */
-.photo-screen a {
-  display: block;
-  border-radius: 10px;
-}
-
-.photo-screen img {
-  border-radius: 10px;
-}
-
-.photo-screen a:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 3px;
-}
-
 .photo figcaption {
   margin-top: 8px;
   font-size: 13px;
@@ -507,6 +492,139 @@ ul {
 .role-snippet {
   grid-column: 1 / -1;
   margin-top: 48px;
+}
+
+/* A role with a demo instead of a photo: the text, then the demo full width. */
+.role-body-wide {
+  grid-column: 1 / -1;
+}
+
+.role-demo {
+  grid-column: 1 / -1;
+  margin-top: 48px;
+}
+
+/* ---- Dashboard click-through (DashDemo.astro) ------------------------ */
+
+.dash {
+  margin: 0;
+}
+
+.dash-window {
+  overflow: hidden;
+  border-radius: 12px;
+  background: #1f2423;
+}
+
+.dash-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding: 0 12px;
+  background: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #a9ada7;
+}
+
+.dash-back {
+  width: 28px;
+  height: 24px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--paper);
+  cursor: pointer;
+}
+
+.dash-back:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.dash-back:not(:disabled):hover {
+  background: rgba(243, 242, 236, 0.1);
+}
+
+.dash-path {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: rgba(243, 242, 236, 0.08);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.dash-more {
+  white-space: nowrap;
+}
+
+/* The window shows a 1440 x 900 page; taller screens scroll inside it once
+   it has been clicked (scripts/dash-demo.ts). */
+.dash-view {
+  position: relative;
+  aspect-ratio: 1440 / 900;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  outline: none;
+}
+
+.dash.is-engaged .dash-view {
+  overflow-y: auto;
+}
+
+.dash-screen {
+  position: relative;
+}
+
+.dash-screen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.dash-spot {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  cursor: pointer;
+  transition: outline-color 0.2s, background-color 0.2s;
+}
+
+.dash-spot:hover,
+.dash-spot:focus-visible,
+.dash.is-hinting .dash-spot {
+  outline-color: var(--green);
+  background: rgba(47, 242, 124, 0.1);
+}
+
+.dash:not(.is-live) .dash-spot,
+.dash:not(.is-live) .dash-back,
+.dash:not(.is-live) .dash-hint {
+  display: none;
+}
+
+.dash-caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 24px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.dash-caption [data-dash-caption] {
+  color: var(--text);
 }
 
 /* ---- Code snippets --------------------------------------------------- */
@@ -987,14 +1105,8 @@ ul {
 
 .snippet-head-wide {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'note' 'figure' 'shots';
+  grid-template-areas: 'note' 'figure';
   grid-template-rows: none;
-}
-
-/* Screenshots under a wide figure (Snippet.shots). */
-.snippet-shots {
-  grid-area: shots;
-  margin-top: 28px;
 }
 
 .snippet-head-wide .snippet-note {
@@ -1297,6 +1409,15 @@ ul {
    and phones (under 600px) stack to one. Rules both share come first. */
 
 @media (max-width: 899px) {
+  /* The dashboard shows each screen whole, with nothing to scroll inside. */
+  .dash-view {
+    aspect-ratio: auto;
+  }
+
+  .dash-more {
+    display: none;
+  }
+
   :root {
     --band: 260px;
     --band-line: 48px;

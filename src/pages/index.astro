@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Intro from '../components/Intro.astro';
 import Machine from '../components/Machine.astro';
 import Photo from '../components/Photo.astro';
+import DashDemo from '../components/DashDemo.astro';
 import Snippet from '../components/Snippet.astro';
 import { about, ai, education, hero, journey, person, publications, stack } from '../data/site';
 
@@ -98,7 +99,7 @@ const personLd = {
                 <Machine kind={c.machine} />
               </div>
               <div class:list={['wrap grid role', { 'role-last': last }]}>
-                <div class="role-body">
+                <div class:list={['role-body', { 'role-body-wide': !c.photo }]}>
                   <p class="role-meta" data-rise>
                     {c.dates} · {c.where}
                   </p>
@@ -106,9 +107,16 @@ const personLd = {
                   <p class="role-summary" data-lines>{c.summary}</p>
                   <p class="role-tags" data-rise>{c.tags.join(' / ')}</p>
                 </div>
-                <div class="role-photo" data-rise>
-                  <Photo photo={c.photo} />
-                </div>
+                {c.photo && (
+                  <div class="role-photo" data-rise>
+                    <Photo photo={c.photo} />
+                  </div>
+                )}
+                {c.demo === 'dashboard' && (
+                  <div class="role-demo" data-rise>
+                    <DashDemo />
+                  </div>
+                )}
                 {c.snippet && (
                   <div class="role-snippet" data-rise>
                     <Snippet snippet={c.snippet} />

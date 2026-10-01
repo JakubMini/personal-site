@@ -1,0 +1,56 @@
+---
+// The fleet dashboard as a click-through: real screens (demo data) in a window,
+// with the sidebar, rows and tabs clickable where they are on the page
+// (scripts/dash-demo.ts). Without JS: the first screen, as a picture.
+import { Image } from 'astro:assets';
+import { SCREENS, START, WIDTH } from '../data/dashboard';
+
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
+const first = SCREENS.find((s) => s.id === START)!;
+const HOST = 'localhost:5181';
+---
+
+<figure class="dash" data-dash>
+  <div class="dash-window">
+    <div class="dash-bar">
+      <button type="button" class="dash-back" data-dash-back disabled aria-label="Back to the previous screen">←</button>
+      <span class="dash-path" data-dash-path>{HOST}{first.path}</span>
+      <span class="dash-more" data-dash-more hidden>scroll for more ↓</span>
+    </div>
+    <div class="dash-view" data-dash-view tabindex="-1">
+      {
+        SCREENS.map((s) => (
+          <div
+            class="dash-screen"
+            data-screen={s.id}
+            data-path={HOST + s.path}
+            data-caption={s.caption}
+            data-tall={s.height > 900 ? '' : undefined}
+            hidden={s.id !== START}
+            style={`aspect-ratio: ${WIDTH} / ${s.height}`}
+          >
+            <Image src={s.image} alt={`Fleet dashboard, demo data. ${s.caption}`} widths={[720, 1440, 2880]} sizes="(min-width: 900px) 90vw, 100vw" />
+            {s.spots.map((p) => (
+              <button
+                type="button"
+                class="dash-spot"
+                data-to={p.to}
+                aria-label={p.label}
+                style={`left: ${pct(p.x, WIDTH)}; top: ${pct(p.y, s.height)}; width: ${pct(p.w, WIDTH)}; height: ${pct(p.h, s.height)}`}
+              />
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+  <figcaption class="dash-caption">
+    <span data-dash-caption aria-live="polite">{first.caption}</span>
+    <span class="dash-hint">Try the sidebar, rows and tabs. Demo data, from a local copy of the platform.</span>
+  </figcaption>
+</figure>
+
+<script>
+  import { initDash } from '../scripts/dash-demo';
+  document.querySelectorAll<HTMLElement>('[data-dash]').forEach(initDash);
+</script>
