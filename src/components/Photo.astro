@@ -1,6 +1,8 @@
 ---
-// A photo slot: the image once one is set in data/site.ts, a grey box until then.
-import { Image } from 'astro:assets';
+// A photo slot: the image once one is set in data/site.ts, a grey box until
+// then. With `video`, a silent loop that scripts/motion.ts plays while it is
+// on screen; its poster is the image.
+import { Image, getImage } from 'astro:assets';
 import type { Photo } from '../data/site';
 
 interface Props {
@@ -12,11 +14,23 @@ interface Props {
 const { photo, portrait = false } = Astro.props;
 // Never ask for a width the source does not have; the original is the ceiling.
 const widths = photo.src ? [...new Set([400, 800, photo.src.width].filter((w) => w <= photo.src!.width))] : [];
+const poster = photo.video && photo.src ? await getImage({ src: photo.src, format: 'webp' }) : null;
 ---
 
-<figure class:list={['photo', { 'photo-portrait': portrait }]}>
+<figure class:list={['photo', { 'photo-portrait': portrait, 'photo-square': photo.square }]}>
   {
-    photo.src ? (
+    photo.video ? (
+      <video
+        src={photo.video}
+        poster={poster?.src}
+        muted
+        loop
+        playsinline
+        preload="none"
+        aria-label={photo.alt}
+        data-loop
+      />
+    ) : photo.src ? (
       <Image src={photo.src} alt={photo.alt} widths={widths} sizes="(min-width: 900px) 25vw, 100vw" />
     ) : (
       <div class="photo-slot">{portrait && <span>{photo.caption}</span>}</div>

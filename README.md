@@ -28,6 +28,18 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 `site.ts`, and set it as that photo's `src`. Astro resizes it at build time.
 Until then the slot is a grey box with its caption.
 
+**Looping clips.** A photo can carry a short silent `video` that plays like a
+GIF while on screen (paused off screen, in a hidden tab and under reduced
+motion), with the photo `src` as its poster. Square, 640px, H.264, no audio:
+
+```bash
+ffmpeg -i in.mp4 -an -vf "crop=720:720:0:300,scale=640:640:flags=lanczos,format=yuv420p" -c:v libx264 -preset slow -crf 26 -movflags +faststart src/assets/video/out.mp4
+ffmpeg -i src/assets/video/out.mp4 -frames:v 1 -q:v 3 src/assets/photos/out-poster.jpg
+```
+
+`crop=w:h:x:y` picks the square; the propeller rig used a 720px square from
+y=300 of a 720×1280 phone clip.
+
 **CV.** Put the PDF in `public/` and set `person.cv` to its path. While it is
 `null` every CV link is hidden rather than dead.
 

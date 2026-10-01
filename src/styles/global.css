@@ -273,6 +273,7 @@ ul {
 /* ---- Photos ---------------------------------------------------------- */
 
 .photo img,
+.photo video,
 .photo-slot {
   display: block;
   width: 100%;
@@ -285,6 +286,12 @@ ul {
 .photo-portrait img,
 .photo-portrait .photo-slot {
   aspect-ratio: 3 / 4;
+}
+
+.photo-square img,
+.photo-square video,
+.photo-square .photo-slot {
+  aspect-ratio: 1 / 1;
 }
 
 /* Rounded on the figure, not the img, so the image can scale inside the

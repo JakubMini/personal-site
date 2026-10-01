@@ -3,11 +3,17 @@
 
 import type { ImageMetadata } from 'astro';
 import portrait from '../assets/photos/portrait.jpg';
+import propellerRigPoster from '../assets/photos/propeller-rig-poster.jpg';
+import propellerRig from '../assets/video/propeller-rig.mp4';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
   // left undefined, the slot renders as a grey placeholder with the caption.
   src?: ImageMetadata;
+  // A short silent loop, played like a GIF while on screen. `src` is its
+  // poster: what shows before it plays, under reduced motion and without JS.
+  video?: string;
+  square?: boolean;
   alt: string;
   caption: string;
 }
@@ -80,7 +86,13 @@ export const journey: Chapter[] = [
     summary:
       'Built an STM32 drone-propeller test rig with C++ firmware and a Python DAQ GUI, and a field-oriented motor controller that cut power losses by 5%.',
     tags: ['STM32', 'C++', 'FOC', 'Python DAQ'],
-    photo: { alt: 'Drone-propeller test rig', caption: 'Propeller test rig' },
+    photo: {
+      src: propellerRigPoster,
+      video: propellerRig,
+      square: true,
+      alt: 'A drone motor spinning a propeller on the test rig',
+      caption: 'Propeller test rig',
+    },
     snippet: { caption: '[Code snippet]' },
   },
   {

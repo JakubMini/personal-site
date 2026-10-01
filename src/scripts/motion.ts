@@ -156,6 +156,38 @@ function reveals() {
   });
 }
 
+// Silent loops ([data-loop] videos) play only while on screen and while the
+// tab is visible. Returns the stop, for when motion is switched off.
+function loops() {
+  const videos = [...document.querySelectorAll<HTMLVideoElement>('video[data-loop]')];
+  const onScreen = new Set<HTMLVideoElement>();
+  const sync = (v: HTMLVideoElement) => {
+    if (onScreen.has(v) && !document.hidden) {
+      v.play().catch(() => {}); // a refused autoplay leaves the poster up
+    } else {
+      v.pause();
+    }
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      const v = e.target as HTMLVideoElement;
+      if (e.isIntersecting) onScreen.add(v);
+      else onScreen.delete(v);
+      sync(v);
+    }
+  });
+  videos.forEach((v) => io.observe(v));
+  const onVisibility = () => videos.forEach(sync);
+  document.addEventListener('visibilitychange', onVisibility);
+
+  return () => {
+    io.disconnect();
+    document.removeEventListener('visibilitychange', onVisibility);
+    videos.forEach((v) => v.pause());
+  };
+}
+
 // Split lines only once the real fonts are in, or the line breaks are wrong.
 document.fonts.ready.then(() => {
   // matchMedia only calls back when some condition matches, so ask for motion
@@ -170,6 +202,7 @@ document.fonts.ready.then(() => {
       heroBike();
       document.querySelectorAll<HTMLElement>('.band').forEach((el) => band(el, wide));
       reveals();
+      return loops();
     },
   );
 });
