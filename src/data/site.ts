@@ -105,8 +105,8 @@ export const journey: Chapter[] = [
     where: 'WeCorp Industries, London',
     role: 'EEE Research Technical Lead',
     summary:
-      'Built an STM32 drone-propeller test rig with C++ firmware and a Python DAQ GUI, and a field-oriented motor controller that cut power losses by 5%.',
-    tags: ['STM32', 'C++', 'FOC', 'Python DAQ'],
+      'Built an STM32 drone-propeller test rig with C++ firmware and a Python DAQ GUI, and a field-oriented motor controller that cut power losses by 5%. Designed the mechatronic prototypes, harnesses and sensor instrumentation around it, and was made research technical lead within the year.',
+    tags: ['STM32', 'C++', 'FOC', 'Python DAQ', 'Mechatronics'],
     photo: {
       src: propellerRigPoster,
       video: propellerRig,
@@ -125,8 +125,8 @@ export const journey: Chapter[] = [
     where: 'Skarper, London',
     role: 'Senior Electronics Engineer',
     summary:
-      'Second hire. Architected the 48V drive system — motor controller, VCU, UI and BMS — and wrote the first firmware for every board. Bring-up to mass production: 2,000+ units shipped, PCB BOM cost cut by more than half.',
-    tags: ['48V drives', 'BMS', 'EN 15194', 'MISRA C', 'Production test'],
+      'Second hire, leading a team of three from concept to mass production: 2,000+ units shipped. Architected the 48V drive system (motor controller, VCU, UI and BMS) and wrote the first firmware for every board, from bare-metal bring-up to a FreeRTOS system controller with BLE, CAN to the BMS and EN 15194 assist limits. Cut the production PCB BOM by more than half, built the production test jigs (~95% functional coverage) and owned release sign-off through launch.',
+    tags: ['48V drives', 'FreeRTOS', 'BLE', 'CAN', 'EN 15194', 'MISRA C', 'Production test'],
     photo: {
       src: driveUnit,
       whole: true,
@@ -187,8 +187,8 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
     where: 'Breathe Battery Technologies, London',
     role: 'Embedded Firmware & Data Engineer',
     summary:
-      'An Ethernet/TFTP bootloader for zero-touch updates across STM32 lab assets, CI/CD and Python services automating battery lab testing, and a Simscape pack model for BMS validation.',
-    tags: ['Bootloaders', 'GitLab CI', 'Azure', 'gRPC', 'Simscape'],
+      'Designed an Ethernet/TFTP bootloader for zero-touch updates across the lab’s STM32 assets. Built the GitLab CI/CD and Python microservices that automate battery testing, co-designed the SQL schema and REST layer behind them, and took gRPC services into production on Azure. Modelled a battery pack in Simscape to validate BMS control in the battery-in-the-loop harness.',
+    tags: ['Bootloaders', 'GitLab CI', 'Python', 'SQL', 'gRPC', 'Azure', 'Simscape'],
     photo: {
       src: batteryCyclers,
       whole: true,
@@ -212,8 +212,8 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
     where: 'Minimal, London',
     role: 'Senior Embedded Firmware & Data Engineer',
     summary:
-      'A CAN bootloader and fleet OTA for 30+ connected vehicles. Firmware builds went from half a day to under ten minutes, releases from monthly to weekly.',
-    tags: ['CAN', 'Fleet OTA', 'BalenaOS', 'MISRA C', 'EN ISO 13849-1'],
+      'Firmware and fleet software for an electric cargo vehicle: STM32 body-control, sound, immobiliser and DC-DC ECUs, VESC motor-control work, and a Raspberry Pi telematics stack on balenaOS. Built the CAN bootloader and signed over-the-air updates for 30+ connected vehicles, plus the CI that took builds from half a day to under ten minutes and releases from monthly to weekly. Refactored the core ECUs to MISRA C with GoogleTest, cutting static-analysis findings by 90%, and mentored two engineers.',
+    tags: ['STM32', 'CAN', 'Fleet OTA', 'balenaOS', 'MISRA C', 'EN ISO 13849-1'],
     photo: { alt: 'Electric cargo vehicle fleet', caption: 'Cargo fleet' },
     snippet: { caption: '[Code snippet]' },
   },
@@ -227,7 +227,7 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
     where: 'Skarper, London',
     role: 'Head of Connected Systems',
     summary:
-      'Rejoined to lead embedded engineering: secure OTA with MCUboot and signed A/B images, a connected product platform from firmware to app, product cybersecurity and the EU Battery Passport.',
+      'Rejoined to lead embedded engineering and the connected product. Building one platform for manufacturing, users, the app and servicing on Supabase, Cloudflare and Expo, with secure OTA (MCUboot, signed A/B images, BLE flashing), product cybersecurity and the EU Battery Passport. Also running the electronics cost-down and a new BLE handlebar controller, with AI agents built into how the team engineers.',
     tags: ['MCUboot', 'BLE GATT', 'Supabase', 'Expo', 'EU Battery Passport', 'AI agents'],
     photo: { alt: 'Connected e-bike', caption: 'Today' },
     snippet: { caption: '[Code snippet]' },
