@@ -1,9 +1,14 @@
 ---
-// How the battery-lab bootloader takes new firmware over the network, as one
-// SVG. The markup is the finished state (what shows without JS and under
-// reduced motion); scripts/tftp-figure.ts plays the sequence from the start.
-// Every value shown is illustrative: the IP is a private-range example and
-// the image size is made up.
+// How the battery-lab bootloader takes new firmware over the network, as SVG.
+// The markup is the finished state (what shows without JS and under reduced
+// motion); scripts/tftp-figure.ts plays the sequence from the start. Every
+// value shown is illustrative: the IP is a private-range example and the image
+// size is made up.
+//
+// Drawn twice: wide, the lab PC and the board side by side with the links
+// between them (1200 x 560); and tall for narrow screens, the board under the
+// PC with the links running down (332 x 1176). CSS shows one. The two panels
+// keep their own coordinates in both; the tall one moves the board's panel.
 
 // Lab PC transcript, revealed line by line. [kind, text]
 const LOG: [string, string][] = [
@@ -28,146 +33,245 @@ const LOG: [string, string][] = [
   ['sent', '> AT+RESET?'],
   ['note', '… new application running'],
 ];
+const LINE = 17; // log line spacing, as in scripts/tftp-figure.ts
 
 const STEPS = ['Request', 'Reboot', 'Network', 'Erase', 'Stream & verify', 'Swap & run'];
+
+const KEY: [string, string, string][] = [
+  ['AT', 'is-at', 'command'],
+  ['DHCP', 'is-dhcp', 'lease'],
+  ['WRQ', 'is-wrq', 'write request'],
+  ['DATA', 'is-data', '512 B block'],
+  ['ACK', 'is-ack', 'acknowledge'],
+];
 
 // Flash map: 1 MB drawn to scale in eighths of the bar.
 const BAR = { x: 904, y: 196, w: 260, h: 40 };
 const EIGHTH = BAR.w / 8;
 const APP = { x: BAR.x + EIGHTH, w: EIGHTH * 6 };
 const IMAGE_FRACTION = 319288 / (768 * 1024);
+
+const FINAL = 'The flags are rewritten, the board resets, finds a valid stack pointer and jumps to the new application.';
+
+// Where each layout puts things. `lanes` is what the script needs to move the
+// packets: they run along `axis` from `pc` to `mcu`, on the line at `uart` or
+// `eth`, `track` to one side of it by direction.
+const LAYOUTS = {
+  wide: {
+    width: 1200,
+    height: 560,
+    pcHeight: 412,
+    rows: LOG.length,
+    mcuShift: null as string | null,
+    lanes: { axis: 'x', pc: 360, mcu: 840, uart: 150, eth: 300, track: 12 },
+    timeout: [334, 300],
+    lost: [600, 288],
+    speed: [566, 334],
+    portTag: { x: 878, y: 342, anchor: 'end' },
+    key: (i: number) => [362 + i * 104, 214],
+    keyWhat: (_w: number) => [0, 26],
+    step: (i: number) => ({ x: 16 + i * 196, y: 458, w: 188 }),
+  },
+  tall: {
+    width: 332,
+    height: 1176,
+    pcHeight: 240,
+    rows: 10, // the log scrolls in a ten-line window
+    mcuShift: 'translate(-868 420)',
+    lanes: { axis: 'y', pc: 284, mcu: 410, uart: 86, eth: 246, track: 0 },
+    timeout: [246, 284],
+    lost: [246, 347],
+    speed: [130, 337],
+    portTag: { x: 236, y: 436, anchor: 'end' },
+    key: (i: number) => [16 + (i % 2) * 154, 884 + Math.floor(i / 2) * 26],
+    keyWhat: (w: number) => [w + 6, 4],
+    step: (i: number) => ({ x: 16 + (i % 2) * 154, y: 962 + Math.floor(i / 2) * 38, w: 146 }),
+  },
+};
+const names = ['wide', 'tall'] as const;
 ---
 
-<svg class="tftp-figure" viewBox="0 0 1200 560" role="img" aria-labelledby="tftp-title" aria-describedby="tftp-desc" data-tftp-figure>
-  <title id="tftp-title">Firmware update over Ethernet with a TFTP bootloader</title>
-  <desc id="tftp-desc">
-    A lab PC tells the running application, over UART, to reboot into the bootloader. The bootloader sees the request
-    flag, brings Ethernet up and takes a DHCP address, then accepts a TFTP write request on UDP port 69. It erases the
-    application sectors, and for every 512-byte block programs it, reads it back and compares CRC32 before
-    acknowledging. A lost block is resent after a timeout. After the short final block it rewrites the boot flags,
-    resets, finds a valid application and jumps to it.
-  </desc>
-  <defs>
-    <clipPath id="tf-log-clip"><rect x="32" y="74" width="270" height="350"></rect></clipPath>
-  </defs>
+{
+  names.map((name) => {
+    const L = LAYOUTS[name];
+    const wide = name === 'wide';
+    // From just under the line above the window, so none of it shows.
+    const clipH = L.rows * LINE + 4;
+    return (
+      <svg
+        class={`tftp-figure tftp-${name}`}
+        viewBox={`0 0 ${L.width} ${L.height}`}
+        role="img"
+        aria-labelledby={`tftp-title-${name}`}
+        aria-describedby={`tftp-desc-${name}`}
+        data-tftp-figure
+        data-axis={L.lanes.axis}
+        data-pc={L.lanes.pc}
+        data-mcu={L.lanes.mcu}
+        data-uart={L.lanes.uart}
+        data-eth={L.lanes.eth}
+        data-track={L.lanes.track}
+        data-log-rows={L.rows}
+      >
+        <title id={`tftp-title-${name}`}>Firmware update over Ethernet with a TFTP bootloader</title>
+        <desc id={`tftp-desc-${name}`}>
+          A lab PC tells the running application, over UART, to reboot into the bootloader. The bootloader sees the
+          request flag, brings Ethernet up and takes a DHCP address, then accepts a TFTP write request on UDP port 69.
+          It erases the application sectors, and for every 512-byte block programs it, reads it back and compares CRC32
+          before acknowledging. A lost block is resent after a timeout. After the short final block it rewrites the
+          boot flags, resets, finds a valid application and jumps to it.
+        </desc>
+        <defs>
+          <clipPath id={`tf-log-clip-${name}`}>
+            <rect x="32" y="80" width="270" height={clipH} />
+          </clipPath>
+        </defs>
 
-  <!-- Lab PC -->
-  <rect class="tf-panel" x="16" y="24" width="300" height="412" rx="10"></rect>
-  <text class="tf-h" x="36" y="52">Lab PC</text>
-  <text class="tf-sub" x="296" y="52" text-anchor="end">serial · TFTP client</text>
-  <line class="tf-div" x1="16" y1="64" x2="316" y2="64"></line>
-  <g clip-path="url(#tf-log-clip)">
-    {LOG.map(([kind, text], i) => <text class:list={['tf-log', `tf-log-${kind}`]} x="36" y={94 + i * 17} data-k={`log-${i}`}>{text}</text>)}
-  </g>
-  <circle class="tf-timeout" cx="334" cy="300" r="11" opacity="0" data-k="timeout"></circle>
-
-  <!-- Links -->
-  <line class="tf-lane" x1="316" y1="150" x2="884" y2="150"></line>
-  <text class="tf-lane-label" x="600" y="120" text-anchor="middle">UART · AT commands · 115200 8N1</text>
-  <line class="tf-lane" x1="316" y1="300" x2="884" y2="300"></line>
-  <text class="tf-lane-label" x="600" y="270" text-anchor="middle">Ethernet · UDP</text>
-  <text class="tf-port" x="878" y="342" text-anchor="end" data-k="port-tag">→ :69</text>
-  <!-- A key to the packets, between the two links. -->
-  <g class="tf-key-row">
-    {
-      [
-        ['AT', 'is-at', 'command'],
-        ['DHCP', 'is-dhcp', 'lease'],
-        ['WRQ', 'is-wrq', 'write request'],
-        ['DATA', 'is-data', '512 B block'],
-        ['ACK', 'is-ack', 'acknowledge'],
-      ].map(([label, kind, what], i) => (
-        <g class={`tf-pkt ${kind}`} transform={`translate(${362 + i * 104} 214)`}>
-          <rect x="0" y="-10" width={label.length * 7.4 + 14} height="20" rx="10"></rect>
-          <text x={(label.length * 7.4 + 14) / 2} y="4" text-anchor="middle">{label}</text>
-          <text class="tf-key-what" x="0" y="26">{what}</text>
+        {/* Lab PC */}
+        <rect class="tf-panel" x="16" y="24" width="300" height={L.pcHeight} rx="10" />
+        <text class="tf-h" x="36" y="52">Lab PC</text>
+        <text class="tf-sub" x="296" y="52" text-anchor="end">serial · TFTP client</text>
+        <line class="tf-div" x1="16" y1="64" x2="316" y2="64" />
+        <g clip-path={`url(#tf-log-clip-${name})`}>
+          {/* Scrolled to the last lines when the window is shorter than the log. */}
+          <g data-k="log-roll" transform={L.rows < LOG.length ? `translate(0 ${-(LOG.length - L.rows) * LINE})` : undefined}>
+            {LOG.map(([kind, text], i) => (
+              <text class:list={['tf-log', `tf-log-${kind}`]} x="36" y={94 + i * LINE} data-k={`log-${i}`}>
+                {text}
+              </text>
+            ))}
+          </g>
         </g>
-      ))
-    }
-  </g>
-  <g class="tf-lost" opacity="0" data-k="lost">
-    <path d="M592 280 L608 296 M608 280 L592 296"></path>
-  </g>
-  <g class="tf-speed" opacity="0" data-k="speed">
-    <rect x="566" y="334" width="68" height="20" rx="10"></rect>
-    <text x="600" y="348" text-anchor="middle">time-lapse</text>
-  </g>
-  {
-    Array.from({ length: 6 }, (_, i) => (
-      <g class="tf-pkt" opacity="0" data-pkt={i}>
-        <rect x="-44" y="-11" width="88" height="22" rx="11"></rect>
-        <text x="0" y="4" text-anchor="middle"></text>
-      </g>
-    ))
-  }
+        <circle class="tf-timeout" cx={L.timeout[0]} cy={L.timeout[1]} r="11" opacity="0" data-k="timeout" />
 
-  <!-- STM32 -->
-  <rect class="tf-panel" x="884" y="24" width="300" height="412" rx="10" data-k="mcu"></rect>
-  <text class="tf-h" x="904" y="52">STM32F427</text>
-  <circle class="tf-led" cx="1100" cy="47" r="5" data-k="led"></circle>
-  <rect class="tf-badge" x="1112" y="36" width="56" height="22" rx="11" data-k="badge"></rect>
-  <text class="tf-badge-text" x="1140" y="51" text-anchor="middle" data-k="state">APP</text>
-  <line class="tf-div" x1="884" y1="64" x2="1184" y2="64"></line>
+        {/* Links */}
+        {wide ? (
+          <>
+            <line class="tf-lane" x1="316" y1="150" x2="884" y2="150" />
+            <text class="tf-lane-label" x="600" y="120" text-anchor="middle">UART · AT commands · 115200 8N1</text>
+            <line class="tf-lane" x1="316" y1="300" x2="884" y2="300" />
+            <text class="tf-lane-label" x="600" y="270" text-anchor="middle">Ethernet · UDP</text>
+          </>
+        ) : (
+          <>
+            <line class="tf-lane" x1="86" y1="264" x2="86" y2="444" />
+            <text class="tf-lane-label" x="76" y="344" text-anchor="end">UART<tspan x="76" dy="15">115200</tspan></text>
+            <line class="tf-lane" x1="246" y1="264" x2="246" y2="444" />
+            <text class="tf-lane-label" x="258" y="344">Ethernet<tspan x="258" dy="15">UDP</tspan></text>
+          </>
+        )}
+        <text class="tf-port" x={L.portTag.x} y={L.portTag.y} text-anchor={L.portTag.anchor} data-k="port-tag">→ :69</text>
+        {/* A key to the packets: between the two links when wide, under the board when tall. */}
+        <g class="tf-key-row">
+          {KEY.map(([label, kind, what], i) => {
+            const w = label.length * 7.4 + 14;
+            const [x, y] = L.key(i);
+            const [wx, wy] = L.keyWhat(w);
+            return (
+              <g class={`tf-pkt ${kind}`} transform={`translate(${x} ${y})`}>
+                <rect x="0" y="-10" width={w} height="20" rx="10" />
+                <text x={w / 2} y="4" text-anchor="middle">{label}</text>
+                <text class="tf-key-what" x={wx} y={wy}>{what}</text>
+              </g>
+            );
+          })}
+        </g>
+        <g class="tf-lost" opacity="0" data-k="lost">
+          <path d={`M${L.lost[0] - 8} ${L.lost[1] - 8} L${L.lost[0] + 8} ${L.lost[1] + 8} M${L.lost[0] + 8} ${L.lost[1] - 8} L${L.lost[0] - 8} ${L.lost[1] + 8}`} />
+        </g>
+        <g class="tf-speed" opacity="0" data-k="speed">
+          <rect x={L.speed[0]} y={L.speed[1]} width="68" height="20" rx="10" />
+          <text x={L.speed[0] + 34} y={L.speed[1] + 14} text-anchor="middle">time-lapse</text>
+        </g>
+        {Array.from({ length: 6 }, (_, i) => (
+          <g class="tf-pkt" opacity="0" data-pkt={i}>
+            <rect x="-44" y="-11" width="88" height="22" rx="11" />
+            <text x="0" y="4" text-anchor="middle" />
+          </g>
+        ))}
 
-  <text class="tf-key" x="904" y="92">IP</text>
-  <text class="tf-val" x="964" y="92" data-k="ip">192.168.0.42</text>
-  <text class="tf-key" x="904" y="112">TFTP</text>
-  <text class="tf-val" x="964" y="112" data-k="port">listening on UDP :69</text>
-  <text class="tf-status" x="904" y="146" data-k="status">running new application</text>
+        {/* STM32 */}
+        <g transform={L.mcuShift ?? undefined}>
+          <rect class="tf-panel" x="884" y="24" width="300" height="412" rx="10" data-k="mcu" />
+          <text class="tf-h" x="904" y="52">STM32F427</text>
+          <circle class="tf-led" cx="1100" cy="47" r="5" data-k="led" />
+          <rect class="tf-badge" x="1112" y="36" width="56" height="22" rx="11" data-k="badge" />
+          <text class="tf-badge-text" x="1140" y="51" text-anchor="middle" data-k="state">APP</text>
+          <line class="tf-div" x1="884" y1="64" x2="1184" y2="64" />
 
-  <text class="tf-key" x="904" y="184">Flash · 1 MB</text>
-  <text class="tf-addr" x="1164" y="184" text-anchor="end" data-k="addr">0x0806_DF38</text>
-  <rect class="tf-boot" x={BAR.x} y={BAR.y} width={EIGHTH} height={BAR.h}></rect>
-  {Array.from({ length: 6 }, (_, i) => <rect class="tf-cell" x={APP.x + i * EIGHTH} y={BAR.y} width={EIGHTH} height={BAR.h} data-k={`cell-${i}`}></rect>)}
-  <rect class="tf-old" x={APP.x} y={BAR.y} width="0" height={BAR.h} data-k="old"></rect>
-  <rect class="tf-fill" x={APP.x} y={BAR.y} width={(APP.w * IMAGE_FRACTION).toFixed(1)} height={BAR.h} data-k="fill"></rect>
-  {Array.from({ length: 5 }, (_, i) => <line class="tf-cell-line" x1={APP.x + (i + 1) * EIGHTH} y1={BAR.y} x2={APP.x + (i + 1) * EIGHTH} y2={BAR.y + BAR.h}></line>)}
-  <rect class="tf-flags" x={BAR.x + EIGHTH * 7} y={BAR.y} width={EIGHTH} height={BAR.h}></rect>
-  <rect class="tf-bar" x={BAR.x} y={BAR.y} width={BAR.w} height={BAR.h} rx="3"></rect>
-  <text class="tf-map" x={BAR.x + EIGHTH / 2} y="254" text-anchor="middle">boot</text>
-  <text class="tf-map" x={APP.x + APP.w / 2} y="254" text-anchor="middle">application · sectors 5–10</text>
-  <text class="tf-map" x={BAR.x + EIGHTH * 7.5} y="254" text-anchor="middle">flags</text>
+          <text class="tf-key" x="904" y="92">IP</text>
+          <text class="tf-val" x="964" y="92" data-k="ip">192.168.0.42</text>
+          <text class="tf-key" x="904" y="112">TFTP</text>
+          <text class="tf-val" x="964" y="112" data-k="port">listening on UDP :69</text>
+          <text class="tf-status" x="904" y="146" data-k="status">running new application</text>
 
-  <g data-k="flag-req" class="tf-flag">
-    <circle cx="910" cy="276" r="5"></circle>
-    <text x="922" y="280">REQ</text>
-  </g>
-  <g data-k="flag-exec" class="tf-flag is-on">
-    <circle cx="972" cy="276" r="5"></circle>
-    <text x="984" y="280">EXEC</text>
-  </g>
+          <text class="tf-key" x="904" y="184">Flash · 1 MB</text>
+          <text class="tf-addr" x="1164" y="184" text-anchor="end" data-k="addr">0x0806_DF38</text>
+          <rect class="tf-boot" x={BAR.x} y={BAR.y} width={EIGHTH} height={BAR.h} />
+          {Array.from({ length: 6 }, (_, i) => (
+            <rect class="tf-cell" x={APP.x + i * EIGHTH} y={BAR.y} width={EIGHTH} height={BAR.h} data-k={`cell-${i}`} />
+          ))}
+          <rect class="tf-old" x={APP.x} y={BAR.y} width="0" height={BAR.h} data-k="old" />
+          <rect class="tf-fill" x={APP.x} y={BAR.y} width={(APP.w * IMAGE_FRACTION).toFixed(1)} height={BAR.h} data-k="fill" />
+          {Array.from({ length: 5 }, (_, i) => (
+            <line class="tf-cell-line" x1={APP.x + (i + 1) * EIGHTH} y1={BAR.y} x2={APP.x + (i + 1) * EIGHTH} y2={BAR.y + BAR.h} />
+          ))}
+          <rect class="tf-flags" x={BAR.x + EIGHTH * 7} y={BAR.y} width={EIGHTH} height={BAR.h} />
+          <rect class="tf-bar" x={BAR.x} y={BAR.y} width={BAR.w} height={BAR.h} rx="3" />
+          <text class="tf-map" x={BAR.x + EIGHTH / 2} y="254" text-anchor="middle">boot</text>
+          <text class="tf-map" x={APP.x + APP.w / 2} y="254" text-anchor="middle">application · sectors 5–10</text>
+          <text class="tf-map" x={BAR.x + EIGHTH * 7.5} y="254" text-anchor="middle">flags</text>
 
-  <text class="tf-key" x="904" y="314">Each block</text>
-  {
-    [
-      ['DATA', 904, 42],
-      ['program ×128', 950, 92],
-      ['read back', 1046, 70],
-      ['CRC32', 1120, 44],
-    ].map(([label, x, w], i) => (
-      <g class="tf-pipe">
-        <rect x={x} y="324" width={w} height="24" rx="12" class="tf-pipe-bg"></rect>
-        <rect x={x} y="324" width={w} height="24" rx="12" class="tf-pipe-on" opacity="0" data-k={`pipe-${i}`}></rect>
-        <text x={Number(x) + Number(w) / 2} y="340" text-anchor="middle">{label}</text>
-      </g>
-    ))
-  }
+          <g data-k="flag-req" class="tf-flag">
+            <circle cx="910" cy="276" r="5" />
+            <text x="922" y="280">REQ</text>
+          </g>
+          <g data-k="flag-exec" class="tf-flag is-on">
+            <circle cx="972" cy="276" r="5" />
+            <text x="984" y="280">EXEC</text>
+          </g>
 
-  <text class="tf-key" x="904" y="384">Block</text>
-  <text class="tf-val" x="964" y="384" data-k="block">624 / 624</text>
-  <text class="tf-key" x="904" y="404">Written</text>
-  <text class="tf-val" x="964" y="404" data-k="bytes">319,288 B · CRC32 ok</text>
+          <text class="tf-key" x="904" y="314">Each block</text>
+          {(
+            [
+              ['DATA', 904, 42],
+              ['program ×128', 950, 92],
+              ['read back', 1046, 70],
+              ['CRC32', 1120, 44],
+            ] as const
+          ).map(([label, x, w], i) => (
+            <g class="tf-pipe">
+              <rect x={x} y="324" width={w} height="24" rx="12" class="tf-pipe-bg" />
+              <rect x={x} y="324" width={w} height="24" rx="12" class="tf-pipe-on" opacity="0" data-k={`pipe-${i}`} />
+              <text x={x + w / 2} y="340" text-anchor="middle">{label}</text>
+            </g>
+          ))}
 
-  <!-- Steps -->
-  {
-    STEPS.map((s, i) => (
-      <g class="tf-step is-done" data-k={`step-${i}`}>
-        <rect x={16 + i * 196} y="458" width="188" height="30" rx="15"></rect>
-        <text x={16 + i * 196 + 94} y="478" text-anchor="middle">{`${i + 1} · ${s}`}</text>
-      </g>
-    ))
-  }
-  <text class="tf-caption" x="16" y="526" data-k="caption">
-    The flags are rewritten, the board resets, finds a valid stack pointer and jumps to the new application.
-  </text>
-</svg>
+          <text class="tf-key" x="904" y="384">Block</text>
+          <text class="tf-val" x="964" y="384" data-k="block">624 / 624</text>
+          <text class="tf-key" x="904" y="404">Written</text>
+          <text class="tf-val" x="964" y="404" data-k="bytes">319,288 B · CRC32 ok</text>
+        </g>
+
+        {/* Steps */}
+        {STEPS.map((s, i) => {
+          const { x, y, w } = L.step(i);
+          return (
+            <g class="tf-step is-done" data-k={`step-${i}`}>
+              <rect x={x} y={y} width={w} height="30" rx="15" />
+              <text x={x + w / 2} y={y + 20} text-anchor="middle">{`${i + 1} · ${s}`}</text>
+            </g>
+          );
+        })}
+        {/* SVG text does not wrap, so in the narrow column the caption is HTML. */}
+        {wide ? (
+          <text class="tf-caption" x="16" y="526" data-k="caption">{FINAL}</text>
+        ) : (
+          <foreignObject x="16" y="1082" width="300" height="90">
+            <p class="tf-caption-html" data-k="caption">{FINAL}</p>
+          </foreignObject>
+        )}
+      </svg>
+    );
+  })
+}

@@ -46,22 +46,43 @@ const chain = chainCanvas ? signalChain(chainCanvas) : null;
 
 // From the top of the page until the board nears the top of the screen, so the
 // signal lands on the chart while the board is still in view.
+//
+// On a narrow screen the board is drawn wider than the screen (.is-panning in
+// global.css) so its parts stay legible, and it slides under the signal: still
+// until the signal passes the middle, then keeping it in view to the chart.
 function heroChain() {
   if (!chain) return;
+  const { canvas } = chain;
+  const host = canvas.parentElement!;
+  host.classList.add('is-panning');
+  const pan = (p: number) => {
+    const spare = canvas.clientWidth - host.clientWidth;
+    const x = spare > 0 ? gsap.utils.clamp(-spare, 0, host.clientWidth * 0.45 - chain.at(p) * canvas.clientWidth) : 0;
+    canvas.style.translate = `${x.toFixed(1)}px 0`;
+  };
   const state = { p: 0 };
   gsap.to(state, {
     p: 1,
     ease: 'none',
-    onUpdate: () => chain.draw(state.p),
+    onUpdate: () => {
+      chain.draw(state.p);
+      pan(state.p);
+    },
     scrollTrigger: {
-      trigger: chain.canvas,
+      trigger: canvas,
       start: 0,
       end: 'top 70px',
       scrub: 0.5,
       invalidateOnRefresh: true,
+      // A resize changes the board's width but maybe not the progress.
+      onRefresh: () => pan(state.p),
     },
   });
-  return () => chain.draw(0);
+  return () => {
+    host.classList.remove('is-panning');
+    canvas.style.translate = '';
+    chain.draw(0);
+  };
 }
 
 function band(el: HTMLElement, wide: boolean) {
@@ -197,9 +218,12 @@ function loops() {
 }
 
 // The TFTP bootloader figure: its timeline plays only while the figure is on
-// screen. Stopping jumps it to the end, which is the still in the markup.
+// screen. Stopping jumps it to the end, which is the still in the markup. Of
+// its two drawings only the one CSS shows gets a timeline; they swap at the
+// same width as `wide`, which re-runs this.
 function tftpFigures() {
-  const timelines = [...document.querySelectorAll<SVGSVGElement>('svg[data-tftp-figure]')].map((svg) => {
+  const shown = [...document.querySelectorAll<SVGSVGElement>('svg[data-tftp-figure]')].filter((svg) => svg.getClientRects().length);
+  const timelines = shown.map((svg) => {
     const tl = tftpTimeline(svg);
     ScrollTrigger.create({
       trigger: svg,

@@ -35,7 +35,7 @@ const poster = photo.video && photo.src ? await getImage({ src: photo.src, forma
         src={photo.src}
         alt={photo.alt}
         widths={widths}
-        sizes="(min-width: 900px) 40vw, 100vw"
+        sizes="(min-width: 600px) 40vw, 100vw"
         style={photo.whole ? `aspect-ratio: ${photo.src.width} / ${photo.src.height}` : undefined}
       />
     ) : (

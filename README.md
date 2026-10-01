@@ -69,7 +69,6 @@ node -e "const s=require('sharp');s('public/favicon.svg',{density:288}).resize(1
 - [ ] Code for the snippet slots, or delete the ones not wanted
 - [ ] A CV cut for the public site (no phone number)
 - [ ] Rewrite the About draft, then set `about.draft` to `false`
-- [ ] A mobile design: below 900px the page is a stacked fallback, not a designed layout
 
 ## Hosting
 
@@ -153,3 +152,24 @@ Where the build departs from the mockup, on purpose:
 - The hero's bike is replaced by a circuit board the signal crosses as you
   scroll, from resistor to cloud to dashboard. The bike keeps its place in
   the Journey bands.
+
+Narrow screens have layouts of their own (`global.css`, Narrow screens), not
+in the mockup:
+
+- **Tablets, 600–899px:** the desktop's twelve columns with wider spans. The
+  hero facts sit two by two and the portrait beside the lead. Role photos sit
+  beside their text, stack rows run in three columns and the degrees side by
+  side.
+- **Phones, under 600px:** one column. The name and Contact share the top
+  line, with the sections as a three-column index under them.
+- **The hero board** is drawn at least 840px wide under 900px, so its parts
+  stay legible, and slides along under the signal as you scroll. Under
+  reduced motion it is shown whole.
+- **The TFTP and fleet figures** are drawn twice, wide and tall
+  (`TftpFigure.astro`, `data/fleet.ts`), and CSS shows the tall drawing
+  under 900px. In the tall TFTP figure the board sits under the lab PC, the
+  links run down between them, and the log scrolls in a ten-line window.
+- **Code** swipes sideways on touch screens, and the hint reads "tap to
+  scroll".
+- Above 1440px, the hero name and the band labels line up with the centred
+  column.

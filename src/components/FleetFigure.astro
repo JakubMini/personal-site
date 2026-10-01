@@ -1,58 +1,74 @@
 ---
 // The Minimal fleet architecture: six blocks and one release running through
-// them, step by step (scripts/fleet-figure.ts). Without JS: the blocks, and
-// the steps as a list.
-import { BLOCKS, EDGES, SLOTS, STEPS } from '../data/fleet';
+// them, step by step (scripts/fleet-figure.ts). Drawn wide for desktops and
+// tall for narrow screens; CSS shows one. Without JS: the blocks, and the
+// steps as a list.
+import { BLOCKS, LAYOUTS, SLOT_LABELS, STEPS, type LayoutName } from '../data/fleet';
 
 const d = (pts: readonly (readonly [number, number])[]) => pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
+const names: LayoutName[] = ['wide', 'tall'];
 ---
 
 <div class="fleet" data-fleet>
-  <div class="fleet-scroll">
-    <svg class="fleet-svg" viewBox="0 0 1200 420" role="img" aria-labelledby="fleet-title fleet-desc">
-      <title id="fleet-title">Minimal fleet architecture</title>
-      <desc id="fleet-desc">{STEPS.map((s, i) => `${i + 1}. ${s.caption}`).join(' ')}</desc>
+  {
+    names.map((name) => {
+      const L = LAYOUTS[name];
+      return (
+        <svg
+          class={`fleet-svg fleet-${name}`}
+          viewBox={`0 0 ${L.width} ${L.height}`}
+          role="img"
+          aria-labelledby={`fleet-title-${name} fleet-desc-${name}`}
+          data-layout={name}
+        >
+          <title id={`fleet-title-${name}`}>Minimal fleet architecture</title>
+          <desc id={`fleet-desc-${name}`}>{STEPS.map((s, i) => `${i + 1}. ${s.caption}`).join(' ')}</desc>
 
-      {Object.entries(EDGES).map(([id, pts]) => <path class="fe" d={d(pts)} data-edge={id} />)}
-      <text class="fe-label" x="900" y="136" text-anchor="middle">CAN</text>
+          {Object.entries(L.edges).map(([id, pts]) => <path class="fe" d={d(pts)} data-edge={id} />)}
+          <text class="fe-label" x={L.can.x} y={L.can.y} text-anchor={L.can.anchor}>CAN</text>
 
-      {
-        BLOCKS.map((b) => (
-          <g class="fb" data-block={b.id}>
-            <rect class="fb-box" x={b.x} y={b.y} width={b.w} height={b.h} rx="12" />
-            {b.id === 'ecu' ? (
-              <>
-                <text class="fb-title" x={b.x + 20} y={b.y + 26}>{b.title}</text>
-                <text class="fb-sub" x={b.x + 20} y={b.y + b.h - 14}>{b.sub}</text>
-              </>
-            ) : (
-              <>
-                <text class="fb-title" x={b.x + b.w / 2} y={b.y + b.h / 2 - 2} text-anchor="middle">{b.title}</text>
-                <text class="fb-sub" x={b.x + b.w / 2} y={b.y + b.h / 2 + 20} text-anchor="middle">{b.sub}</text>
-              </>
-            )}
-          </g>
-        ))
-      }
-      {
-        Object.entries(SLOTS).map(([id, s]) => (
-          <g class="fs" data-slot={id}>
-            <rect x={s.x} y={s.y} width={s.w} height={s.h} rx="7" />
-            <text x={s.x + s.w / 2} y={s.y + s.h / 2 + 5} text-anchor="middle">{s.label}</text>
-          </g>
-        ))
-      }
+          {
+            BLOCKS.map((b) => {
+              const { x, y, w, h } = L.boxes[b.id];
+              return (
+                <g class="fb" data-block={b.id}>
+                  <rect class="fb-box" x={x} y={y} width={w} height={h} rx="12" />
+                  {b.id === 'ecu' ? (
+                    <>
+                      <text class="fb-title" x={x + 20} y={y + 26}>{b.title}</text>
+                      <text class="fb-sub" x={x + 20} y={y + h - 14}>{b.sub}</text>
+                    </>
+                  ) : (
+                    <>
+                      <text class="fb-title" x={x + w / 2} y={y + h / 2 - 2} text-anchor="middle">{b.title}</text>
+                      <text class="fb-sub" x={x + w / 2} y={y + h / 2 + 20} text-anchor="middle">{b.sub}</text>
+                    </>
+                  )}
+                </g>
+              );
+            })
+          }
+          {
+            Object.entries(L.slots).map(([id, s]) => (
+              <g class="fs" data-slot={id}>
+                <rect x={s.x} y={s.y} width={s.w} height={s.h} rx="7" />
+                <text x={s.x + s.w / 2} y={s.y + s.h / 2 + 5} text-anchor="middle">{SLOT_LABELS[id as keyof typeof SLOT_LABELS]}</text>
+              </g>
+            ))
+          }
 
-      {
-        [0, 1].map((i) => (
-          <g class="fpkt" data-packet={i} opacity="0">
-            <rect class="fpkt-tag" x="0" y="-11" width="60" height="22" rx="11" />
-            <text x="30" y="4" text-anchor="middle" />
-          </g>
-        ))
-      }
-    </svg>
-  </div>
+          {
+            [0, 1].map((i) => (
+              <g class="fpkt" data-packet={i} opacity="0">
+                <rect class="fpkt-tag" x="0" y="-11" width="60" height="22" rx="11" />
+                <text x="30" y="4" text-anchor="middle" />
+              </g>
+            ))
+          }
+        </svg>
+      );
+    })
+  }
 
   <div class="fleet-foot">
     <div class="fleet-dots" role="group" aria-label="Steps">

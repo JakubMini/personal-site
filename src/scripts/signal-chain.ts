@@ -702,6 +702,10 @@ export function signalChain(canvas: HTMLCanvasElement) {
       progress = clamp(p, 0, 1);
       if (board) frame(ctx, board, scale, progress);
     },
+    // Where the signal is across the board at progress p, 0 (left) to 1 (right).
+    at(p: number) {
+      return point(clamp(p, 0, 1) * TOTAL)[0] / W;
+    },
     stop() {
       observer.disconnect();
     },

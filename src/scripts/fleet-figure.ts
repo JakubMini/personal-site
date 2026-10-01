@@ -1,25 +1,35 @@
 // The fleet architecture figure (components/FleetFigure.astro): one release,
-// step by step, a packet travelling each step's link. Autoplay only while on
-// screen and the tab is visible; under reduced motion nothing moves on its
-// own, and the step dots still work.
+// step by step, a packet travelling each step's link. Both drawings (wide and
+// tall) follow the same step; CSS shows one. Autoplay only while on screen and
+// the tab is visible; under reduced motion nothing moves on its own, and the
+// step dots still work.
 
 import { gsap } from 'gsap';
-import { EDGES, STEPS, type Pt } from '../data/fleet';
+import { LAYOUTS, STEPS, type LayoutName, type Pt } from '../data/fleet';
 
 const HOLD = 2.0; // seconds a step stays up after its packet arrives
 const HOLD_STILL = 2.8; // for a step with no packet
 
+interface Drawing {
+  svg: SVGSVGElement;
+  edges: Record<string, Pt[]>;
+  packets: SVGGElement[];
+}
+
 export function initFleet(root: HTMLElement) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const svg = root.querySelector('svg')!;
-  const packets = [...root.querySelectorAll<SVGGElement>('[data-packet]')];
+  const drawings: Drawing[] = [...root.querySelectorAll<SVGSVGElement>('svg[data-layout]')].map((svg) => ({
+    svg,
+    edges: LAYOUTS[svg.dataset.layout as LayoutName].edges,
+    packets: [...svg.querySelectorAll<SVGGElement>('[data-packet]')],
+  }));
   const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-step]')];
   const playBtn = root.querySelector<HTMLButtonElement>('[data-play]')!;
   const caption = root.querySelector('[data-caption]')!;
 
   let step = 0;
   let playing = !reduce;
-  let onScreen = false;
+  const onScreen = new Set<Element>();
   let pending: gsap.core.Tween[] = [];
 
   root.classList.add('is-live');
@@ -27,12 +37,12 @@ export function initFleet(root: HTMLElement) {
     pending.forEach((t) => t.kill());
     pending = [];
   };
-  const running = () => playing && onScreen && !document.hidden;
+  const running = () => playing && onScreen.size > 0 && !document.hidden;
   const along = (pts: readonly Pt[], k: number): Pt => [pts[0][0] + (pts[1][0] - pts[0][0]) * k, pts[0][1] + (pts[1][1] - pts[0][1]) * k];
+  const all = (selector: string) => root.querySelectorAll(selector);
 
   // A packet along a link, its tag centred on the dot's path. Returns its travel time.
-  const send = (g: SVGGElement, edge: string, label: string, animate: boolean) => {
-    const pts = EDGES[edge];
+  const send = (g: SVGGElement, pts: readonly Pt[], label: string, animate: boolean) => {
     const t = g.querySelector('text')!;
     t.textContent = label;
     const w = t.getComputedTextLength() + 20;
@@ -63,21 +73,23 @@ export function initFleet(root: HTMLElement) {
   const show = (animate: boolean) => {
     kill();
     const s = STEPS[step];
-    svg.querySelectorAll('.is-on').forEach((el) => el.classList.remove('is-on'));
-    s.on.forEach((id) => svg.querySelector(`[data-block="${id}"]`)?.classList.add('is-on'));
-    [s.edge, s.also?.edge].forEach((e) => e && svg.querySelector(`[data-edge="${e}"]`)?.classList.add('is-on'));
+    all('.is-on').forEach((el) => el.classList.remove('is-on'));
+    s.on.forEach((id) => all(`[data-block="${id}"]`).forEach((el) => el.classList.add('is-on')));
+    [s.edge, s.also?.edge].forEach((e) => e && all(`[data-edge="${e}"]`).forEach((el) => el.classList.add('is-on')));
     // The ECU's flash: the bootloader takes the image, then the application is new.
-    svg.querySelector('[data-slot="boot"]')!.classList.toggle('is-on', s.slot === 'boot');
-    svg.querySelector('[data-slot="app"]')!.classList.toggle('is-new', s.slot === 'app' || step === STEPS.length - 1);
+    all('[data-slot="boot"]').forEach((el) => el.classList.toggle('is-on', s.slot === 'boot'));
+    all('[data-slot="app"]').forEach((el) => el.classList.toggle('is-new', s.slot === 'app' || step === STEPS.length - 1));
 
     caption.textContent = s.caption;
     dots.forEach((d, i) => d.setAttribute('aria-current', String(i === step)));
     playBtn.textContent = playing ? 'Pause' : 'Play';
 
-    gsap.set(packets, { opacity: 0 });
     let dur = 0;
-    if (s.edge && s.packet) dur = send(packets[0], s.edge, s.packet, animate && !reduce);
-    if (s.also) send(packets[1], s.also.edge, s.also.packet, animate && !reduce);
+    for (const { edges, packets } of drawings) {
+      gsap.set(packets, { opacity: 0 });
+      if (s.edge && s.packet) dur = send(packets[0], edges[s.edge], s.packet, animate && !reduce);
+      if (s.also) send(packets[1], edges[s.also.edge], s.also.packet, animate && !reduce);
+    }
     if (animate) pending.push(gsap.delayedCall(dur ? dur + HOLD : HOLD_STILL, advance));
   };
 
@@ -98,11 +110,15 @@ export function initFleet(root: HTMLElement) {
     show(running());
   });
 
-  const io = new IntersectionObserver(([e]) => {
-    onScreen = e.isIntersecting;
+  // The drawing CSS hides never intersects, so this follows the one on show.
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) onScreen.add(e.target);
+      else onScreen.delete(e.target);
+    }
     show(running());
   });
-  io.observe(svg);
+  drawings.forEach(({ svg }) => io.observe(svg));
   document.addEventListener('visibilitychange', () => show(running()));
 
   show(false);

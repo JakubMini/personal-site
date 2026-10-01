@@ -59,8 +59,11 @@ a {
   color: inherit;
 }
 
-a:hover {
-  opacity: 0.7;
+/* Only where there is a pointer to hover with; on touch it would stick. */
+@media (hover: hover) {
+  a:hover {
+    opacity: 0.7;
+  }
 }
 
 a:focus-visible {
@@ -181,6 +184,8 @@ ul {
 }
 
 .hero-name {
+  max-width: 1440px;
+  margin-inline: auto;
   padding-inline: calc(var(--gutter) - 12px);
   font-family: var(--display);
   font-weight: 600;
@@ -194,12 +199,20 @@ ul {
    1660 × 300 proportions. */
 .hero-chain {
   padding-block: 20px 8px;
+  overflow: hidden;
 }
 
 .hero-chain canvas {
   display: block;
   width: 100%;
   aspect-ratio: 1660 / 300;
+}
+
+/* With motion, a narrow screen gets the board at a legible size, wider than
+   the screen, and scripts/motion.ts slides it along under the signal. At
+   rest it is shown whole. */
+.hero-chain.is-panning canvas {
+  width: max(100%, 840px);
 }
 
 .hero-facts {
@@ -366,7 +379,8 @@ ul {
 
 .band-label {
   position: absolute;
-  left: var(--gutter);
+  /* In line with the page's 1440px column on wider screens. */
+  left: max(var(--gutter), calc((100% - 1440px) / 2 + var(--gutter)));
   top: 24px;
   font-size: 15px;
   font-weight: 600;
@@ -379,29 +393,33 @@ ul {
   border-top: 1.5px solid currentColor;
 }
 
+/* --mw is the drawing's width and --ms its scale, so narrow screens can keep
+   a resting machine inside the band. */
 .band .machine {
+  --ms: 1;
   position: absolute;
   left: var(--at);
   bottom: var(--band-line);
+  width: var(--mw);
   height: auto;
 }
 
 .band .machine-drone {
-  width: 260px;
+  --mw: 260px;
   bottom: calc(var(--band-line) + 40px);
 }
 
 .band .machine-ebike,
 .band .machine-connected-ebike {
-  width: 280px;
+  --mw: 280px;
 }
 
 .band .machine-battery {
-  width: 260px;
+  --mw: 260px;
 }
 
 .band .machine-cargo {
-  width: 330px;
+  --mw: 330px;
 }
 
 .band-ink {
@@ -521,9 +539,18 @@ ul {
   position: absolute;
   right: 0;
   bottom: 8px;
+  /* Paper behind it, so a long last line does not run under the words. */
+  padding-left: 20px;
+  background: linear-gradient(to right, transparent, var(--paper) 20px);
   font-size: 12px;
   color: var(--muted);
   pointer-events: none;
+}
+
+@media (hover: none) {
+  .snippet-window::after {
+    content: 'tap to scroll';
+  }
 }
 
 .snippet-window:focus-within::after {
@@ -965,6 +992,19 @@ ul {
   font-family: var(--sans);
 }
 
+/* Wide and tall drawings of the TFTP and fleet figures: the tall ones are for
+   screens under 900px (Narrow screens, below). */
+.tftp-figure.tftp-tall,
+.fleet-svg.fleet-tall {
+  display: none;
+}
+
+.tftp-figure .tf-caption-html {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text);
+}
+
 .tftp-figure text { fill: var(--ink); }
 .tf-panel { fill: #faf9f5; stroke: var(--rule); }
 .tf-div { stroke: var(--rule); }
@@ -1138,6 +1178,7 @@ ul {
 
 .fleet-dots {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
@@ -1211,6 +1252,7 @@ ul {
 
 .not-found {
   min-height: 100vh;
+  min-height: 100svh;
   padding-top: 28px;
   background: var(--green);
 }
@@ -1225,10 +1267,167 @@ ul {
 }
 
 /* ---- Narrow screens -------------------------------------------------- */
-/* The mockup is desktop only. Below 900px every grid stacks to one column
-   until a mobile design exists. */
+/* The mockup is drawn at 1440px. Under 900px the page has two layouts of its
+   own: tablets (600-899px) keep the twelve columns with fewer, wider spans,
+   and phones (under 600px) stack to one. Rules both share come first. */
 
 @media (max-width: 899px) {
+  :root {
+    --band: 260px;
+    --band-line: 48px;
+  }
+
+  .pitch {
+    padding-top: 96px;
+  }
+
+  .about {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+
+  .about-body {
+    grid-template-columns: 1fr;
+  }
+
+  .section-head .display,
+  .degree {
+    margin-top: 40px;
+  }
+
+  #journey .section-head {
+    padding-bottom: 64px;
+  }
+
+  /* Machines drawn smaller; at rest (reduced motion) each stays in its band. */
+  .band .machine {
+    --ms: 0.85;
+    scale: var(--ms);
+    transform-origin: left bottom;
+    left: min(var(--at), calc(100% - var(--mw) * var(--ms)));
+  }
+
+  .role {
+    padding-top: 48px;
+    padding-bottom: 88px;
+  }
+
+  .role-last {
+    padding-bottom: 100px;
+  }
+
+  #stack,
+  #ai,
+  .education,
+  .publications {
+    padding-bottom: 100px;
+  }
+
+  /* Titles that wrap here would otherwise take the body's 1.5 line height. */
+  .row-title,
+  .degree-field {
+    line-height: 1.15;
+  }
+
+  /* Code swipes sideways without being tapped into; vertical swipes still
+     scroll the page until it is. */
+  .snippet-window pre {
+    overflow-x: auto;
+  }
+
+  .tftp-figure.tftp-wide,
+  .fleet-svg.fleet-wide {
+    display: none;
+  }
+
+  .tftp-figure.tftp-tall,
+  .fleet-svg.fleet-tall {
+    display: block;
+    max-width: 400px;
+  }
+
+  .contact-title {
+    margin: 96px 0 48px;
+  }
+
+  .colophon {
+    margin-top: 96px;
+  }
+}
+
+/* Tablets: the desktop grid, respanned. */
+@media (min-width: 600px) and (max-width: 899px) {
+  .hero-facts {
+    row-gap: 20px;
+  }
+
+  .fact-now,
+  .fact-education {
+    grid-column: 1 / span 6;
+  }
+
+  .fact-previously,
+  .fact-links {
+    grid-column: 7 / span 6;
+  }
+
+  .about-side {
+    grid-column: 1 / span 4;
+  }
+
+  .about-main {
+    grid-column: 5 / span 8;
+  }
+
+  /* The lean figure: the problem across the top, the render beside its key. */
+  .snippet-head:not(.snippet-head-wide) {
+    grid-template-areas:
+      'note    note'
+      'legend  figure'
+      'readout figure';
+    grid-template-rows: auto auto 1fr;
+  }
+
+  .lean-host {
+    align-self: start;
+    aspect-ratio: 520 / 400;
+    min-height: 0;
+  }
+
+  .stack .row-key {
+    grid-column: 1 / span 2;
+  }
+
+  .stack .row-title {
+    grid-column: 3 / span 4;
+    font-size: 26px;
+  }
+
+  .education .label,
+  .publications .label,
+  .pubs {
+    grid-column: 1 / -1;
+  }
+
+  .degree {
+    grid-column: 1 / span 6;
+  }
+
+  .degree + .degree {
+    grid-column: 7 / span 6;
+  }
+
+  .pubs {
+    margin-top: 40px;
+  }
+
+  .pub .row-title {
+    font-size: 24px;
+  }
+}
+
+/* Phones: one column. */
+@media (max-width: 599px) {
   :root {
     --band: 220px;
     --band-line: 40px;
@@ -1245,13 +1444,43 @@ ul {
     grid-column: 1 / -1 !important;
   }
 
+  /* The name and Contact on one line, the sections as a three-column index
+     under them, each link tall enough to tap. */
+  .topbar {
+    position: relative;
+    display: block;
+  }
+
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 12px;
+    margin-top: 14px;
+  }
+
+  .nav a {
+    padding-block: 6px;
+  }
+
+  .nav .nav-contact {
+    position: absolute;
+    top: 28px;
+    right: var(--gutter);
+    padding: 0;
+    line-height: 28px;
+  }
+
   .pitch {
-    padding-top: 72px;
+    padding-top: 56px;
     font-size: 20px;
   }
 
   .hero-name {
     font-size: 19vw;
+  }
+
+  .hero-facts {
+    row-gap: 16px;
   }
 
   .fact-links {
@@ -1269,10 +1498,6 @@ ul {
     max-width: 320px;
   }
 
-  .about-body {
-    grid-template-columns: 1fr;
-  }
-
   .section-head .display,
   .degree {
     margin-top: 32px;
@@ -1283,8 +1508,7 @@ ul {
   }
 
   .band .machine {
-    scale: 0.7;
-    transform-origin: left bottom;
+    --ms: 0.7;
   }
 
   .role {
@@ -1293,12 +1517,7 @@ ul {
     row-gap: 16px;
   }
 
-  .stack .row,
-  .pub {
-    gap: 4px;
-  }
-
-  .snippet-head {
+  .snippet-head:not(.snippet-head-wide) {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: 'note' 'figure' 'legend' 'readout';
     grid-template-rows: none;
@@ -1309,34 +1528,54 @@ ul {
     min-height: 0;
   }
 
-  .tftp-host {
-    overflow-x: auto;
+  .snippet pre {
+    font-size: 13px;
   }
 
-  .fleet-scroll {
-    overflow-x: auto;
+  .stack .row,
+  .pub {
+    gap: 4px;
   }
 
-  .fleet-svg {
-    min-width: 900px;
-  }
-
-
-
-  .tftp-figure {
-    min-width: 900px;
+  .stack .row-title {
+    font-size: 26px;
   }
 
   .pub {
     grid-template-columns: 1fr;
   }
 
+  .pubs {
+    margin-top: 32px;
+  }
+
+  .pub .row-title {
+    font-size: 24px;
+  }
+
   .row-arrow {
     display: none;
   }
 
+  /* Seven steps and Play on one line at 375px. */
+  .fleet-dot {
+    min-width: 32px;
+    height: 32px;
+  }
+
+  .fleet-play {
+    height: 32px;
+    padding: 0 12px;
+    margin-left: 0;
+  }
+
   .contact-title {
     margin: 72px 0 40px;
+  }
+
+  /* The address is one long word; let it break rather than run off. */
+  .contact-links a {
+    overflow-wrap: anywhere;
   }
 
   .colophon {
