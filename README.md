@@ -57,7 +57,7 @@ y=300 of a 720×1280 phone clip.
 **CV.** Put the PDF in `public/` and set `person.cv` to its path. While it is
 `null` every CV link is hidden rather than dead.
 
-**Code snippets.** Each chapter and the AI section have a `snippet`: set its
+**Code snippets.** A chapter can have a `snippet`: set its
 `code`, `lang` and `caption` in `site.ts`. It renders as text, highlighted at
 build time by Shiki (bundled with Astro), never as a screenshot. Without `code`
 the slot is blank; delete a chapter's `snippet` to remove the slot.

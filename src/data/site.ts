@@ -369,7 +369,6 @@ export const ai = {
         'A briefing agent on the Anthropic API: deterministic rules first, the model only returns strict JSON with no tools, and the prompt is hardened against injection.',
     },
   ],
-  snippet: { caption: '[Code snippet]' } as Snippet,
 };
 
 export const education = [
