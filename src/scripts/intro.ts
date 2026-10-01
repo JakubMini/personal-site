@@ -90,8 +90,10 @@ function timeline(cover: HTMLElement) {
   gsap.set(topbar, { y: -16, autoAlpha: 0 });
   gsap.set(pitch.lines, { yPercent: 120 });
   gsap.set(facts, { y: 14, autoAlpha: 0 });
+  gsap.set('.hero-chain', { autoAlpha: 0 });
 
   tl.to(name.chars, { yPercent: 0, duration: 1, ease: 'expo.out', stagger: 0.03 }, 1.7)
+    .to('.hero-chain', { autoAlpha: 1, duration: 0.9, ease: 'power2.out', clearProps: 'all' }, 1.95)
     .to(
       '.hero .ruled',
       { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'expo.inOut', clearProps: 'clipPath' },

@@ -11,6 +11,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { intro } from './intro';
+import { signalChain } from './signal-chain';
 import { tftpTimeline } from './tftp-figure';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -38,25 +39,29 @@ function wheels(tl: gsap.core.Timeline, svg: SVGSVGElement, distance: () => numb
   });
 }
 
-function heroBike() {
-  const svg = document.querySelector<SVGSVGElement>('.hero-bike');
-  if (!svg) return;
-  const road = svg.parentElement!;
-  // It sits 12% in from the right; this carries it just past the edge.
-  const travel = () => road.clientWidth * 0.12 + svg.getBoundingClientRect().width;
+// The hero's circuit board, drawn at rest whether or not anything moves; the
+// scroll then carries its signal from the shunt to the dashboard.
+const chainCanvas = document.querySelector<HTMLCanvasElement>('[data-signal-chain]');
+const chain = chainCanvas ? signalChain(chainCanvas) : null;
 
-  const tl = gsap.timeline({
-    defaults: { ease: 'none', duration: 1 },
+// From the top of the page until the board nears the top of the screen, so the
+// signal lands on the chart while the board is still in view.
+function heroChain() {
+  if (!chain) return;
+  const state = { p: 0 };
+  gsap.to(state, {
+    p: 1,
+    ease: 'none',
+    onUpdate: () => chain.draw(state.p),
     scrollTrigger: {
-      trigger: '.hero',
-      start: 'top top',
-      end: 'bottom top',
+      trigger: chain.canvas,
+      start: 0,
+      end: 'top 70px',
       scrub: 0.5,
       invalidateOnRefresh: true,
     },
   });
-  tl.to(svg, { x: travel }, 0);
-  wheels(tl, svg, travel);
+  return () => chain.draw(0);
 }
 
 function band(el: HTMLElement, wide: boolean) {
@@ -265,11 +270,14 @@ document.fonts.ready.then(() => {
       if (!moving) return;
       // Creation order is refresh order: pins first, so everything below them
       // measures its start with the pin spacing already in place.
-      heroBike();
+      const chainAtRest = heroChain();
       document.querySelectorAll<HTMLElement>('.band').forEach((el) => band(el, wide));
       reveals();
       const stops = [loops(), leanFigures(), tftpFigures()];
-      return () => stops.forEach((stop) => stop());
+      return () => {
+        stops.forEach((stop) => stop());
+        chainAtRest?.();
+      };
     },
   );
 });

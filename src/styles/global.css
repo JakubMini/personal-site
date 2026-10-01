@@ -189,17 +189,17 @@ ul {
   letter-spacing: -0.055em;
 }
 
-.hero-road {
-  position: relative;
-  height: 150px;
-  overflow: hidden;
+/* The circuit board the signal crosses as the page scrolls
+   (scripts/signal-chain.ts). Full bleed; the canvas keeps the drawing's
+   1660 × 300 proportions. */
+.hero-chain {
+  padding-block: 20px 8px;
 }
 
-.hero-bike {
-  position: absolute;
-  right: 12%;
-  bottom: 0;
-  width: 240px;
+.hero-chain canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1660 / 300;
 }
 
 .hero-facts {
@@ -1145,14 +1145,6 @@ ul {
 
   .hero-name {
     font-size: 19vw;
-  }
-
-  .hero-road {
-    height: 110px;
-  }
-
-  .hero-bike {
-    width: 180px;
   }
 
   .fact-links {

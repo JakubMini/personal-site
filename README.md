@@ -23,6 +23,7 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 | Colours, type, spacing | `src/styles/global.css`, tokens at the top |
 | Scroll motion | `src/scripts/motion.ts` |
 | The intro on load | `src/scripts/intro.ts`, `src/components/Intro.astro`; the record is `src/scripts/vinyl.ts` |
+| The hero's circuit board | `src/scripts/signal-chain.ts`; `motion.ts` scrubs it with the scroll |
 | The icon and logo mark | `public/favicon.svg` (also the mark beside the name) |
 | The line drawings | `src/components/Machine.astro` |
 
@@ -114,6 +115,11 @@ check `pnpm wrangler whoami` shows the personal account first.
   under reduced motion, without JavaScript, and when the address names a
   section (`/#contact`). If the script never arrives, the cover fades by itself
   after six seconds.
+- **The hero's circuit board** (`scripts/signal-chain.ts`) is a 2D canvas, no
+  library, drawn in the page's own ink, green and paper. Scrolling carries a
+  signal from a shunt resistor through the MCU and radio to the cloud and onto
+  a dashboard chart, scrubbed like the rest of the motion. Under reduced
+  motion it is drawn at rest; without JavaScript the band stays plain green.
 - **Fonts self-hosted** (Funnel Display and Funnel Sans via Fontsource). No
   request to Google, so no visitor data goes to a third party and no consent
   banner is needed.
@@ -140,3 +146,6 @@ Where the build departs from the mockup, on purpose:
   and spun up on ink, rolls off, and the hero builds in behind it.
 - The favicon is a green vinyl record instead of the bike, and the same record
   sits beside the name in the top bar.
+- The hero's bike is replaced by a circuit board the signal crosses as you
+  scroll, from resistor to cloud to dashboard. The bike keeps its place in
+  the Journey bands.
