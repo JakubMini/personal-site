@@ -6,6 +6,7 @@ import portrait from '../assets/photos/portrait.jpg';
 import propellerRigPoster from '../assets/photos/propeller-rig-poster.jpg';
 import propellerRig from '../assets/video/propeller-rig.mp4';
 import driveUnit from '../assets/photos/skarper-drive-unit.jpg';
+import batteryCyclers from '../assets/photos/battery-cyclers.webp';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
@@ -15,8 +16,8 @@ export interface Photo {
   // poster: what shows before it plays, under reduced motion and without JS.
   video?: string;
   square?: boolean;
-  // Show the whole image at its own shape, without the grey slot: for product
-  // shots whose background is already the page colour.
+  // Show the whole image at its own shape instead of cropping it to the slot:
+  // for wide photos, and product shots whose background is the page colour.
   whole?: boolean;
   alt: string;
   caption: string;
@@ -180,7 +181,12 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
     summary:
       'An Ethernet/TFTP bootloader for zero-touch updates across STM32 lab assets, CI/CD and Python services automating battery lab testing, and a Simscape pack model for BMS validation.',
     tags: ['Bootloaders', 'GitLab CI', 'Azure', 'gRPC', 'Simscape'],
-    photo: { alt: 'Battery test lab', caption: 'Battery lab' },
+    photo: {
+      src: batteryCyclers,
+      whole: true,
+      alt: 'An aisle of battery cyclers and test cabinets in the battery lab, with orange cabling overhead',
+      caption: 'The battery cycler fleet',
+    },
     snippet: {
       caption: 'Ethernet bootloader, one update end to end. Addresses and sizes are illustrative.',
       noteLabel: 'How it works',
