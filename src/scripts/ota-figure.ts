@@ -1,41 +1,34 @@
-// The fleet architecture figure (components/FleetFigure.astro): a release out
-// to the vehicles and data back, one step after another, on a loop. Both
-// drawings (wide and tall) follow the same step; CSS shows one. It plays only
-// while on screen and the tab is visible. Under reduced motion it doesn't start
-// at all: the still drawing and the steps as a list stay, as without JS.
+// The OTA figure (components/OtaFigure.astro): a firmware update from CI to the
+// bike and the results back, one step after another, on a loop. It runs like
+// the fleet figure: both drawings follow the same step, it plays only while on
+// screen and the tab is visible, and under reduced motion it doesn't start.
 
 import { gsap } from 'gsap';
-import { ECUS, LAYOUTS, PATH_LIGHTS, STEPS, type EcuId, type LayoutName, type Pt } from '../data/fleet';
+import { LAYOUTS, SLOTS, STEPS, type LayoutName, type Pt } from '../data/ota';
 import { along } from './figure-path';
 
 const TRAVEL = 1.1; // seconds a packet takes along its path
-const FILL = 2.4; // seconds an image takes to stream into a download slot
+const FILL = 2.6; // seconds the image takes to stream into staging flash
 const HOLD = 1.8; // seconds a step stays up once it's done
 
 interface Drawing {
-  svg: SVGSVGElement;
   paths: Record<string, Pt[]>;
+  svg: SVGSVGElement;
   packets: SVGGElement[];
 }
 
-// Where each ECU's flash stands: its application is new, its download slot full.
-type Flash = Record<EcuId, { app: boolean; dl: boolean }>;
-
-const fresh = (): Flash => ({ ecu1: { app: false, dl: false }, ecu2: { app: false, dl: false } });
-
-// The flash after `step` has run.
-function flashAfter(step: number): Flash {
-  const f = fresh();
+// The bike after `step` has run: the image waits in staging, then runs from slot B.
+function flashAfter(step: number) {
+  let staged = false;
+  let swapped = false;
   for (const s of STEPS.slice(0, step + 1)) {
-    if (!s.flash) continue;
-    const e = f[s.flash.ecu];
-    if (s.flash.fill) e.dl = true;
-    if (s.flash.swap) Object.assign(e, { app: true, dl: false });
+    if (s.flash === 'stage') staged = true;
+    if (s.flash === 'swap') [staged, swapped] = [false, true];
   }
-  return f;
+  return { staged, swapped };
 }
 
-export function initFleet(root: HTMLElement) {
+export function initOta(root: HTMLElement) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const drawings: Drawing[] = [...root.querySelectorAll<SVGSVGElement>('svg[data-layout]')].map((svg) => ({
@@ -57,22 +50,21 @@ export function initFleet(root: HTMLElement) {
     pending = [];
   };
 
-  // Set a download slot `k` full (0 to 1), its label following.
-  const fillTo = (id: EcuId, k: number, version: string) => {
-    all(`[data-dl="${id}"]`).forEach((g) => g.classList.toggle('is-filling', k > 0));
-    all(`[data-dl="${id}"] [data-dl-fill]`).forEach((r) => r.setAttribute('width', (Number(r.dataset.w) * k).toFixed(1)));
-    all(`[data-dl="${id}"] [data-dl-text]`).forEach((t) => {
-      t.textContent = k > 0 ? `${version} · ${Math.round(k * 100)}%` : 'download slot';
+  // Staging flash `k` full (0 to 1), its label following.
+  const stageTo = (k: number) => {
+    all('[data-stage]').forEach((g) => g.classList.toggle('is-filling', k > 0));
+    all('[data-stage-fill]').forEach((r) => r.setAttribute('width', (Number(r.dataset.w) * k).toFixed(1)));
+    all('[data-stage-text]').forEach((t) => {
+      t.textContent = k > 0 ? `v${SLOTS.next} · ${Math.round(k * 100)}%` : 'staging';
     });
   };
-  const setFlash = (f: Flash) => {
-    for (const e of ECUS) {
-      all(`[data-app="${e.id}"]`).forEach((g) => g.classList.toggle('is-new', f[e.id].app));
-      all(`[data-app="${e.id}"] [data-app-text]`).forEach((t) => {
-        t.textContent = f[e.id].app ? `application ${e.to} ✓` : `application ${e.from}`;
-      });
-      fillTo(e.id, f[e.id].dl ? 1 : 0, e.to);
-    }
+  const setFlash = ({ staged, swapped }: { staged: boolean; swapped: boolean }) => {
+    stageTo(staged ? 1 : 0);
+    all('[data-slot="a"]').forEach((g) => g.classList.toggle('is-run', !swapped));
+    all('[data-slot="b"]').forEach((g) => g.classList.toggle('is-run', swapped));
+    all('[data-slot="b"] [data-slot-text]').forEach((t) => {
+      t.textContent = `app ${swapped ? SLOTS.next : SLOTS.b}`;
+    });
   };
 
   const show = (animate: boolean) => {
@@ -81,8 +73,11 @@ export function initFleet(root: HTMLElement) {
     const packets = s.packets ?? [];
 
     const lit = new Set(s.on);
-    for (const p of packets) (PATH_LIGHTS[p.path] ?? [p.path]).forEach((id) => lit.add(id));
-    all('[data-part]').forEach((el) => el.classList.toggle('is-on', lit.has(el.dataset.part!)));
+    for (const p of packets) lit.add(p.path);
+    all('[data-part]').forEach((el) => {
+      const ids = [el.dataset.part!, ...(el.dataset.also?.split(' ') ?? [])];
+      el.classList.toggle('is-on', ids.some((id) => lit.has(id)));
+    });
     caption.textContent = s.caption;
 
     for (const { packets: groups } of drawings) gsap.set(groups, { opacity: 0 });
@@ -91,8 +86,7 @@ export function initFleet(root: HTMLElement) {
       return;
     }
 
-    // From where the last step left the flash to where this one leaves it.
-    setFlash(step ? flashAfter(step - 1) : fresh());
+    setFlash(step ? flashAfter(step - 1) : flashAfter(-1));
     let end = 0;
     packets.forEach((p, i) => {
       const at = p.delay ?? 0;
@@ -121,24 +115,18 @@ export function initFleet(root: HTMLElement) {
       }
     });
 
-    const f = s.flash;
-    if (f) {
-      const e = ECUS.find((x) => x.id === f.ecu)!;
-      let at = 0;
-      if (f.fill) {
-        const k = { v: 0 };
-        pending.push(gsap.to(k, { v: 1, duration: FILL, delay: TRAVEL * 0.6, ease: 'none', onUpdate: () => fillTo(e.id, k.v, e.to) }));
-        at = TRAVEL * 0.6 + FILL;
-      }
-      if (f.swap) {
-        at += f.fill ? 0.4 : 0.8;
-        pending.push(gsap.delayedCall(at, () => setFlash(flashAfter(step))));
-      }
-      end = Math.max(end, at);
+    if (s.flash === 'stage') {
+      const k = { v: 0 };
+      pending.push(gsap.to(k, { v: 1, duration: FILL, delay: TRAVEL * 0.6, ease: 'none', onUpdate: () => stageTo(k.v) }));
+      end = Math.max(end, TRAVEL * 0.6 + FILL);
+    }
+    if (s.flash === 'swap') {
+      pending.push(gsap.delayedCall(1.2, () => setFlash(flashAfter(step))));
+      end = Math.max(end, 1.2);
     }
 
     // A step with nothing moving (the build) stays up a little longer.
-    pending.push(gsap.delayedCall(end + HOLD + (packets.length || f ? 0 : 1), advance));
+    pending.push(gsap.delayedCall(end + HOLD + (packets.length || s.flash ? 0 : 1), advance));
   };
 
   function advance() {

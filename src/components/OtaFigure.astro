@@ -1,0 +1,202 @@
+---
+// The Skarper OTA path: CI, the platform, the rider's phone and the bike's two
+// slots, an update going out and the results coming back (scripts/ota-figure.ts
+// plays it on a loop). Drawn wide and tall like the fleet figure, and in its
+// styles; CSS shows one drawing. Without JS, or under reduced motion: the still
+// drawing, and the steps as a list.
+import { APP_STEPS, CHECKS, ICONS, LAYOUTS, PLATFORM, SLOTS, STEPS, type LayoutName, type Pt } from '../data/ota';
+
+const names: LayoutName[] = ['wide', 'tall'];
+const d = (pts: readonly Pt[]) => pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
+
+// An arrowhead with its tip on `b`, pointing from `a`.
+const head = (a: Pt, b: Pt) => {
+  const dx = Math.sign(b[0] - a[0]);
+  const dy = Math.sign(b[1] - a[1]);
+  const [x, y] = b;
+  const [bx, by] = [x - dx * 7, y - dy * 7];
+  return `M${x} ${y}L${bx - dy * 4.5} ${by + dx * 4.5}L${bx + dy * 4.5} ${by - dx * 4.5}Z`;
+};
+---
+
+<div class="fleet ota" data-ota>
+  {
+    names.map((name) => {
+      const L = LAYOUTS[name];
+      const B = L.boxes;
+      const F = L.flash;
+      const wide = name === 'wide';
+      const icon = (id: string, x: number, y: number, scale = 1) => (
+        <g class="fi" transform={`translate(${x} ${y})${scale === 1 ? '' : ` scale(${scale})`}`}>
+          <path d={ICONS[id].line} />
+          {ICONS[id].fill && <path class="fi-fill" d={ICONS[id].fill} />}
+        </g>
+      );
+      // A box with its icon, title and lines beside the icon; `under` puts the lines
+      // under both, for the narrow boxes of the tall drawing.
+      const header = (b: { x: number; y: number }, ic: string, title: string, lines: readonly string[], under = false) => (
+        <>
+          {icon(ic, b.x + 14, b.y + 14)}
+          <text class="ft" x={b.x + 60} y={b.y + 32}>{title}</text>
+          {lines.map((l, i) => <text class="fsub" x={b.x + (under ? 14 : 60)} y={b.y + (under ? 72 : 50) + i * 16}>{l}</text>)}
+        </>
+      );
+      return (
+        <svg
+          class={`fleet-svg fleet-${name} ota-svg`}
+          viewBox={`0 0 ${L.width} ${L.height}`}
+          role="img"
+          aria-labelledby={`ota-title-${name} ota-desc-${name}`}
+          data-layout={name}
+        >
+          <title id={`ota-title-${name}`}>Skarper firmware updates, from CI to the bike</title>
+          <desc id={`ota-desc-${name}`}>{STEPS.map((s) => s.caption).join(' ')}</desc>
+
+          {L.headings.map((h) => <text class="fh" x={h.x} y="30">{h.text}</text>)}
+
+          {/* Build */}
+          <g class="fp" data-part="ci">
+            <rect class="fp-box" x={B.ci.x} y={B.ci.y} width={B.ci.w} height={B.ci.h} rx="10" />
+            {wide ? (
+              <>
+                {icon('actions', B.ci.x + 16, B.ci.y + 16)}
+                <text class="ft" x={B.ci.x + 16} y={B.ci.y + 76}>Firmware CI</text>
+                {CHECKS.map((c, i) => (
+                  <g class="fpill">
+                    <rect x={B.ci.x + 16} y={B.ci.y + 92 + i * 34} width={B.ci.w - 32} height="26" rx="13" />
+                    <text x={B.ci.x + 30} y={B.ci.y + 109.5 + i * 34}>{c}</text>
+                  </g>
+                ))}
+              </>
+            ) : (
+              header(B.ci, 'actions', 'Firmware CI', ['build · unit tests', 'sign · ECDSA-P256'], true)
+            )}
+          </g>
+
+          {/* Platform: Supabase */}
+          <rect class="fp-frame" x={B.frame.x} y={B.frame.y} width={B.frame.w} height={B.frame.h} rx="12" />
+          {L.frameLabel && <text class="fh fh-tcu" x={L.frameLabel[0]} y={L.frameLabel[1]} text-anchor="end">Supabase</text>}
+          {PLATFORM.map((p) => {
+            const b = B[p.id];
+            return (
+              <g class="fp fp-chip" data-part={p.id}>
+                <rect class="fp-box" x={b.x} y={b.y} width={b.w} height={b.h} rx="9" />
+                {wide ? (
+                  <>
+                    {icon(p.icon, b.x + 12, b.y + (b.h - 36) / 2)}
+                    <text class="ft" x={b.x + 58} y={b.y + b.h / 2 - 2 - (p.sub.length - 1) * 8}>{p.title}</text>
+                    {p.sub.map((l, i) => (
+                      <text class="fsub" x={b.x + 58} y={b.y + b.h / 2 + 15 + i * 16 - (p.sub.length - 1) * 8}>{l}</text>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {icon(p.icon, b.x + 10, b.y + 14, 0.78)}
+                    <text class="ft ft-small" x={b.x + 46} y={b.y + 33}>{p.title}</text>
+                    {'tall' in p && p.tall.map((l, i) => <text class="fsub fsub-small" x={b.x + 14} y={b.y + 64 + i * 15}>{l}</text>)}
+                  </>
+                )}
+              </g>
+            );
+          })}
+          <g class="fp" data-part="dash">
+            <rect class="fp-box" x={B.dash.x} y={B.dash.y} width={B.dash.w} height={B.dash.h} rx="10" />
+            {wide ? (
+              <>
+                {icon('dash', B.dash.x + 14, B.dash.y + 14)}
+                <text class="ft" x={B.dash.x + 60} y={B.dash.y + 30}>Fleet dashboard</text>
+                <text class="fsub" x={B.dash.x + 60} y={B.dash.y + 47}>publish · ramp · bikes · rides</text>
+              </>
+            ) : (
+              header(B.dash, 'dash', 'Dashboard', ['publish · ramp', 'bikes · rides'], true)
+            )}
+          </g>
+
+          {/* The rider's phone */}
+          <g class="fp fp-chip" data-part="app">
+            <rect class="fp-box" x={B.app.x} y={B.app.y} width={B.app.w} height={B.app.h} rx="12" />
+            {header(B.app, 'phone', 'Skarper app', ['React Native · Expo'])}
+          </g>
+          {APP_STEPS.map((s) => {
+            const c = L.chips[s.id];
+            return (
+              <g class="fstep" data-part={s.id}>
+                <rect x={c.x} y={c.y} width={c.w} height={c.h} rx="8" />
+                <text x={c.x + 14} y={c.y + c.h / 2 + 4.5}>{s.label}</text>
+              </g>
+            );
+          })}
+
+          {/* The bike: staging flash, MCUboot, two slots */}
+          <g class="fp fp-chip" data-part="bike">
+            <rect class="fp-box" x={B.bike.x} y={B.bike.y} width={B.bike.w} height={B.bike.h} rx="12" />
+            {header(B.bike, 'chip', 'System controller', ['on charge to update'])}
+          </g>
+          {F.labels.map((l) => <text class="fh fh-flash" x={l.at[0]} y={l.at[1]}>{l.text}</text>)}
+          <g class="fbar fbar-dl" data-part="staging" data-stage>
+            <rect x={F.staging.x} y={F.staging.y} width={F.staging.w} height={F.staging.h} rx="5" />
+            <rect class="fbar-fill" x={F.staging.x} y={F.staging.y} width="0" height={F.staging.h} rx="5" data-stage-fill data-w={F.staging.w} />
+            <text x={F.staging.x + 12} y={F.staging.y + F.staging.h / 2 + 4} data-stage-text>staging</text>
+          </g>
+          <g class="fbar" data-part="boot">
+            <rect x={F.boot.x} y={F.boot.y} width={F.boot.w} height={F.boot.h} rx="5" />
+            <text x={F.boot.x + 12} y={F.boot.y + F.boot.h / 2 + 4}>MCUboot · checks signature</text>
+          </g>
+          {(['a', 'b'] as const).map((k) => {
+            const s = k === 'a' ? F.slotA : F.slotB;
+            return (
+              <g class:list={['fslot', { 'is-run': k === 'a' }]} data-part={k === 'a' ? 'slotA' : 'slotB'} data-slot={k}>
+                <rect class="fslot-bg" x={s.x} y={s.y} width={s.w} height={s.h} rx="6" />
+                <text class="fslot-name" x={s.x + 14} y={s.y + 26}>{`slot ${k.toUpperCase()}`}</text>
+                <text class="fslot-ver" x={s.x + 14} y={s.y + 48} data-slot-text>{`app ${k === 'a' ? SLOTS.a : SLOTS.b}`}</text>
+                <g class="fslot-tag">
+                  <rect x={s.x + s.w - 82} y={s.y + (wide ? 20 : 8)} width="70" height="24" rx="12" />
+                  <text x={s.x + s.w - 47} y={s.y + (wide ? 36 : 24)} text-anchor="middle">running</text>
+                </g>
+              </g>
+            );
+          })}
+
+          {/* Wires, over the boxes so their arrowheads stay whole */}
+          {L.wires.map((w) => {
+            const n = w.pts.length;
+            return (
+              <g class="fw" data-part={w.id} data-also={w.also?.join(' ')}>
+                <path class="fw-line" d={d(w.pts)} />
+                {w.arrow && <path class="fw-head" d={head(w.pts[n - 2], w.pts[n - 1])} />}
+                {w.arrow === 'both' && <path class="fw-head" d={head(w.pts[1], w.pts[0])} />}
+                {w.label && w.at && (
+                  <>
+                    {!wide && <rect class="fw-knock" x={w.at[0] - w.label.length * 3.2 - 4} y={w.at[1] - 8} width={w.label.length * 6.4 + 8} height="15" rx="3" />}
+                    <text class="fwl" x={w.at[0]} y={w.at[1] + (wide ? 0 : 3.5)} text-anchor="middle">{w.label}</text>
+                  </>
+                )}
+              </g>
+            );
+          })}
+
+          {
+            [0, 1, 2].map((i) => (
+              <g class="fpkt" data-packet={i} opacity="0">
+                <rect class="fpkt-tag" x="-30" y="-33" width="60" height="22" rx="11" />
+                <text x="0" y="-18" text-anchor="middle" />
+                <circle class="fpkt-dot" r="5.5" />
+              </g>
+            ))
+          }
+        </svg>
+      );
+    })
+  }
+
+  <div class="fleet-foot" aria-hidden="true">
+    <p class="fleet-caption" data-caption>{STEPS[0].caption}</p>
+  </div>
+
+  <ol class="fleet-static">{STEPS.map((s) => <li>{s.caption}</li>)}</ol>
+</div>
+
+<script>
+  import { initOta } from '../scripts/ota-figure';
+  document.querySelectorAll<HTMLElement>('[data-ota]').forEach(initOta);
+</script>

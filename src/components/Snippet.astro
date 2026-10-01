@@ -8,6 +8,8 @@ import type { Snippet } from '../data/site';
 import LeanFigure from './LeanFigure.astro';
 import TftpFigure from './TftpFigure.astro';
 import FleetFigure from './FleetFigure.astro';
+import OtaFigure from './OtaFigure.astro';
+import Photo from './Photo.astro';
 
 interface Props {
   snippet: Snippet;
@@ -41,7 +43,7 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
 <figure class="snippet">
   {
     snippet.note && (
-      <div class:list={['snippet-head', { 'snippet-head-wide': snippet.figure === 'tftp' || snippet.figure === 'fleet' }]}>
+      <div class:list={['snippet-head', { 'snippet-head-wide': snippet.figure === 'tftp' || snippet.figure === 'fleet' || snippet.figure === 'ota' }]}>
         <div class="snippet-explain">
           <p class="snippet-label">{snippet.noteLabel ?? 'The problem'}</p>
           <p class="snippet-note">{noteParts.map((part, i) => (i % 2 ? <code>{part}</code> : part))}</p>
@@ -58,6 +60,20 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
           snippet.figure === 'fleet' && (
             <div class="tftp-host">
               <FleetFigure />
+            </div>
+          )
+        }
+        {
+          snippet.figure === 'ota' && (
+            <div class="tftp-host">
+              <OtaFigure />
+            </div>
+          )
+        }
+        {
+          snippet.shots && (
+            <div class="snippet-shots">
+              {snippet.shots.map((s) => <Photo photo={s} sizes="(min-width: 900px) 70vw, 100vw" />)}
             </div>
           )
         }

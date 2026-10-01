@@ -338,6 +338,21 @@ ul {
   color: var(--muted);
 }
 
+/* A screenshot: rounded like a window, linking to itself at full size. */
+.photo-screen a {
+  display: block;
+  border-radius: 10px;
+}
+
+.photo-screen img {
+  border-radius: 10px;
+}
+
+.photo-screen a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
 .photo figcaption {
   margin-top: 8px;
   font-size: 13px;
@@ -972,8 +987,14 @@ ul {
 
 .snippet-head-wide {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'note' 'figure';
+  grid-template-areas: 'note' 'figure' 'shots';
   grid-template-rows: none;
+}
+
+/* Screenshots under a wide figure (Snippet.shots). */
+.snippet-shots {
+  grid-area: shots;
+  margin-top: 28px;
 }
 
 .snippet-head-wide .snippet-note {
@@ -1193,6 +1214,25 @@ ul {
 .fpkt-tag { fill: var(--ink); }
 .fleet-svg .fpkt text { fill: var(--green); font-family: var(--mono); font-size: 12px; font-weight: 700; }
 .fpkt-dot { fill: var(--green); stroke: #146b37; stroke-width: 2; }
+
+/* The OTA figure (OtaFigure.astro), in the fleet figure's styles: the app's
+   steps, the bike's flash labels and its two slots. */
+.fleet-svg .fh-flash { font-size: 10.5px; }
+.fstep rect { fill: var(--slot); stroke: none; transition: fill 0.3s; }
+.fleet-svg .fstep text { font-size: 12px; }
+.fstep.is-on rect { fill: #dcf7e6; stroke: #146b37; stroke-width: 1.5; }
+.fleet-svg .fstep.is-on text { font-weight: 700; }
+
+.fslot-bg { fill: var(--slot); transition: fill 0.4s; }
+.fslot.is-run .fslot-bg { fill: var(--green); }
+.fslot.is-on .fslot-bg { stroke: #146b37; stroke-width: 2; }
+.fleet-svg .fslot-name { font-family: var(--mono); font-size: 12px; font-weight: 700; }
+.fleet-svg .fslot-ver { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
+.fleet-svg .fslot.is-run .fslot-ver { fill: var(--ink); font-weight: 700; }
+.fslot-tag { opacity: 0; transition: opacity 0.3s; }
+.fslot.is-run .fslot-tag { opacity: 1; }
+.fslot-tag rect { fill: var(--ink); }
+.fleet-svg .fslot-tag text { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--green); }
 
 /* What the step shows, under the drawing. */
 .fleet-foot {

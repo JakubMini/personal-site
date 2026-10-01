@@ -164,10 +164,13 @@ in the mockup:
 - **The hero board** is drawn at least 840px wide under 900px, so its parts
   stay legible, and slides along under the signal as you scroll. Under
   reduced motion it is shown whole.
-- **The TFTP and fleet figures** are drawn twice, wide and tall
-  (`TftpFigure.astro`, `data/fleet.ts`), and CSS shows the tall drawing
-  under 900px. In the tall TFTP figure the board sits under the lab PC, the
+- **The TFTP, fleet and OTA figures** are drawn twice, wide and tall
+  (`TftpFigure.astro`, `data/fleet.ts`, `data/ota.ts`), and CSS shows the
+  tall drawing under 900px. In the tall TFTP figure the board sits under the lab PC, the
   links run down between them, and the log scrolls in a ten-line window.
+- **The dashboard screenshots** (Skarper, 2026) are of a local copy of the
+  platform on its own ports, loaded with demo data: `DEMO-` serials,
+  example.com riders, laps of a park. Never the hosted project.
 - **Code** swipes sideways on touch screens, and the hint reads "tap to
   scroll".
 - Above 1440px, the hero name and the band labels line up with the centred

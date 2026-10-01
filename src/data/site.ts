@@ -8,6 +8,8 @@ import propellerRig from '../assets/video/propeller-rig.mp4';
 import driveUnit from '../assets/photos/skarper-drive-unit.jpg';
 import batteryCyclers from '../assets/photos/battery-cyclers.webp';
 import minimalPedal4 from '../assets/photos/minimal-pedal-4.jpg';
+import dashboardBikes from '../assets/photos/skarper-dashboard-bikes.png';
+import dashboardFirmware from '../assets/photos/skarper-dashboard-firmware.png';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
@@ -20,6 +22,8 @@ export interface Photo {
   // Show the whole image at its own shape instead of cropping it to the slot:
   // for wide photos, and product shots whose background is the page colour.
   whole?: boolean;
+  // A screenshot: rounded like a window, and opens at full size.
+  screen?: boolean;
   alt: string;
   caption: string;
 }
@@ -37,8 +41,11 @@ export interface Snippet {
   // The note's heading; 'The problem' unless set.
   noteLabel?: string;
   // An animated figure: 'lean' beside the note (components/LeanFigure.astro);
-  // 'tftp' and 'fleet' full width under it (TftpFigure.astro, FleetFigure.astro).
-  figure?: 'lean' | 'tftp' | 'fleet';
+  // 'tftp', 'fleet' and 'ota' full width under it (TftpFigure.astro,
+  // FleetFigure.astro, OtaFigure.astro).
+  figure?: 'lean' | 'tftp' | 'fleet' | 'ota';
+  // Screenshots under the figure.
+  shots?: Photo[];
 }
 
 export const person = {
@@ -240,8 +247,28 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
     summary:
       'Rejoined to lead embedded engineering and the connected product. Building one platform for manufacturing, users, the app and servicing on Supabase, Cloudflare and Expo, with secure OTA (MCUboot, signed A/B images, BLE flashing), product cybersecurity and the EU Battery Passport. Also running the electronics cost-down and a new BLE handlebar controller, with AI agents built into how the team engineers.',
     tags: ['MCUboot', 'BLE GATT', 'Supabase', 'Expo', 'EU Battery Passport', 'AI agents'],
-    photo: { alt: 'Connected e-bike', caption: 'Today' },
-    snippet: { caption: '[Code snippet]' },
+    photo: {
+      src: dashboardBikes,
+      whole: true,
+      screen: true,
+      alt: 'The fleet dashboard’s Bikes page: each bike’s status, rider, battery, firmware version and odometer, with one bike riding now. Demo data.',
+      caption: 'Fleet dashboard, with demo data',
+    },
+    snippet: {
+      caption: 'One update, from CI to the bike, and the results back.',
+      noteLabel: 'How it works',
+      note: 'One platform from the factory line to the rider’s phone. Firmware is built and signed in CI and lands as a draft release; on the dashboard it is published to a channel and ramped across the fleet. The rider’s app checks for an update, downloads it from `Supabase Storage`, checks its hash and streams it over Bluetooth. On the bike, `MCUboot` keeps two slots, verifies the signature and boots the newer image; the app confirms it and reports back.',
+      figure: 'ota',
+      shots: [
+        {
+          src: dashboardFirmware,
+          whole: true,
+          screen: true,
+          alt: 'The dashboard’s Firmware page: releases with their status, channel, rollout percentage, installs, boards and signed image hash. Demo data.',
+          caption: 'Releases on the dashboard: drafts from CI, published to a channel, ramped across the fleet',
+        },
+      ],
+    },
   },
 ];
 
