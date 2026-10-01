@@ -5,7 +5,7 @@ import type { ImageMetadata } from 'astro';
 import portrait from '../assets/photos/portrait.jpg';
 import propellerRigPoster from '../assets/photos/propeller-rig-poster.jpg';
 import propellerRig from '../assets/video/propeller-rig.mp4';
-import driveUnit from '../assets/photos/skarper-drive-unit.png';
+import driveUnit from '../assets/photos/skarper-drive-unit.jpg';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
@@ -15,8 +15,9 @@ export interface Photo {
   // poster: what shows before it plays, under reduced motion and without JS.
   video?: string;
   square?: boolean;
-  // A product on a transparent background: shown whole, without the grey slot.
-  cutout?: boolean;
+  // Show the whole image at its own shape, without the grey slot: for product
+  // shots whose background is already the page colour.
+  whole?: boolean;
   alt: string;
   caption: string;
 }
@@ -116,7 +117,7 @@ export const journey: Chapter[] = [
     tags: ['48V drives', 'BMS', 'EN 15194', 'MISRA C', 'Production test'],
     photo: {
       src: driveUnit,
-      cutout: true,
+      whole: true,
       alt: 'The Skarper drive unit: a grey body with a round disc carrying a lens, status lights and a button',
       caption: 'Skarper drive unit',
     },

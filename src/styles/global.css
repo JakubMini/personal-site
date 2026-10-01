@@ -288,12 +288,11 @@ ul {
   aspect-ratio: 3 / 4;
 }
 
-/* A product cut out of its background: shown whole, on the page itself. */
-.photo-cutout img {
+/* A product shot on the page colour (its white multiplied to #f3f2ec when it
+   was prepared): shown whole, with no slot behind it. */
+.photo-whole img {
   object-fit: contain;
   background: none;
-  /* A close contact shadow and a soft one further off, so it sits on the page. */
-  filter: drop-shadow(0 4px 5px rgba(11, 15, 12, 0.16)) drop-shadow(0 26px 30px rgba(11, 15, 12, 0.2));
 }
 
 .photo-square img,

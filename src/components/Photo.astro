@@ -17,7 +17,7 @@ const widths = photo.src ? [...new Set([400, 800, photo.src.width].filter((w) =>
 const poster = photo.video && photo.src ? await getImage({ src: photo.src, format: 'webp' }) : null;
 ---
 
-<figure class:list={['photo', { 'photo-portrait': portrait, 'photo-square': photo.square, 'photo-cutout': photo.cutout }]}>
+<figure class:list={['photo', { 'photo-portrait': portrait, 'photo-square': photo.square, 'photo-whole': photo.whole }]}>
   {
     photo.video ? (
       <video
@@ -36,7 +36,7 @@ const poster = photo.video && photo.src ? await getImage({ src: photo.src, forma
         alt={photo.alt}
         widths={widths}
         sizes="(min-width: 900px) 40vw, 100vw"
-        style={photo.cutout ? `aspect-ratio: ${photo.src.width} / ${photo.src.height}` : undefined}
+        style={photo.whole ? `aspect-ratio: ${photo.src.width} / ${photo.src.height}` : undefined}
       />
     ) : (
       <div class="photo-slot">{portrait && <span>{photo.caption}</span>}</div>
