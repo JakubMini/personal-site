@@ -1,15 +1,59 @@
 /* One stylesheet for the site. Values are lifted from the desktop mockup
-   (design/desktop-mockup-2026-10-01.pdf), drawn at 1440px wide. */
+   (design/desktop-mockup-2026-10-01.pdf), drawn at 1440px wide.
+
+   Every colour has a light and a dark value (Theme, below): --paper is the
+   page and --ink what is drawn on it, and in dark mode they swap. Green is
+   green in both. A surface that looks the same in both modes pins its
+   scheme: color-scheme: light for the green bands and the intro,
+   color-scheme: dark for the surfaces that are ink with paper on them (the
+   last Journey band, the vinyls page's deck), which on the dark page are
+   simply the page. --ink-0 and --paper-0 are the colours themselves, for
+   ink on green and for the record's label. The green is set under Theme:
+   the electric green of the light page, and a deeper one on ink that is
+   easier on the eyes. */
 
 :root {
-  --green: #2ff27c;
-  --paper: #f3f2ec;
-  --ink: #0b0f0c;
-  --text: #3c403a;
-  --muted: #5a5e58;
-  --slot: #e2e1da;
-  --rule: rgba(11, 15, 12, 0.25);
-  --year: rgba(11, 15, 12, 0.07);
+  --ink-0: #0b0f0c;
+  --paper-0: #f3f2ec;
+  --paper: light-dark(#f3f2ec, #0b0f0c);
+  --ink: light-dark(#0b0f0c, #f3f2ec);
+  --text: light-dark(#3c403a, #c5c7c1);
+  --muted: light-dark(#5a5e58, #9a9e98);
+  --slot: light-dark(#e2e1da, #1e2420);
+  --rule: light-dark(rgba(11, 15, 12, 0.25), rgba(243, 242, 236, 0.25));
+  --year: light-dark(rgba(11, 15, 12, 0.07), rgba(243, 242, 236, 0.06));
+
+  /* The figures: their panels and tints, and the colours the code and the
+     vectors share, each with a lighter twin for ink. */
+  --panel: light-dark(#faf9f5, #121815);
+  --chip: light-dark(#ffffff, #181e1b);
+  --halo: light-dark(rgba(243, 242, 236, 0.86), rgba(11, 15, 12, 0.86));
+  --wire: light-dark(rgba(11, 15, 12, 0.4), rgba(243, 242, 236, 0.4));
+  --rule-soft: light-dark(rgba(11, 15, 12, 0.18), rgba(243, 242, 236, 0.18));
+  /* The lean figure's road and bike (scripts/lean-scene-3d.ts): a dark bike
+     on paper, and a light one on ink, so it stands out from either. */
+  --road: light-dark(#e2e0d8, #262d29);
+  --road-line: light-dark(#fbfaf6, #4a534d);
+  --lf-frame: light-dark(#5d676d, #a9b3b8);
+  --lf-tyre: light-dark(#1c1e1e, #5a6060);
+  --lf-metal: light-dark(#b4b8b6, #d9dcda);
+  --lf-battery: light-dark(#66706c, #96a09b);
+  --lf-rubber: light-dark(#222424, #6a7070);
+  --road-fill: light-dark(rgba(11, 15, 12, 0.035), rgba(243, 242, 236, 0.05));
+  --on-tint: light-dark(#dcf7e6, #113b23);
+  --on-bar: light-dark(#c9f5d7, #16472b);
+  --boot: light-dark(#c9c7bd, #3a3f3b);
+  --old: light-dark(#9a9d96, #5b605c);
+  --flags: light-dark(#d8d3c0, #2a2f27);
+  /* A tag: ink with green lettering on the light page, green with ink on the dark. */
+  --tag: light-dark(#0b0f0c, var(--green));
+  --tag-text: light-dark(#2ff27c, #0b0f0c);
+  --c-ok: light-dark(#146b37, #5fd98f);
+  --c-led: light-dark(#1c8a4a, var(--green));
+  --c-blue: light-dark(#1d6a86, #6fbde0);
+  --c-red: light-dark(#b0305c, #ef7fa3);
+  --c-brown: light-dark(#8a4b14, #e0a060);
+  --c-amber: light-dark(#c98a1b, #e8b24a);
 
   --display: 'Funnel Display Variable', 'Helvetica Neue', sans-serif;
   --sans: 'Funnel Sans Variable', 'Helvetica Neue', sans-serif;
@@ -19,8 +63,51 @@
   --gap: 24px;
   --band: 300px;
   --band-line: 56px;
+}
 
+/* ---- Theme ----------------------------------------------------------- */
+/* Light unless the system asks for dark. A choice made with the toggle
+   (components/ThemeToggle.astro, scripts/theme.ts) sets data-theme on <html>
+   and wins; layouts/Layout.astro reads it back before the first paint.
+   The green is a plain value here, not a light-dark() pair, so it is the
+   dark page's deeper green on every surface, the pinned green ones too.
+   --turn turns the toggle's glyph over and --dim takes the white out of a
+   product shot on ink. */
+:root {
   color-scheme: light;
+  --green: #2ff27c;
+  --turn: 0deg;
+  --dim: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --green: #1cb35a;
+    --turn: 180deg;
+    --dim: 0.82;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --green: #1cb35a;
+  --turn: 180deg;
+  --dim: 0.82;
+}
+
+/* Green is green in both modes, with ink on it; the intro's cover and the
+   dashboard's window are what they are. The colour is set here again, not
+   inherited, because what is inherited is the page's resolved colour. */
+.hero,
+.band,
+.contact,
+.hobby-foot,
+.not-found,
+.intro,
+.dash-window {
+  color-scheme: light;
+  color: var(--ink);
 }
 
 *,
@@ -163,6 +250,7 @@ ul {
 .nav {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px 32px;
 }
 
@@ -174,6 +262,50 @@ ul {
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+/* Light or dark (components/ThemeToggle.astro, scripts/theme.ts): a half-ink
+   circle that turns over, last in the nav so it wraps with the links. It
+   shows once the script is in; without one the page follows the system by
+   itself and there is nothing to press. */
+.theme-toggle {
+  display: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.has-js .theme-toggle {
+  display: inline-grid;
+  place-items: center;
+}
+
+.theme-toggle svg {
+  width: 22px;
+  height: 22px;
+  rotate: var(--turn);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .theme-toggle svg {
+    transition: rotate 0.4s ease;
+  }
+}
+
+@media (hover: hover) {
+  .theme-toggle:hover {
+    opacity: 0.7;
+  }
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
 }
 
 /* The two pages away from the desk, set off from the sections by a hairline. */
@@ -338,10 +470,13 @@ ul {
 }
 
 /* A product shot on the page colour (its white multiplied to #f3f2ec when it
-   was prepared): shown whole, with no slot behind it. */
+   was prepared): shown whole, with no slot behind it. On ink its paper shows
+   as a card, so the corners are rounded and it is turned down a little. */
 .photo-whole img {
   object-fit: contain;
   background: none;
+  border-radius: 8px;
+  filter: brightness(var(--dim));
 }
 
 .photo-square img,
@@ -449,10 +584,12 @@ ul {
   --mw: 330px;
 }
 
+/* The last band is ink with paper on it in both modes; on the dark page it
+   is the page itself, with the green line and machine across it. */
 .band-ink {
-  background: var(--ink);
-  color: var(--paper);
-  --year: rgba(243, 242, 236, 0.06);
+  color-scheme: dark;
+  background: var(--paper);
+  color: var(--ink);
 }
 
 .band-ink .band-line,
@@ -705,6 +842,17 @@ ul {
   font-family: var(--mono);
   font-size: 14px;
   line-height: 1.6;
+}
+
+/* Shiki writes each token's colour in both themes as variables
+   (components/Snippet.astro); the scheme picks one. */
+.snippet .astro-code,
+.snippet .astro-code span {
+  color: light-dark(var(--shiki-light), var(--shiki-dark));
+}
+
+.snippet .astro-code {
+  background: var(--paper);
 }
 
 .snippet-blank,
@@ -1031,19 +1179,19 @@ ul {
   stroke-linejoin: round;
 }
 
-.lean-figure .lf-road { stroke: var(--ink); stroke-width: 1; fill: rgba(11, 15, 12, 0.035); }
+.lean-figure .lf-road { stroke: var(--ink); stroke-width: 1; fill: var(--road-fill); }
 .lean-figure .lf-guide { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 4; }
 .lean-figure .lf-arc { stroke: var(--muted); stroke-width: 1.2; }
 .lean-figure .lf-bike { stroke: var(--ink); stroke-width: 1.6; }
-.lean-figure .lf-axis { stroke: #1d6a86; stroke-width: 1.4; }
-.lean-figure .lf-lateral { stroke: #b0305c; stroke-width: 2.2; }
+.lean-figure .lf-axis { stroke: var(--c-blue); stroke-width: 1.4; }
+.lean-figure .lf-lateral { stroke: var(--c-red); stroke-width: 2.2; }
 .lean-figure .lf-accel { stroke: var(--ink); stroke-width: 2.4; }
-.lean-figure .lf-upright { stroke: #146b37; stroke-width: 2.6; }
+.lean-figure .lf-upright { stroke: var(--c-ok); stroke-width: 2.6; }
 
-.lean-figure .lf-head-axis path { fill: #1d6a86; }
-.lean-figure .lf-head-lateral path { fill: #b0305c; }
+.lean-figure .lf-head-axis path { fill: var(--c-blue); }
+.lean-figure .lf-head-lateral path { fill: var(--c-red); }
 .lean-figure .lf-head-accel path { fill: var(--ink); }
-.lean-figure .lf-head-upright path { fill: #146b37; }
+.lean-figure .lf-head-upright path { fill: var(--c-ok); }
 
 /* Labels sit on a paper halo so lines passing behind them stay readable. */
 .lean-figure text {
@@ -1052,10 +1200,10 @@ ul {
   paint-order: stroke;
 }
 
-.lean-figure .lf-t-axis { fill: #1d6a86; }
+.lean-figure .lf-t-axis { fill: var(--c-blue); }
 .lean-figure .lf-t-accel { fill: var(--ink); font-weight: 600; }
-.lean-figure .lf-t-lateral { fill: #b0305c; }
-.lean-figure .lf-t-upright { fill: #146b37; font-weight: 600; }
+.lean-figure .lf-t-lateral { fill: var(--c-red); }
+.lean-figure .lf-t-upright { fill: var(--c-ok); font-weight: 600; }
 .lean-figure .lf-t-guide { fill: var(--muted); }
 
 .snippet-explain { grid-area: note; }
@@ -1101,7 +1249,7 @@ ul {
 .lf3-label {
   padding: 1px 6px;
   border-radius: 3px;
-  background: rgba(243, 242, 236, 0.86);
+  background: var(--halo);
   font-family: var(--mono);
   font-size: 12.5px;
   line-height: 1.4;
@@ -1109,9 +1257,9 @@ ul {
 }
 
 .lf3-accel { color: var(--ink); font-weight: 600; }
-.lf3-upright { color: #146b37; font-weight: 600; }
-.lf3-lateral { color: #b0305c; }
-.lf3-axis { color: #1d6a86; }
+.lf3-upright { color: var(--c-ok); font-weight: 600; }
+.lf3-lateral { color: var(--c-red); }
+.lf3-axis { color: var(--c-blue); }
 .lf3-guide { color: var(--muted); }
 
 .lean-legend {
@@ -1142,8 +1290,8 @@ ul {
 }
 
 .lg-accel { --swatch: var(--ink); }
-.lg-lateral { --swatch: #b0305c; }
-.lg-upright { --swatch: #146b37; }
+.lg-lateral { --swatch: var(--c-red); }
+.lg-upright { --swatch: var(--c-ok); }
 
 .lean-readout {
   margin-top: 16px;
@@ -1167,8 +1315,8 @@ ul {
   min-width: 3ch;
 }
 
-.lean-readout .rd-naive { color: #b0305c; }
-.lean-readout .rd-fixed { color: #146b37; }
+.lean-readout .rd-naive { color: var(--c-red); }
+.lean-readout .rd-fixed { color: var(--c-ok); }
 
 .sr-only {
   position: absolute;
@@ -1217,7 +1365,7 @@ ul {
 }
 
 .tftp-figure text { fill: var(--ink); }
-.tf-panel { fill: #faf9f5; stroke: var(--rule); }
+.tf-panel { fill: var(--panel); stroke: var(--rule); }
 .tf-div { stroke: var(--rule); }
 .tf-h { font-size: 15px; font-weight: 600; }
 .tftp-figure .tf-sub, .tftp-figure .tf-key, .tftp-figure .tf-map, .tftp-figure .tf-lane-label { fill: var(--muted); font-size: 12.5px; }
@@ -1226,55 +1374,55 @@ ul {
 .tftp-figure .tf-port { fill: var(--muted); font-family: var(--mono); font-size: 12px; }
 
 .tf-log { font-family: var(--mono); font-size: 12.5px; }
-.tftp-figure .tf-log-sent { fill: #1d6a86; }
+.tftp-figure .tf-log-sent { fill: var(--c-blue); }
 .tftp-figure .tf-log-reply { fill: var(--ink); font-weight: 600; }
 .tftp-figure .tf-log-cmd { fill: var(--ink); }
-.tftp-figure .tf-log-tftp { fill: #146b37; }
-.tftp-figure .tf-log-warn { fill: #b0305c; }
-.tftp-figure .tf-log-ok { fill: #146b37; font-weight: 600; }
+.tftp-figure .tf-log-tftp { fill: var(--c-ok); }
+.tftp-figure .tf-log-warn { fill: var(--c-red); }
+.tftp-figure .tf-log-ok { fill: var(--c-ok); font-weight: 600; }
 .tftp-figure .tf-log-note { fill: var(--muted); font-style: italic; }
 
-.tf-timeout { fill: none; stroke: #b0305c; stroke-width: 2; stroke-dasharray: 18 52; }
-.tf-lost path { stroke: #b0305c; stroke-width: 3; stroke-linecap: round; }
+.tf-timeout { fill: none; stroke: var(--c-red); stroke-width: 2; stroke-dasharray: 18 52; }
+.tf-lost path { stroke: var(--c-red); stroke-width: 3; stroke-linecap: round; }
 .tf-speed rect { fill: var(--ink); }
 .tftp-figure .tf-speed text { fill: var(--paper); font-size: 11px; font-family: var(--mono); }
 
 /* Packets: colour by kind. */
 .tf-pkt rect { stroke-width: 1.5; }
 .tftp-figure .tf-pkt text { font-family: var(--mono); font-size: 12px; font-weight: 600; }
-.tf-pkt.is-at rect { fill: #faf9f5; stroke: #1d6a86; }
-.tftp-figure .tf-pkt.is-at text { fill: #1d6a86; }
-.tf-pkt.is-reply rect { fill: #1d6a86; stroke: #1d6a86; }
-.tftp-figure .tf-pkt.is-reply text { fill: #faf9f5; }
-.tf-pkt.is-dhcp rect { fill: #faf9f5; stroke: #8a4b14; }
-.tftp-figure .tf-pkt.is-dhcp text { fill: #8a4b14; }
-.tf-pkt.is-wrq rect { fill: var(--ink); stroke: var(--ink); }
-.tftp-figure .tf-pkt.is-wrq text { fill: var(--green); }
-.tf-pkt.is-data rect { fill: var(--green); stroke: #146b37; }
-.tftp-figure .tf-pkt.is-data text { fill: var(--ink); }
-.tf-pkt.is-ack rect { fill: #faf9f5; stroke: #146b37; }
-.tftp-figure .tf-pkt.is-ack text { fill: #146b37; }
-.tf-pkt.is-lost rect { fill: #b0305c; stroke: #b0305c; }
-.tftp-figure .tf-pkt.is-lost text { fill: #faf9f5; }
+.tf-pkt.is-at rect { fill: var(--panel); stroke: var(--c-blue); }
+.tftp-figure .tf-pkt.is-at text { fill: var(--c-blue); }
+.tf-pkt.is-reply rect { fill: var(--c-blue); stroke: var(--c-blue); }
+.tftp-figure .tf-pkt.is-reply text { fill: var(--panel); }
+.tf-pkt.is-dhcp rect { fill: var(--panel); stroke: var(--c-brown); }
+.tftp-figure .tf-pkt.is-dhcp text { fill: var(--c-brown); }
+.tf-pkt.is-wrq rect { fill: var(--tag); stroke: var(--tag); }
+.tftp-figure .tf-pkt.is-wrq text { fill: var(--tag-text); }
+.tf-pkt.is-data rect { fill: var(--green); stroke: var(--c-ok); }
+.tftp-figure .tf-pkt.is-data text { fill: var(--ink-0); }
+.tf-pkt.is-ack rect { fill: var(--panel); stroke: var(--c-ok); }
+.tftp-figure .tf-pkt.is-ack text { fill: var(--c-ok); }
+.tf-pkt.is-lost rect { fill: var(--c-red); stroke: var(--c-red); }
+.tftp-figure .tf-pkt.is-lost text { fill: var(--panel); }
 
 /* The board. */
-.tf-led { fill: #1c8a4a; }
-.tf-led.is-boot { fill: #c98a1b; }
+.tf-led { fill: var(--c-led); }
+.tf-led.is-boot { fill: var(--c-amber); }
 .tf-badge { fill: var(--ink); }
-.tf-badge.is-boot { fill: #c98a1b; }
+.tf-badge.is-boot { fill: var(--c-amber); }
 .tftp-figure .tf-badge-text { fill: var(--paper); font-family: var(--mono); font-size: 12px; font-weight: 600; }
 .tftp-figure .tf-val { font-family: var(--mono); font-size: 12.5px; }
-.tftp-figure .tf-status { font-family: var(--mono); font-size: 13px; font-weight: 600; fill: #146b37; }
+.tftp-figure .tf-status { font-family: var(--mono); font-size: 13px; font-weight: 600; fill: var(--c-ok); }
 .tftp-figure .tf-addr { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
-.tf-boot { fill: #c9c7bd; }
+.tf-boot { fill: var(--boot); }
 .tf-cell { fill: var(--slot); }
-.tf-old { fill: #9a9d96; }
+.tf-old { fill: var(--old); }
 .tf-fill { fill: var(--green); }
-.tf-cell-line { stroke: rgba(11, 15, 12, 0.18); }
-.tf-flags { fill: #d8d3c0; }
+.tf-cell-line { stroke: var(--rule-soft); }
+.tf-flags { fill: var(--flags); }
 .tf-bar { fill: none; stroke: var(--ink); stroke-width: 1.2; }
 .tf-flag circle { fill: none; stroke: var(--muted); stroke-width: 1.5; }
-.tf-flag.is-on circle { fill: #c98a1b; stroke: #c98a1b; }
+.tf-flag.is-on circle { fill: var(--c-amber); stroke: var(--c-amber); }
 .tftp-figure .tf-flag text { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
 .tftp-figure .tf-flag.is-on text { fill: var(--ink); font-weight: 600; }
 
@@ -1289,8 +1437,8 @@ ul {
 .tftp-figure .tf-step text { fill: var(--muted); font-size: 13px; }
 .tf-step.is-done rect { stroke: var(--ink); }
 .tftp-figure .tf-step.is-done text { fill: var(--ink); }
-.tf-step.is-active rect { fill: var(--ink); stroke: var(--ink); }
-.tftp-figure .tf-step.is-active text { fill: var(--green); font-weight: 600; }
+.tf-step.is-active rect { fill: var(--tag); stroke: var(--tag); }
+.tftp-figure .tf-step.is-active text { fill: var(--tag-text); font-weight: 600; }
 .tftp-figure .tf-caption { font-size: 15px; fill: var(--text); }
 
 /* ---- Intro ----------------------------------------------------------- */
@@ -1362,67 +1510,68 @@ ul {
 .fleet-svg .fsub { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
 .fleet-svg .fsub-small { font-size: 10px; }
 
-.fp-box { fill: #faf9f5; stroke: var(--rule); stroke-width: 1.2; transition: fill 0.3s, stroke 0.3s; }
-.fp-chip .fp-box { fill: #fff; }
-.fp.is-on > .fp-box { fill: #dcf7e6; stroke: #146b37; stroke-width: 2; }
+.fp-box { fill: var(--panel); stroke: var(--rule); stroke-width: 1.2; transition: fill 0.3s, stroke 0.3s; }
+.fp-chip .fp-box { fill: var(--chip); }
+.fp.is-on > .fp-box { fill: var(--on-tint); stroke: var(--c-ok); stroke-width: 2; }
 .fp-frame { fill: none; stroke: var(--ink); stroke-width: 1.4; }
 
 .fi path { fill: none; stroke: var(--ink); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.3s; }
 .fi .fi-fill { fill: var(--ink); stroke: none; }
-.fp.is-on .fi path { stroke: #146b37; }
-.fp.is-on .fi .fi-fill { fill: #146b37; }
+.fp.is-on .fi path { stroke: var(--c-ok); }
+.fp.is-on .fi .fi-fill { fill: var(--c-ok); }
 
 .fpill rect { fill: none; stroke: var(--rule); transition: stroke 0.3s; }
 .fleet-svg .fpill text { font-size: 12px; }
-.fp.is-on .fpill rect { stroke: #146b37; }
+.fp.is-on .fpill rect { stroke: var(--c-ok); }
 
 /* Wires: grey until a step uses them. */
-.fw-line { fill: none; stroke: rgba(11, 15, 12, 0.4); stroke-width: 1.4; }
-.fw-head { fill: rgba(11, 15, 12, 0.4); }
+.fw-line { fill: none; stroke: var(--wire); stroke-width: 1.4; }
+.fw-head { fill: var(--wire); }
 .fw-knock { fill: var(--paper); }
 .fleet-svg .fwl { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); }
-.fw.is-on .fw-line { stroke: #146b37; stroke-width: 2.6; }
-.fw.is-on .fw-head { fill: #146b37; }
-.fleet-svg .fw.is-on .fwl { fill: #146b37; font-weight: 700; }
+.fw.is-on .fw-line { stroke: var(--c-ok); stroke-width: 2.6; }
+.fw.is-on .fw-head { fill: var(--c-ok); }
+.fleet-svg .fw.is-on .fwl { fill: var(--c-ok); font-weight: 700; }
 
 .fbus-line { fill: none; stroke: var(--ink); stroke-width: 2.2; }
 .fbus circle { fill: var(--ink); }
-.fbus.is-on .fbus-line { stroke: #146b37; stroke-width: 3; }
-.fbus.is-on circle { fill: #146b37; }
+.fbus.is-on .fbus-line { stroke: var(--c-ok); stroke-width: 3; }
+.fbus.is-on circle { fill: var(--c-ok); }
 
 /* An ECU's flash: bootloader, application, download slot. */
 .fbar rect { fill: var(--slot); transition: fill 0.4s; }
 .fleet-svg .fbar text { font-family: var(--mono); font-size: 11px; }
 .fleet-tall .fbar text { font-size: 10.5px; }
-.fbar.is-on rect { fill: #c9f5d7; }
+.fbar.is-on rect { fill: var(--on-bar); }
 .fbar-app.is-new rect { fill: var(--green); }
-.fleet-svg .fbar-app.is-new text { font-weight: 700; }
+.fleet-svg .fbar-app.is-new text { fill: var(--ink-0); font-weight: 700; }
 .fbar .fbar-fill { fill: var(--green); fill-opacity: 0.55; transition: none; }
 .fleet-svg .fbar-dl text { fill: var(--muted); }
 .fleet-svg .fbar-dl.is-filling text { fill: var(--ink); }
 
-.fpkt-tag { fill: var(--ink); }
-.fleet-svg .fpkt text { fill: var(--green); font-family: var(--mono); font-size: 12px; font-weight: 700; }
-.fpkt-dot { fill: var(--green); stroke: #146b37; stroke-width: 2; }
+.fpkt-tag { fill: var(--tag); }
+.fleet-svg .fpkt text { fill: var(--tag-text); font-family: var(--mono); font-size: 12px; font-weight: 700; }
+.fpkt-dot { fill: var(--green); stroke: var(--c-ok); stroke-width: 2; }
 
 /* The OTA figure (OtaFigure.astro), in the fleet figure's styles: the app's
    steps, the bike's flash labels and its two slots. */
 .fleet-svg .fh-flash { font-size: 10.5px; }
 .fstep rect { fill: var(--slot); stroke: none; transition: fill 0.3s; }
 .fleet-svg .fstep text { font-size: 12px; }
-.fstep.is-on rect { fill: #dcf7e6; stroke: #146b37; stroke-width: 1.5; }
+.fstep.is-on rect { fill: var(--on-tint); stroke: var(--c-ok); stroke-width: 1.5; }
 .fleet-svg .fstep.is-on text { font-weight: 700; }
 
 .fslot-bg { fill: var(--slot); transition: fill 0.4s; }
 .fslot.is-run .fslot-bg { fill: var(--green); }
-.fslot.is-on .fslot-bg { stroke: #146b37; stroke-width: 2; }
+.fslot.is-on .fslot-bg { stroke: var(--c-ok); stroke-width: 2; }
 .fleet-svg .fslot-name { font-family: var(--mono); font-size: 12px; font-weight: 700; }
 .fleet-svg .fslot-ver { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
-.fleet-svg .fslot.is-run .fslot-ver { fill: var(--ink); font-weight: 700; }
+.fleet-svg .fslot.is-run .fslot-name { fill: var(--ink-0); }
+.fleet-svg .fslot.is-run .fslot-ver { fill: var(--ink-0); font-weight: 700; }
 .fslot-tag { opacity: 0; transition: opacity 0.3s; }
 .fslot.is-run .fslot-tag { opacity: 1; }
-.fslot-tag rect { fill: var(--ink); }
-.fleet-svg .fslot-tag text { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--green); }
+.fslot-tag rect { fill: var(--tag); }
+.fleet-svg .fslot-tag text { font-family: var(--mono); font-size: 11px; font-weight: 700; fill: var(--tag-text); }
 
 /* What the step shows, under the drawing. */
 .fleet-foot {
@@ -1462,9 +1611,11 @@ ul {
   padding-bottom: 24px;
 }
 
+/* Ink in both modes, like the deck under it. */
 .hobby-ink .hobby-top {
-  background: var(--ink);
-  color: var(--paper);
+  color-scheme: dark;
+  background: var(--paper);
+  color: var(--ink);
 }
 
 /* The page you are on. */
@@ -1493,7 +1644,9 @@ ul {
 
 /* The vinyls page's deck: the hero text and the facts on an ink band, the
    record beside them and then, sticky, beside the crate. The band is each
-   block's own full-bleed backdrop, so the record scrolls off it onto paper. */
+   block's own full-bleed backdrop, so the record scrolls off it onto paper.
+   The band is ink in both modes (color-scheme: dark); on the dark page the
+   record stays on ink all the way down. */
 .deck {
   position: relative;
   isolation: isolate;
@@ -1515,7 +1668,8 @@ ul {
   gap: 40px;
   min-height: 540px;
   padding: 64px 0 36px;
-  color: var(--paper);
+  color-scheme: dark;
+  color: var(--ink);
 }
 
 .deck-facts {
@@ -1523,7 +1677,8 @@ ul {
   grid-column: 1 / span 7;
   grid-row: 2;
   padding-bottom: 48px;
-  color: var(--paper);
+  color-scheme: dark;
+  color: var(--ink);
 }
 
 .deck-hero::before,
@@ -1532,7 +1687,7 @@ ul {
   position: absolute;
   inset: 0 -50vw;
   z-index: -1;
-  background: var(--ink);
+  background: var(--paper);
 }
 
 .hobby-title {
@@ -1543,7 +1698,7 @@ ul {
   max-width: 30em;
   font-size: 22px;
   line-height: 1.4;
-  color: rgba(243, 242, 236, 0.78);
+  color: var(--text);
 }
 
 .hobby-facts {
@@ -1551,7 +1706,7 @@ ul {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--gap);
   padding-top: 20px;
-  border-top: 1.5px solid var(--paper);
+  border-top: 1.5px solid var(--ink);
   font-size: 15px;
   line-height: 1.45;
 }
@@ -1695,7 +1850,7 @@ ul {
 
 .rec.is-playing .rec-n span {
   background: var(--green);
-  color: var(--ink);
+  color: var(--ink-0);
   font-weight: 600;
 }
 
@@ -2057,9 +2212,15 @@ ul {
   .nav .nav-contact {
     position: absolute;
     top: 28px;
-    right: var(--gutter);
+    right: calc(var(--gutter) + 44px);
     padding: 0;
     line-height: 28px;
+  }
+
+  .theme-toggle {
+    position: absolute;
+    top: 28px;
+    right: var(--gutter);
   }
 
   /* The pages join the index as cells of their own, without the hairline. */
@@ -2253,12 +2414,16 @@ ul {
     padding: 0;
   }
 
+  .deck-side {
+    color-scheme: dark;
+  }
+
   .deck-side::before {
     content: '';
     position: absolute;
     inset: 0 -50vw;
     z-index: -1;
-    background: var(--ink);
+    background: var(--paper);
   }
 
   .player {

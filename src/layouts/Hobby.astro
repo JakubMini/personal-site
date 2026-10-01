@@ -3,6 +3,7 @@
 // the top bar with the hobby pages and Home, the page, and a short green
 // footer. `ink` sets the top bar on ink, for a page whose hero is.
 import Layout from './Layout.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 import { person } from '../data/site';
 
 interface Props {
@@ -29,6 +30,7 @@ const year = new Date().getFullYear();
         <nav class="nav" aria-label="Pages">
           {pages.map(([id, label, href]) => <a href={href} aria-current={id === current ? 'page' : undefined}>{label}</a>)}
           <a href="/">Home</a>
+          <ThemeToggle />
         </nav>
       </div>
     </div>

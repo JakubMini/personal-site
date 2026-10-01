@@ -1,0 +1,13 @@
+---
+// Light or dark: a half-ink circle that turns over when the page does.
+// scripts/theme.ts sets the theme and the switch's state; global.css draws it
+// (.theme-toggle) and hides it without JavaScript, when the page follows the
+// system by itself.
+---
+
+<button type="button" class="theme-toggle" data-theme-toggle role="switch" aria-checked="false" aria-label="Dark mode">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+    <path d="M12 2.75a9.25 9.25 0 0 1 0 18.5Z" fill="currentColor"></path>
+  </svg>
+</button>

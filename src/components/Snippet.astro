@@ -16,23 +16,35 @@ interface Props {
 
 const { snippet } = Astro.props;
 
-// Syntax colours on the page's paper. Every one holds at least 5.4:1 against
-// #f3f2ec (WCAG AA for body text), so colour adds meaning without costing legibility.
-const paper = {
-  name: 'paper',
-  type: 'light' as const,
-  colors: { 'editor.background': '#f3f2ec', 'editor.foreground': '#0b0f0c' },
-  tokenColors: [
-    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#5a5e58', fontStyle: 'italic' } },
-    { scope: ['keyword', 'storage.modifier', 'keyword.operator.sizeof'], settings: { foreground: '#b0305c' } },
-    { scope: ['storage.type', 'support.type', 'entity.name.type'], settings: { foreground: '#1d6a86' } },
-    { scope: ['entity.name.function', 'support.function'], settings: { foreground: '#6440a8' } },
-    { scope: ['constant.numeric', 'constant.language', 'constant.character', 'constant.other', 'variable.other.constant', 'keyword.other.unit'], settings: { foreground: '#8a4b14' } },
-    { scope: ['string', 'punctuation.definition.string'], settings: { foreground: '#146b37' } },
-    { scope: ['meta.preprocessor', 'entity.name.function.preprocessor'], settings: { foreground: '#a1371b' } },
-    { scope: ['keyword.operator', 'punctuation'], settings: { foreground: '#3c403a' } },
-  ],
+// Syntax colours on the page's paper, and the same set lightened for ink.
+// Every one holds at least 5.4:1 against its page (WCAG AA for body text), so
+// colour adds meaning without costing legibility. Shiki writes both into each
+// token as variables and global.css picks by the scheme (.snippet .astro-code).
+const scopes = {
+  comment: ['comment', 'punctuation.definition.comment'],
+  keyword: ['keyword', 'storage.modifier', 'keyword.operator.sizeof'],
+  type: ['storage.type', 'support.type', 'entity.name.type'],
+  fn: ['entity.name.function', 'support.function'],
+  constant: ['constant.numeric', 'constant.language', 'constant.character', 'constant.other', 'variable.other.constant', 'keyword.other.unit'],
+  string: ['string', 'punctuation.definition.string'],
+  preprocessor: ['meta.preprocessor', 'entity.name.function.preprocessor'],
+  operator: ['keyword.operator', 'punctuation'],
 };
+const syntax = (name: string, type: 'light' | 'dark', background: string, foreground: string, c: Record<keyof typeof scopes, string>) => ({
+  name,
+  type,
+  colors: { 'editor.background': background, 'editor.foreground': foreground },
+  tokenColors: (Object.keys(scopes) as (keyof typeof scopes)[]).map((k) => ({
+    scope: scopes[k],
+    settings: k === 'comment' ? { foreground: c[k], fontStyle: 'italic' } : { foreground: c[k] },
+  })),
+});
+const paper = syntax('paper', 'light', '#f3f2ec', '#0b0f0c', {
+  comment: '#5a5e58', keyword: '#b0305c', type: '#1d6a86', fn: '#6440a8', constant: '#8a4b14', string: '#146b37', preprocessor: '#a1371b', operator: '#3c403a',
+});
+const ink = syntax('ink', 'dark', '#0b0f0c', '#f3f2ec', {
+  comment: '#8e928c', keyword: '#ef7fa3', type: '#6fbde0', fn: '#b79cf0', constant: '#e0a060', string: '#5fd98f', preprocessor: '#ef8f6e', operator: '#c5c7c1',
+});
 
 // `backticks` in a note mark identifiers from the code; odd pieces are code.
 const noteParts = snippet.note ? snippet.note.split('`') : [];
@@ -76,7 +88,7 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
     snippet.code ? (
       <div class="snippet-window">
         {snippet.note && <p class="snippet-label">The fix</p>}
-        <Code code={snippet.code} lang={(snippet.lang ?? 'c') as never} theme={paper} />
+        <Code code={snippet.code} lang={(snippet.lang ?? 'c') as never} themes={{ light: paper, dark: ink }} defaultColor={false} />
       </div>
     ) : (
       !snippet.figure && (

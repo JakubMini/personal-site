@@ -5,6 +5,7 @@ import Machine from '../components/Machine.astro';
 import Photo from '../components/Photo.astro';
 import DashDemo from '../components/DashDemo.astro';
 import Snippet from '../components/Snippet.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 import { about, ai, education, hero, journey, person, publications, stack } from '../data/site';
 
 const sections = [
@@ -43,6 +44,7 @@ const personLd = {
           <a href="/photography">Photography</a>
         </span>
         <a class="nav-contact" href="#contact">Contact</a>
+        <ThemeToggle />
       </nav>
     </div>
     <div class="wrap">

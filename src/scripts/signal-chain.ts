@@ -75,10 +75,21 @@ interface Cloud {
 const TAU = Math.PI * 2;
 const INK = '#0b0f0c';
 const PAPER = '#f3f2ec';
-const GREEN = '#2ff27c';
+// The green is the page's (global.css, --green): the electric green on the
+// light page and a deeper one on the dark, read when the chain is made and
+// again when the theme changes.
+let GREEN = '#2ff27c';
+let greenRgb = '47, 242, 124';
 const ink = (a: number) => `rgba(11, 15, 12, ${+a.toFixed(3)})`;
-const green = (a: number) => `rgba(47, 242, 124, ${+a.toFixed(3)})`;
+const green = (a: number) => `rgba(${greenRgb}, ${+a.toFixed(3)})`;
 const paper = (a: number) => `rgba(243, 242, 236, ${+a.toFixed(3)})`;
+function readGreen() {
+  const v = getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
+  const m = /^#([0-9a-f]{6})$/i.exec(v);
+  if (!m) return;
+  GREEN = v;
+  greenRgb = [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16)).join(', ');
+}
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const smooth = (v: number) => {
@@ -1624,7 +1635,15 @@ export function signalChain(canvas: HTMLCanvasElement, kind: Kind) {
   };
   const observer = new ResizeObserver(resize);
   observer.observe(canvas);
+  readGreen();
   resize();
+  const retheme = () => {
+    readGreen();
+    if (!base) return;
+    renderBase();
+    render();
+  };
+  document.addEventListener('themechange', retheme);
 
   return {
     canvas,
@@ -1683,6 +1702,7 @@ export function signalChain(canvas: HTMLCanvasElement, kind: Kind) {
     },
     stop() {
       observer.disconnect();
+      document.removeEventListener('themechange', retheme);
     },
   };
 }

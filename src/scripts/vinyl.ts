@@ -131,8 +131,9 @@ function round(g: CanvasRenderingContext2D, text: string, r: number, top: boolea
 function label(g: CanvasRenderingContext2D, r: number, text: Label, css: CSSStyleDeclaration) {
   const rl = r * LABEL;
   const green = css.getPropertyValue('--green').trim();
-  const ink = css.getPropertyValue('--ink').trim();
-  const paper = css.getPropertyValue('--paper').trim();
+  // The colours themselves, not the page's: a paper label stays paper on a dark page.
+  const ink = css.getPropertyValue('--ink-0').trim();
+  const paper = css.getPropertyValue('--paper-0').trim();
   // Each scheme: the label's colour lit and plain, its lettering, and a rim
   // where the label would otherwise vanish into the record.
   const schemes = {

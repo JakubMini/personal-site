@@ -31,6 +31,7 @@ import {
 } from 'three';
 import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { GRADIENT } from './lean-figure';
+import { colour } from './theme';
 
 const UP = new Vector3(0, 1, 0);
 const DEG = 180 / Math.PI;
@@ -39,21 +40,26 @@ const DEG = 180 / Math.PI;
 // bike's own frame: x forward, y up from the road, z to its right, in metres-ish.
 const at = (x: number, y: number, z = 0) => new Vector3((x - 190) / 100, (186 - y) / 100, z);
 
-const COLOURS = {
-  paper: '#f3f2ec',
-  frame: '#5d676d',
-  tyre: '#1c1e1e',
-  metal: '#b4b8b6',
-  battery: '#66706c',
-  imu: '#2ff27c',
-  road: '#e2e0d8',
-  roadLine: '#fbfaf6',
-  guide: '#8a8d86',
-  accel: '#0b0f0c',
-  axis: '#1d6a86',
-  lateral: '#b0305c',
-  upright: '#1c8a4a',
-};
+// Every colour is read from the stylesheet at mount, light or dark: a dark
+// bike on paper, a light one on ink. A theme change mounts the scene again
+// (scripts/motion.ts).
+const GUIDE = '#8a8d86'; // reads on paper and on ink
+const palette = (host: HTMLElement) => ({
+  paper: colour(host, '--paper'),
+  road: colour(host, '--road'),
+  roadLine: colour(host, '--road-line'),
+  frame: colour(host, '--lf-frame'),
+  tyre: colour(host, '--lf-tyre'),
+  metal: colour(host, '--lf-metal'),
+  battery: colour(host, '--lf-battery'),
+  rubber: colour(host, '--lf-rubber'),
+  imu: colour(host, '--green'),
+  accel: colour(host, '--ink'),
+  axis: colour(host, '--c-blue'),
+  lateral: colour(host, '--c-red'),
+  upright: colour(host, '--c-led'),
+});
+type Palette = ReturnType<typeof palette>;
 
 const mat = (color: string, roughness = 0.6, metalness = 0) => new MeshStandardMaterial({ color, roughness, metalness });
 
@@ -74,12 +80,12 @@ function joint(p: Vector3, r: number, material: MeshStandardMaterial) {
   return m;
 }
 
-function wheel(centre: Vector3, hubRadius: number) {
+function wheel(centre: Vector3, hubRadius: number, C: Palette) {
   const g = new Group();
   g.position.copy(centre);
-  const tyre = new Mesh(new TorusGeometry(0.43, 0.034, 18, 96), mat(COLOURS.tyre, 0.85));
-  const rim = new Mesh(new TorusGeometry(0.395, 0.012, 10, 96), mat(COLOURS.metal, 0.3, 0.8));
-  const hub = new Mesh(new CylinderGeometry(hubRadius, hubRadius, 0.07, 32), mat(COLOURS.frame, 0.45, 0.4));
+  const tyre = new Mesh(new TorusGeometry(0.43, 0.034, 18, 96), mat(C.tyre, 0.85));
+  const rim = new Mesh(new TorusGeometry(0.395, 0.012, 10, 96), mat(C.metal, 0.3, 0.8));
+  const hub = new Mesh(new CylinderGeometry(hubRadius, hubRadius, 0.07, 32), mat(C.frame, 0.45, 0.4));
   hub.rotation.x = Math.PI / 2;
   // Spokes laced from alternate hub flanges, so the wheel reads as a wheel.
   const pts: number[] = [];
@@ -90,16 +96,16 @@ function wheel(centre: Vector3, hubRadius: number) {
   }
   const spokes = new LineSegments(
     new BufferGeometry().setAttribute('position', new Float32BufferAttribute(pts, 3)),
-    new LineBasicMaterial({ color: COLOURS.metal }),
+    new LineBasicMaterial({ color: C.metal }),
   );
   for (const m of [tyre, rim, hub]) m.castShadow = true;
   g.add(tyre, rim, hub, spokes);
   return g;
 }
 
-function buildBike() {
+function buildBike(C: Palette) {
   const bike = new Group();
-  const frame = mat(COLOURS.frame, 0.4, 0.45);
+  const frame = mat(C.frame, 0.4, 0.45);
   const r = 0.022;
   const rear = at(80, 140);
   const front = at(300, 140);
@@ -122,36 +128,36 @@ function buildBike() {
   const barCentre = at(282, 38);
   bike.add(tube(headTop, at(258, 42), r, frame), tube(at(258, 42), barCentre, r, frame));
   bike.add(tube(at(282, 38, -0.22), at(282, 38, 0.22), r * 0.9, frame));
-  for (const side of [-0.22, 0.22]) bike.add(tube(at(282, 38, side), at(282, 38, side * 0.72), r * 1.4, mat('#222424', 0.85)));
+  for (const side of [-0.22, 0.22]) bike.add(tube(at(282, 38, side), at(282, 38, side * 0.72), r * 1.4, mat(C.rubber, 0.85)));
   // Saddle.
-  const saddle = new Mesh(new BoxGeometry(0.24, 0.035, 0.1), mat('#222424', 0.8));
+  const saddle = new Mesh(new BoxGeometry(0.24, 0.035, 0.1), mat(C.rubber, 0.8));
   saddle.position.copy(at(150, 47));
   saddle.castShadow = true;
   bike.add(saddle);
   for (const p of [bb, seatCluster, headTop, headBottom, at(258, 42), barCentre]) bike.add(joint(p, r * 1.3, frame));
 
   // Cranks, pedals, chainring.
-  const ring = new Mesh(new TorusGeometry(0.1, 0.01, 8, 48), mat(COLOURS.metal, 0.3, 0.8));
+  const ring = new Mesh(new TorusGeometry(0.1, 0.01, 8, 48), mat(C.metal, 0.3, 0.8));
   ring.position.copy(bb).setZ(0.07);
   bike.add(ring);
   for (const [side, sign] of [[0.09, 1], [-0.09, -1]] as const) {
     const pedal = at(175 + 13 * sign, 144 + 16 * sign, side);
     bike.add(tube(at(175, 144, side), pedal, 0.012, frame));
-    const p = new Mesh(new BoxGeometry(0.09, 0.02, 0.1), mat('#1a1c1c', 0.8));
+    const p = new Mesh(new BoxGeometry(0.09, 0.02, 0.1), mat(C.rubber, 0.8));
     p.position.copy(pedal).setZ(side * 1.6);
     p.castShadow = true;
     bike.add(p);
   }
 
-  bike.add(wheel(rear, 0.13), wheel(front, 0.04));
+  bike.add(wheel(rear, 0.13, C), wheel(front, 0.04, C));
 
   // Battery on the down tube, and the IMU on the battery.
   const tilt = Math.atan2(at(268, 86).y - bb.y, at(268, 86).x - bb.x);
-  const battery = new Mesh(new BoxGeometry(0.62, 0.1, 0.085), mat(COLOURS.battery, 0.5, 0.25));
+  const battery = new Mesh(new BoxGeometry(0.62, 0.1, 0.085), mat(C.battery, 0.5, 0.25));
   battery.position.copy(at(223, 107));
   battery.rotation.z = tilt;
   battery.castShadow = true;
-  const imu = new Mesh(new BoxGeometry(0.1, 0.03, 0.07), new MeshStandardMaterial({ color: COLOURS.imu, roughness: 0.4, emissive: COLOURS.imu, emissiveIntensity: 0.35 }));
+  const imu = new Mesh(new BoxGeometry(0.1, 0.03, 0.07), new MeshStandardMaterial({ color: C.imu, roughness: 0.4, emissive: C.imu, emissiveIntensity: 0.35 }));
   imu.position.copy(at(223, 107)).add(new Vector3(-Math.sin(tilt), Math.cos(tilt), 0).multiplyScalar(0.065));
   imu.rotation.z = tilt;
   bike.add(battery, imu);
@@ -225,7 +231,8 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
   renderer.toneMapping = NeutralToneMapping;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFShadowMap;
-  renderer.setClearColor(new Color(COLOURS.paper));
+  const page = palette(host);
+  renderer.setClearColor(new Color(page.paper));
   const labels = new CSS2DRenderer();
   renderer.domElement.className = 'lf3-canvas';
   labels.domElement.className = 'lf3-labels';
@@ -248,12 +255,12 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
   const road = new Group();
   road.rotation.z = GRADIENT;
   scene.add(road);
-  const slab = new Mesh(new BoxGeometry(9, 0.05, 1.7), mat(COLOURS.road, 0.95));
+  const slab = new Mesh(new BoxGeometry(9, 0.05, 1.7), mat(page.road, 0.95));
   slab.position.y = -0.025;
   slab.receiveShadow = true;
   road.add(slab);
   for (let x = -4.25; x < 4.3; x += 0.5) {
-    const dash = new Mesh(new BoxGeometry(0.25, 0.002, 0.03), mat(COLOURS.roadLine, 0.9));
+    const dash = new Mesh(new BoxGeometry(0.25, 0.002, 0.03), mat(page.roadLine, 0.9));
     dash.position.set(x, 0.001, -0.62);
     dash.receiveShadow = true;
     road.add(dash);
@@ -261,14 +268,14 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
 
   const roll = new Group();
   road.add(roll);
-  const { bike, imu } = buildBike();
+  const { bike, imu } = buildBike(page);
   roll.add(bike);
 
   // The level the climb is measured from, and its angle.
   const rearContact = new Vector3(-2, 0, 0).applyAxisAngle(new Vector3(0, 0, 1), GRADIENT).setZ(0.95);
-  scene.add(dashed([rearContact, rearContact.clone().add(new Vector3(1.6, 0, 0))], COLOURS.guide));
-  scene.add(dashed([rearContact, rearContact.clone().add(new Vector3(1.6 * Math.cos(GRADIENT), 1.6 * Math.sin(GRADIENT), 0))], COLOURS.guide));
-  const gradientArc = new Mesh(new TorusGeometry(1.25, 0.006, 6, 24, GRADIENT), mat(COLOURS.guide));
+  scene.add(dashed([rearContact, rearContact.clone().add(new Vector3(1.6, 0, 0))], GUIDE));
+  scene.add(dashed([rearContact, rearContact.clone().add(new Vector3(1.6 * Math.cos(GRADIENT), 1.6 * Math.sin(GRADIENT), 0))], GUIDE));
+  const gradientArc = new Mesh(new TorusGeometry(1.25, 0.006, 6, 24, GRADIENT), mat(GUIDE));
   gradientArc.position.copy(rearContact);
   scene.add(gradientArc);
   const thetaLabel = label('θ = 8°', 'guide');
@@ -279,12 +286,12 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
   // Vectors at the IMU.
   const L = 1.4;
   const arrows = {
-    accel: new Arrow(COLOURS.accel, 0.018),
-    lateral: new Arrow(COLOURS.lateral, 0.016),
-    upright: new Arrow(COLOURS.upright, 0.018),
-    fwd: new Arrow(COLOURS.axis, 0.009),
-    up: new Arrow(COLOURS.axis, 0.009),
-    lat: new Arrow(COLOURS.axis, 0.009),
+    accel: new Arrow(page.accel, 0.018),
+    lateral: new Arrow(page.lateral, 0.016),
+    upright: new Arrow(page.upright, 0.018),
+    fwd: new Arrow(page.axis, 0.009),
+    up: new Arrow(page.axis, 0.009),
+    lat: new Arrow(page.axis, 0.009),
   };
   scene.add(...Object.values(arrows));
   const tags = {
@@ -297,13 +304,13 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
     lean: label('lean', 'guide'),
   };
   scene.add(...Object.values(tags));
-  const plumb = dashed([new Vector3(), new Vector3(0, 1.1, 0)], COLOURS.guide);
+  const plumb = dashed([new Vector3(), new Vector3(0, 1.1, 0)], GUIDE);
   scene.add(plumb);
   // The lean, as an arc from the road's normal to the bike's up: one buffer,
   // rewritten in place each frame.
   const ARC_STEPS = 48;
   const arcPositions = new Float32BufferAttribute(new Float32Array((ARC_STEPS + 1) * 3), 3);
-  const leanArc = new Line(new BufferGeometry().setAttribute('position', arcPositions), new LineBasicMaterial({ color: COLOURS.guide }));
+  const leanArc = new Line(new BufferGeometry().setAttribute('position', arcPositions), new LineBasicMaterial({ color: GUIDE }));
   leanArc.frustumCulled = false;
   scene.add(leanArc);
   const arcPoint = new Vector3();

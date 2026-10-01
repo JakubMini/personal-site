@@ -96,6 +96,12 @@ export function crate() {
     disc.classList.add('is-live');
     render();
   };
+  // The label's green is the page's, so it is lettered again on a change of theme.
+  document.addEventListener('themechange', () => {
+    record?.setLabel(labelOf(current));
+    small?.setLabel(labelOf(current));
+    render();
+  });
 
   const setCurrent = (i: number) => {
     if (i === target) return;

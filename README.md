@@ -21,7 +21,8 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 |---|---|
 | Any words, links, dates | `src/data/site.ts`; the markup holds no copy |
 | Layout | `src/pages/index.astro` |
-| Colours, type, spacing | `src/styles/global.css`, tokens at the top |
+| Colours, type, spacing | `src/styles/global.css`, tokens at the top; each colour is a light and a dark value |
+| Light or dark | `src/scripts/theme.ts` and the switch, `src/components/ThemeToggle.astro`; the surfaces that keep or flip their colours are under Theme in `global.css` |
 | Scroll motion | `src/scripts/motion.ts` |
 | The intro on load | `src/scripts/intro.ts`, `src/components/Intro.astro`; the record is `src/scripts/vinyl.ts` |
 | The hero's signal chain | `src/scripts/signal-chain.ts`; `motion.ts` runs its loop and hands it the pointer |
@@ -149,6 +150,23 @@ check `pnpm wrangler whoami` shows the personal account first.
 - **The hobbies are pages, not sections.** `/vinyls` and `/photography` are
   linked from the top bar (after the sections, past a hairline), the About
   paragraph and the colophon, so the main page's scroll is unchanged. Photography links the Instagram feed; the page is the edit.
+- **Dark mode is the same three colours the other way up.** Every colour
+  token is a `light-dark()` pair: `--paper` is the page and `--ink` what is
+  drawn on it, and on the dark page they swap. Green stays green but goes
+  deeper on ink (`#1cb35a` for `#2ff27c`), easier on the eyes across a hero.
+  The green surfaces pin `color-scheme: light`, so ink stays on green, and the
+  surfaces that are ink with paper on them (the last Journey band, the vinyls
+  page's top bar and deck) pin `color-scheme: dark`, so on the dark page they
+  are simply the page. The page follows the system until the switch in the
+  top bar is pressed; that choice is kept in `localStorage` and put back
+  before the first paint, and a choice that matches the system is dropped so
+  the page follows it again. The code snippets carry both syntax palettes
+  (Shiki's dual themes), the figures draw with the tokens, the hero's chain
+  and the record's label read the green, and the 3D lean figure reads its
+  colours when it mounts (a light bike on a dark road, on ink) and is built
+  again when the theme changes. A product shot with its paper baked in is
+  turned down a little on ink. The intro's cover and the dashboard's window
+  keep their own colours.
 - **Fonts self-hosted** (Funnel Display and Funnel Sans via Fontsource). No
   request to Google, so no visitor data goes to a third party and no consent
   banner is needed.
@@ -193,8 +211,9 @@ in the mockup:
   hero facts sit two by two and the portrait beside the lead. Role photos sit
   beside their text, stack rows run in three columns and the degrees side by
   side.
-- **Phones, under 600px:** one column. The name and Contact share the top
-  line, with the sections as a three-column index under them.
+- **Phones, under 600px:** one column. The name, Contact and the light or
+  dark switch share the top line, with the sections as a three-column index
+  under them.
 - **The hero chain** has a tall drawing under 600px, the chain running down
   the page at phone size with every part legible. Tablets get the wide
   drawing at their width.

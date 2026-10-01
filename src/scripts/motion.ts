@@ -275,7 +275,7 @@ function leanFigures() {
         const block = host.closest('.lean-block');
         import('./lean-scene-3d')
           .then(({ mountLeanScene }) => {
-            if (stopped) return;
+            if (stopped || host.classList.contains('is-3d')) return;
             stops.push(
               mountLeanScene(host, {
                 naive: block?.querySelector('[data-read-naive]') ?? null,
@@ -289,9 +289,19 @@ function leanFigures() {
     },
     { rootMargin: '600px 0px' },
   );
-  document.querySelectorAll('[data-lean-figure]').forEach((h) => io.observe(h));
+  const hosts = document.querySelectorAll('[data-lean-figure]');
+  hosts.forEach((h) => io.observe(h));
+  // The scene is built in the page's colours, so a change of theme builds it
+  // again; observing a host once more mounts it as soon as it is in view.
+  const retheme = () => {
+    stops.forEach((stop) => stop());
+    stops.length = 0;
+    hosts.forEach((h) => io.observe(h));
+  };
+  document.addEventListener('themechange', retheme);
   return () => {
     stopped = true;
+    document.removeEventListener('themechange', retheme);
     io.disconnect();
     stops.forEach((stop) => stop());
   };
