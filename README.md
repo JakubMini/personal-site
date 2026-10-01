@@ -22,6 +22,7 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 | Layout | `src/pages/index.astro` |
 | Colours, type, spacing | `src/styles/global.css`, tokens at the top |
 | Scroll motion | `src/scripts/motion.ts` |
+| The intro on load | `src/scripts/intro.ts`, `src/components/Intro.astro` |
 | The line drawings | `src/components/Machine.astro` |
 
 **Photos.** Put the file in `src/assets/photos/`, import it at the top of
@@ -96,6 +97,13 @@ check `pnpm wrangler whoami` shows the personal account first.
 - **No motion under `prefers-reduced-motion`, and no timers.** Every tween is
   scrubbed by the scroll or plays once on entry. Without JavaScript the page is
   complete and static.
+- **One exception: the intro** (`components/Intro.astro`, `scripts/intro.ts`),
+  about three seconds on every load, after wodniack.dev. The hero's e-bike
+  boots on an ink cover, rides off and uncovers the page. It never locks the
+  scroll: any scroll, key, click or touch finishes it at once. It is skipped
+  under reduced motion, without JavaScript, and when the address names a
+  section (`/#contact`). If the script never arrives, the cover fades by itself
+  after six seconds.
 - **Fonts self-hosted** (Funnel Display and Funnel Sans via Fontsource). No
   request to Google, so no visitor data goes to a third party and no consent
   banner is needed.
@@ -118,3 +126,5 @@ Where the build departs from the mockup, on purpose:
 - A battery's cells fill as it crosses; the drone's rotors spin; the last
   bike's signal arcs appear as it rides.
 - Links with nowhere to go yet (CV, papers) are not rendered as links.
+- The page opens with an intro the mockup doesn't have: the hero's bike
+  draws itself on ink, rides off, and the hero builds in behind it.

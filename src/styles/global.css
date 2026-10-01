@@ -1031,6 +1031,58 @@ ul {
 .tftp-figure .tf-step.is-active text { fill: var(--green); font-weight: 600; }
 .tftp-figure .tf-caption { font-size: 15px; fill: var(--text); }
 
+/* ---- Intro ----------------------------------------------------------- */
+
+/* The startup cover (components/Intro.astro, scripts/intro.ts). It shows only
+   while html.has-intro is set. Should the script never arrive, it fades by
+   itself after six seconds rather than hide the page for good. */
+.intro {
+  display: none;
+}
+
+.has-intro .intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--green);
+  font-family: var(--mono);
+  font-size: 14px;
+  animation: intro-failsafe 0.4s 6s both;
+}
+
+@keyframes intro-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Hidden until the script undraws it, or it flashes up whole first. */
+.intro-bike {
+  width: clamp(240px, 36vw, 520px);
+  height: auto;
+  margin-bottom: 4vh;
+  visibility: hidden;
+}
+
+.intro-log,
+.intro-charge {
+  position: absolute;
+  bottom: 28px;
+}
+
+.intro-log {
+  left: var(--gutter);
+}
+
+.intro-charge {
+  right: var(--gutter);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---- Motion ---------------------------------------------------------- */
 
 /* SplitText clips each line in a .line-mask while it rises. Display type sets

@@ -57,6 +57,12 @@ export const hero = {
   education: 'PhD, Imperial College London',
 };
 
+// The startup animation's boot log, one line after another while the bike
+// draws itself (components/Intro.astro). The last shows as the battery fills.
+export const intro = {
+  log: ['power on', 'motor controller: first boot', 'ready'],
+};
+
 export const about = {
   draft: true,
   lead: "I like products that move. For seven years I've taken e-bikes, battery labs and electric cargo vehicles from first boot to fleets in the field.",
