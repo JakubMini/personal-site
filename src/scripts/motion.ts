@@ -193,6 +193,13 @@ function loops() {
 function leanFigures() {
   const stops: (() => void)[] = [];
   let stopped = false;
+  // Download and parse three.js while the browser is idle after load, so the
+  // work does not land mid-scroll; mounting still waits for the figure.
+  if (document.querySelector('[data-lean-figure]')) {
+    const prefetch = () => void import('./lean-scene-3d').catch(() => {});
+    if ('requestIdleCallback' in window) requestIdleCallback(prefetch, { timeout: 4000 });
+    else setTimeout(prefetch, 2000);
+  }
   const io = new IntersectionObserver(
     (entries) => {
       for (const e of entries) {

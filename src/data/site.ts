@@ -5,6 +5,7 @@ import type { ImageMetadata } from 'astro';
 import portrait from '../assets/photos/portrait.jpg';
 import propellerRigPoster from '../assets/photos/propeller-rig-poster.jpg';
 import propellerRig from '../assets/video/propeller-rig.mp4';
+import driveUnit from '../assets/photos/skarper-drive-unit.png';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
@@ -14,6 +15,8 @@ export interface Photo {
   // poster: what shows before it plays, under reduced motion and without JS.
   video?: string;
   square?: boolean;
+  // A product on a transparent background: shown whole, without the grey slot.
+  cutout?: boolean;
   alt: string;
   caption: string;
 }
@@ -111,7 +114,12 @@ export const journey: Chapter[] = [
     summary:
       'Second hire. Architected the 48V drive system — motor controller, VCU, UI and BMS — and wrote the first firmware for every board. Bring-up to mass production: 2,000+ units shipped, PCB BOM cost cut by more than half.',
     tags: ['48V drives', 'BMS', 'EN 15194', 'MISRA C', 'Production test'],
-    photo: { alt: 'E-bike drive system', caption: 'Drive system' },
+    photo: {
+      src: driveUnit,
+      cutout: true,
+      alt: 'The Skarper drive unit: a grey body with a round disc carrying a lens, status lights and a button',
+      caption: 'Skarper drive unit',
+    },
     snippet: {
       caption: 'Lean-compensated road gradient (C)',
       note: 'Assistance follows the road gradient, read from an IMU in the frame. The accelerometer only sees gravity, and when the bike leans into a corner part of that reading moves onto the sensor’s `lat` axis. The `up` share shrinks, so a naive estimate reads every climb steeper than it is. `roadGradient` measures the `lean`, rolls the reading back into the bike’s plane with `rodrigues(fwd, -lean)`, and returns the slope alone.',

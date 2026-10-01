@@ -16,7 +16,6 @@ import {
   LineBasicMaterial,
   LineDashedMaterial,
   LineSegments,
-  Matrix4,
   Mesh,
   MeshStandardMaterial,
   NeutralToneMapping,
@@ -190,15 +189,20 @@ function label(text: string, kind: string) {
   return new CSS2DObject(el);
 }
 
-// Nudge labels that would poke out of the figure back inside it. Runs after
-// CSS2DRenderer has set each label's transform for the frame.
-function keepInside(host: HTMLElement, els: HTMLElement[], pad = 4) {
-  const h = host.getBoundingClientRect();
-  for (const el of els) {
-    const r = el.getBoundingClientRect();
-    const dx = Math.max(0, h.left + pad - r.left) - Math.max(0, r.right - (h.right - pad));
-    const dy = Math.max(0, h.top + pad - r.top) - Math.max(0, r.bottom - (h.bottom - pad));
-    if (dx || dy) el.style.transform += ` translate(${dx}px, ${dy}px)`;
+// Nudge labels that would poke out of the figure back inside it, after
+// CSS2DRenderer has placed them. Each label's box is worked out the way the
+// renderer places it (project the anchor, offset by centre and size), so no
+// layout is read per frame; sizes are measured once, at mount.
+const projected = new Vector3();
+function keepInside(tags: CSS2DObject[], sizes: Map<CSS2DObject, readonly [number, number]>, camera: PerspectiveCamera, w: number, h: number, pad = 4) {
+  for (const tag of tags) {
+    const [ew, eh] = sizes.get(tag) ?? [0, 0];
+    tag.getWorldPosition(projected).project(camera);
+    const x = (projected.x * 0.5 + 0.5) * w - tag.center.x * ew;
+    const y = (-projected.y * 0.5 + 0.5) * h - tag.center.y * eh;
+    const dx = Math.max(0, pad - x) - Math.max(0, x + ew - (w - pad));
+    const dy = Math.max(0, pad - y) - Math.max(0, y + eh - (h - pad));
+    if (dx || dy) tag.element.style.transform += ` translate(${dx}px, ${dy}px)`;
   }
 }
 
@@ -216,7 +220,7 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
   } catch {
     return () => {}; // no WebGL: the SVG still stays
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // sharp enough, and half the pixels of 2x
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.toneMapping = NeutralToneMapping;
   renderer.shadowMap.enabled = true;
@@ -233,7 +237,7 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
   const sun = new DirectionalLight('#ffffff', 2.4);
   sun.position.set(-2.5, 6, 4);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.mapSize.set(1024, 1024);
   sun.shadow.radius = 5;
   sun.shadow.bias = -0.0004;
   sun.shadow.normalBias = 0.02;
@@ -244,11 +248,11 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
   const road = new Group();
   road.rotation.z = GRADIENT;
   scene.add(road);
-  const slab = new Mesh(new BoxGeometry(4.4, 0.05, 1.7), mat(COLOURS.road, 0.95));
+  const slab = new Mesh(new BoxGeometry(9, 0.05, 1.7), mat(COLOURS.road, 0.95));
   slab.position.y = -0.025;
   slab.receiveShadow = true;
   road.add(slab);
-  for (let x = -2; x < 2.1; x += 0.5) {
+  for (let x = -4.25; x < 4.3; x += 0.5) {
     const dash = new Mesh(new BoxGeometry(0.25, 0.002, 0.03), mat(COLOURS.roadLine, 0.9));
     dash.position.set(x, 0.001, -0.62);
     dash.receiveShadow = true;
@@ -295,16 +299,23 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
   scene.add(...Object.values(tags));
   const plumb = dashed([new Vector3(), new Vector3(0, 1.1, 0)], COLOURS.guide);
   scene.add(plumb);
-  let leanArc: Mesh | null = null;
-  const arcMat = mat(COLOURS.guide);
-  const basis = new Matrix4();
+  // The lean, as an arc from the road's normal to the bike's up: one buffer,
+  // rewritten in place each frame.
+  const ARC_STEPS = 48;
+  const arcPositions = new Float32BufferAttribute(new Float32Array((ARC_STEPS + 1) * 3), 3);
+  const leanArc = new Line(new BufferGeometry().setAttribute('position', arcPositions), new LineBasicMaterial({ color: COLOURS.guide }));
+  leanArc.frustumCulled = false;
+  scene.add(leanArc);
+  const arcPoint = new Vector3();
 
   const camera = new PerspectiveCamera(26, 1, 0.1, 60);
-  const target = new Vector3(0.1, 0.85, 0.1);
+  const target = new Vector3(0.1, 1.0, 0.1);
 
+  let w = 0;
+  let h = 0;
   const resize = () => {
-    const w = host.clientWidth;
-    const h = host.clientHeight;
+    w = host.clientWidth;
+    h = host.clientHeight;
     renderer.setSize(w, h, false);
     labels.setSize(w, h);
     camera.aspect = w / h;
@@ -359,35 +370,33 @@ export function mountLeanScene(host: HTMLElement, readout: { naive: Element | nu
 
     plumb.position.copy(o);
     plumb.quaternion.setFromUnitVectors(UP, up0);
-    // The lean, as an arc from the road's normal to the bike's up.
-    if (leanArc) {
-      scene.remove(leanArc);
-      leanArc.geometry.dispose();
+    for (let i = 0; i <= ARC_STEPS; i++) {
+      const a = (lean * i) / ARC_STEPS;
+      arcPoint.copy(o).addScaledVector(up0, 0.85 * Math.cos(a)).addScaledVector(lat0, 0.85 * Math.sin(a));
+      arcPositions.setXYZ(i, arcPoint.x, arcPoint.y, arcPoint.z);
     }
-    leanArc = new Mesh(new TorusGeometry(0.85, 0.005, 6, 32, Math.max(Math.abs(lean), 0.001)), arcMat);
-    leanArc.position.copy(o);
-    // Torus arcs start on +x and sweep towards +y: map those to up0 and the lean side.
-    const xAxis = up0.clone();
-    const yAxis = lat0.clone().multiplyScalar(Math.sign(lean) || 1);
-    const zAxis = new Vector3().crossVectors(xAxis, yAxis);
-    leanArc.quaternion.setFromRotationMatrix(basis.makeBasis(xAxis, yAxis, zAxis));
-    scene.add(leanArc);
+    arcPositions.needsUpdate = true;
     tags.lean.position.copy(o).addScaledVector(up0, 0.98 * Math.cos(lean / 2)).addScaledVector(lat0, 0.98 * Math.sin(lean / 2));
 
     const el = 0.27;
-    const dist = 6.7;
+    const dist = 7.2;
     camera.position.set(target.x + dist * Math.sin(az) * Math.cos(el), target.y + dist * Math.sin(el), target.z + dist * Math.cos(az) * Math.cos(el));
     camera.lookAt(target);
 
     renderer.render(scene, camera);
     labels.render(scene, camera);
-    keepInside(host, [...Object.values(tags), thetaLabel].map((t) => t.element));
+    if (!sizes.size) for (const tag of allTags) sizes.set(tag, [tag.element.offsetWidth, tag.element.offsetHeight]);
+    keepInside(allTags, sizes, camera, w, h);
 
-    const naive = Math.atan2(accel.dot(fwd), accel.dot(up)) * DEG;
-    const fixed = Math.atan2(accel.dot(fwd), above) * DEG;
-    if (readout.naive) readout.naive.textContent = `${naive.toFixed(1)}°`;
-    if (readout.fixed) readout.fixed.textContent = `${fixed.toFixed(1)}°`;
-    if (readout.lean) readout.lean.textContent = `${Math.abs(lean * DEG).toFixed(0)}°`;
+    // Write the readout only when what it shows changes.
+    show(readout.naive, `${(Math.atan2(accel.dot(fwd), accel.dot(up)) * DEG).toFixed(1)}°`);
+    show(readout.fixed, `${(Math.atan2(accel.dot(fwd), above) * DEG).toFixed(1)}°`);
+    show(readout.lean, `${Math.abs(lean * DEG).toFixed(0)}°`);
+  };
+  const allTags = [...Object.values(tags), thetaLabel];
+  const sizes = new Map<CSS2DObject, readonly [number, number]>();
+  const show = (el: Element | null, text: string) => {
+    if (el && el.textContent !== text) el.textContent = text;
   };
 
   // Run only while on screen and the tab is visible.

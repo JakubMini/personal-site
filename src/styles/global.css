@@ -288,6 +288,12 @@ ul {
   aspect-ratio: 3 / 4;
 }
 
+/* A product cut out of its background: shown whole, on the page itself. */
+.photo-cutout img {
+  object-fit: contain;
+  background: none;
+}
+
 .photo-square img,
 .photo-square video,
 .photo-square .photo-slot {
@@ -479,12 +485,37 @@ ul {
 
 /* A ten-line window that scrolls. The bottom line fades to say there is more;
    the matching bottom padding lets the last line clear the fade at the end. */
+.snippet-window {
+  position: relative;
+}
+
+/* It only takes the wheel once clicked into (or reached by Tab): a window this
+   wide sits under the pointer while the page scrolls, and would otherwise
+   swallow the page's scroll until its own content ran out. */
 .snippet-window pre {
   max-height: calc(16px + 10 * 1.6em);
   padding: 16px 0 1.6em;
-  overflow: auto;
+  overflow: hidden;
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.6em), transparent);
   mask-image: linear-gradient(to bottom, #000 calc(100% - 1.6em), transparent);
+}
+
+.snippet-window pre:focus {
+  overflow: auto;
+}
+
+.snippet-window::after {
+  content: 'click to scroll';
+  position: absolute;
+  right: 0;
+  bottom: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.snippet-window:focus-within::after {
+  content: none;
 }
 
 .snippet-window pre:focus-visible {
@@ -702,16 +733,16 @@ ul {
 /* ---- Snippet head: the problem, its figure, then the fix -------------- */
 
 /* The figure's legend and readout leave its block (display: contents) and sit
-   in the left column under the note, level with the figure's bottom edge. */
+   in the left column under the note; the figure stretches to that column's
+   height, so the render is exactly as tall as the text beside it. */
 .snippet-head {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   grid-template-areas:
     'note    figure'
-    '.       figure'
     'legend  figure'
     'readout figure';
-  grid-template-rows: auto 1fr auto auto;
+  grid-template-rows: auto auto auto;
   column-gap: var(--gap);
   align-items: start;
   padding: 20px 0 28px;
@@ -779,14 +810,14 @@ ul {
 
 .snippet-explain { grid-area: note; }
 .lean-block { display: contents; }
-.lean-host { grid-area: figure; }
+.lean-host { grid-area: figure; align-self: stretch; }
 .lean-legend { grid-area: legend; }
 .lean-readout { grid-area: readout; }
 
 /* The still and the 3D render share one box; the render fades in over the still. */
 .lean-host {
   position: relative;
-  aspect-ratio: 520 / 400;
+  min-height: 320px;
   border-radius: 6px;
   overflow: hidden;
 }
@@ -873,8 +904,17 @@ ul {
   font-variant-numeric: tabular-nums;
 }
 
+/* Fixed-width numbers: 9.7° becoming 10.3° must never re-wrap the line, or the
+   column's height and so everything below it (and the scroll pins) would move. */
 .lean-readout b {
+  display: inline-block;
+  min-width: 5ch;
   font-family: var(--mono);
+  text-align: right;
+}
+
+.lean-readout [data-read-lean] {
+  min-width: 3ch;
 }
 
 .lean-readout .rd-naive { color: #b0305c; }
@@ -1001,6 +1041,11 @@ ul {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: 'note' 'figure' 'legend' 'readout';
     grid-template-rows: none;
+  }
+
+  .lean-host {
+    aspect-ratio: 520 / 400;
+    min-height: 0;
   }
 
   .pub {
