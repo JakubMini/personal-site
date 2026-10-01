@@ -1,1 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#2FF27C"/><g fill="none" stroke="#0B0F0C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="41" r="10"/><circle cx="47" cy="41" r="10"/><path d="M17 41 L30 42 L27 27 Z M30 42 L44 30 M42 22 L44 30 L47 41 M27 27 L43 26"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<defs>
+<radialGradient id="v" cx="32" cy="32" r="31.5" gradientUnits="userSpaceOnUse"><stop offset=".3" stop-color="#5cffa2"/><stop offset="1" stop-color="#0c9446"/></radialGradient>
+<radialGradient id="l" cx="32" cy="32" r="12.6" fx="27.6" fy="27.6" gradientUnits="userSpaceOnUse"><stop offset=".08" stop-color="#2b312d"/><stop offset="1" stop-color="#0b0f0c"/></radialGradient>
+<radialGradient id="g" cx="17.8" cy="16.3" r="34.7" gradientUnits="userSpaceOnUse"><stop stop-color="#fff" stop-opacity=".11"/><stop offset=".5" stop-color="#fff" stop-opacity=".03"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<clipPath id="a"><path d="M32 1.92a30.08 30.08 0 1 1 0 60.16a30.08 30.08 0 1 1 0-60.16ZM32 18.77a13.23 13.23 0 1 0 0 26.46a13.23 13.23 0 1 0 0-26.46Z" clip-rule="evenodd"/></clipPath>
+<mask id="h"><rect width="64" height="64" fill="#fff"/><circle cx="32" cy="32" r="1.5"/></mask>
+</defs>
+<g mask="url(#h)">
+<circle cx="32" cy="32" r="31.5" fill="url(#v)"/>
+<circle cx="32" cy="32" r="30.93" fill="none" stroke="#ffffff80" stroke-width=".5"/>
+<g transform="translate(32 32)" fill="none" stroke-width="0.69"><circle r="28.98" stroke="#ffffff38"/><circle r="27.09" stroke="#00321499"/><circle r="25.2" stroke="#ffffff38"/><circle r="23.31" stroke="#00321499"/><circle r="21.42" stroke="#ffffff38"/><circle r="19.53" stroke="#00321499"/><circle r="17.64" stroke="#ffffff38"/><circle r="15.75" stroke="#00321499"/></g>
+<g clip-path="url(#a)"><path d="M32 32L2.22 21.74A31.5 31.5 0 0 1 21.74 2.22ZM32 32L61.78 42.26A31.5 31.5 0 0 1 42.26 61.78Z" fill="#fff" fill-opacity="0.045"/><path d="M32 32L3.45 18.69A31.5 31.5 0 0 1 18.69 3.45ZM32 32L60.55 45.31A31.5 31.5 0 0 1 45.31 60.55Z" fill="#fff" fill-opacity="0.045"/><path d="M32 32L4.72 16.25A31.5 31.5 0 0 1 16.25 4.72ZM32 32L59.28 47.75A31.5 31.5 0 0 1 47.75 59.28Z" fill="#fff" fill-opacity="0.045"/><path d="M32 32L5.89 14.39A31.5 31.5 0 0 1 14.39 5.89ZM32 32L58.11 49.61A31.5 31.5 0 0 1 49.61 58.11Z" fill="#fff" fill-opacity="0.045"/><path d="M32 32L6.84 13.04A31.5 31.5 0 0 1 13.04 6.84ZM32 32L57.16 50.96A31.5 31.5 0 0 1 50.96 57.16Z" fill="#fff" fill-opacity="0.045"/><path d="M32 32L7.69 11.96A31.5 31.5 0 0 1 11.96 7.69ZM32 32L56.31 52.04A31.5 31.5 0 0 1 52.04 56.31Z" fill="#fff" fill-opacity="0.045"/><path d="M32 32L8.41 11.13A31.5 31.5 0 0 1 11.13 8.41ZM32 32L55.59 52.87A31.5 31.5 0 0 1 52.87 55.59Z" fill="#fff" fill-opacity="0.045"/><path d="M32 32L8.96 10.52A31.5 31.5 0 0 1 10.52 8.96ZM32 32L55.04 53.48A31.5 31.5 0 0 1 53.48 55.04Z" fill="#fff" fill-opacity="0.045"/></g>
+<circle cx="32" cy="32" r="31.5" fill="url(#g)"/>
+<path d="M1.2 27.12A31.185 31.185 0 0 1 36.88 1.2" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width=".6"/>
+<circle cx="32" cy="32" r="12.6" fill="url(#l)"/>
+</g>
+</svg>

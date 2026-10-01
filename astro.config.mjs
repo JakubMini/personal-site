@@ -12,6 +12,6 @@ export default defineConfig({
     // Pre-bundle the motion libraries at dev startup. Found lazily (three is
     // only imported when the figure nears the viewport), Vite re-optimises
     // mid-session and the in-flight import fails with "Outdated Optimize Dep".
-    optimizeDeps: { include: ['gsap', 'gsap/DrawSVGPlugin', 'gsap/ScrambleTextPlugin', 'gsap/ScrollTrigger', 'gsap/SplitText', 'three', 'three/addons/renderers/CSS2DRenderer.js'] },
+    optimizeDeps: { include: ['gsap', 'gsap/ScrambleTextPlugin', 'gsap/ScrollTrigger', 'gsap/SplitText', 'three', 'three/addons/renderers/CSS2DRenderer.js'] },
   },
 });

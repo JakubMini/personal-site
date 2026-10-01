@@ -12,12 +12,31 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { intro } from './intro';
 import { tftpTimeline } from './tftp-figure';
-import { wheels } from './wheels';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 // Pinning a band is for wide screens; narrow ones scrub as the band passes.
 const WIDE = '(min-width: 900px)';
+
+// Degrees a wheel turns while its drawing travels `distance` CSS px, so it
+// rolls rather than slides. data-wheel is "cx cy r" in viewBox units.
+function roll(wheel: SVGGElement, svg: SVGSVGElement, distance: number) {
+  const r = Number(wheel.dataset.wheel!.split(' ')[2]);
+  const scale = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+  return (distance / (2 * Math.PI * r * scale)) * 360;
+}
+
+function wheels(tl: gsap.core.Timeline, svg: SVGSVGElement, distance: () => number, sign = 1) {
+  svg.querySelectorAll<SVGGElement>('[data-wheel]').forEach((wheel) => {
+    const [cx, cy] = wheel.dataset.wheel!.split(' ');
+    tl.fromTo(
+      wheel,
+      { rotation: 0 },
+      { rotation: () => sign * roll(wheel, svg, distance()), svgOrigin: `${cx} ${cy}` },
+      0,
+    );
+  });
+}
 
 function heroBike() {
   const svg = document.querySelector<SVGSVGElement>('.hero-bike');
@@ -232,8 +251,8 @@ function leanFigures() {
 }
 
 // The intro starts now, ahead of the fonts, so its cover can be dismissed
-// while they load. It resolves at once when there is no intro to play.
-const introDone = intro();
+// while they load.
+intro();
 
 // Split lines only once the real fonts are in, or the line breaks are wrong.
 document.fonts.ready.then(() => {
@@ -244,14 +263,9 @@ document.fonts.ready.then(() => {
     (context) => {
       const { wide, moving } = context.conditions as { wide: boolean; moving: boolean };
       if (!moving) return;
-      // The intro rolls the hero bike into place, so its scroll scrub waits
-      // until it has. It is no pin and sits above them all, so creating it
-      // last does not change where anything else starts.
-      introDone.then(() => {
-        if (!context.isReverted) context.add(heroBike);
-      });
       // Creation order is refresh order: pins first, so everything below them
       // measures its start with the pin spacing already in place.
+      heroBike();
       document.querySelectorAll<HTMLElement>('.band').forEach((el) => band(el, wide));
       reveals();
       const stops = [loops(), leanFigures(), tftpFigures()];

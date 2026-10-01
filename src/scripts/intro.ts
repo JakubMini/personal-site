@@ -1,8 +1,7 @@
-// The startup animation, after wodniack.dev's. On an ink cover the hero's
-// e-bike draws itself while a boot log runs and the charge counts up; the
-// battery fills, the bike rides off to the right and takes the cover with it,
-// and the hero builds in behind. Its own bike rolls in from the left and stops
-// in its place, still heading right, the way the scroll then carries it.
+// The startup animation, after wodniack.dev's. On an ink cover a glossy black
+// record is cut from the rim inwards while a log runs, spins up to 33⅓ rpm
+// and gets its label, then rolls off to the right and takes the cover with it.
+// The hero builds in behind.
 //
 // It plays only when the inline script in components/Intro.astro has set
 // html.has-intro: JavaScript on, motion allowed, no #section in the address.
@@ -10,84 +9,71 @@
 // scrolls throughout, and any scroll, key, click or touch finishes it at once.
 
 import { gsap } from 'gsap';
-import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
 import { SplitText } from 'gsap/SplitText';
-import { roll } from './wheels';
+import { vinyl, type Pose } from './vinyl';
 
-gsap.registerPlugin(DrawSVGPlugin, ScrambleTextPlugin, SplitText);
+gsap.registerPlugin(ScrambleTextPlugin, SplitText);
 
 const SKIP = ['scroll', 'wheel', 'touchstart', 'keydown', 'pointerdown'];
 
-// Turn a drawing's wheels for `distance` px of travel. `turns` scales that
-// travel: [0, 1] rides off from rest, [-1, 0] rolls in and comes to rest.
-function spin(
-  tl: gsap.core.Timeline,
-  svg: SVGSVGElement,
-  distance: number,
-  [from, to]: [number, number],
-  vars: gsap.TweenVars,
-  position: number,
-) {
-  svg.querySelectorAll<SVGGElement>('[data-wheel]').forEach((wheel) => {
-    const turn = roll(wheel, svg, distance);
-    // The tyre is the wheel's bounding box, so its centre is the hub. Not
-    // svgOrigin as the scroll uses: when a timeline starts a fromTo on a wheel
-    // that is already turned, GSAP re-reads an svgOrigin as box-relative but
-    // still absolute, and the wheel orbits a point off its axle.
-    gsap.set(wheel, { transformOrigin: '50% 50%', rotation: from * turn });
-    tl.to(wheel, { rotation: to * turn, ...vars }, position);
-  });
-}
+const RPM = 100 / 3;
+const SPEED = (RPM / 60) * Math.PI * 2; // radians a second
+const SPIN_UP = 1.2; // seconds, accelerating evenly
 
 function timeline(cover: HTMLElement) {
-  const bike = cover.querySelector<SVGSVGElement>('.intro-bike')!;
+  const record = cover.querySelector<HTMLCanvasElement>('.intro-record')!;
   const log = cover.querySelector<HTMLElement>('[data-log]')!;
-  const charge = cover.querySelector<HTMLElement>('.intro-charge')!;
-  const heroBike = document.querySelector<SVGSVGElement>('.hero-bike')!;
-  const road = heroBike.parentElement!;
+  const speed = cover.querySelector<HTMLElement>('.intro-speed')!;
 
-  // From where it stands to just past the right edge, and from just past the
-  // road's left edge to where it stands.
-  const rideOff = innerWidth - bike.getBoundingClientRect().left;
-  const rollIn = heroBike.getBoundingClientRect().right - road.getBoundingClientRect().left;
+  // CSS sizes the record; it is drawn at the screen's density, two at most.
+  const radius = record.clientWidth / 2;
+  record.width = record.height = Math.round(radius * 2 * Math.min(2, devicePixelRatio || 1));
+  const draw = vinyl(record, JSON.parse(record.dataset.label!));
 
-  const tl = gsap.timeline();
-  const level = { percent: 0 };
+  // Spin is the record turning on the spot; rolling adds a turn for every
+  // radius it travels, so it rolls rather than slides.
+  const pose: Pose & { spin: number; x: number } = { spin: 0, x: 0, turn: 0, cut: 0, label: 0 };
+  const frame = () => {
+    pose.turn = pose.spin + pose.x / radius;
+    gsap.set(record, { x: pose.x });
+    draw(pose);
+  };
+  const rollOff = innerWidth - record.getBoundingClientRect().left;
+  const rpm = { now: 0 };
 
-  // Boot: the drawing draws itself wheels first, the log runs, the charge
-  // counts up. A round cap draws a dot at zero length, so each stroke also
-  // stays transparent until its turn.
-  const strokes = bike.querySelectorAll('circle, path, rect');
-  gsap.set(strokes, { drawSVG: 0, opacity: 0 });
-  tl.set(bike, { visibility: 'visible' }, 0)
-    .to(strokes, { drawSVG: '100%', duration: 0.9, ease: 'power2.inOut', stagger: 0.035 }, 0.1)
-    .to(strokes, { opacity: 1, duration: 0.01, stagger: 0.035 }, 0.1)
+  const tl = gsap.timeline({ onUpdate: frame });
+
+  // Cut and spin up: grooves from the rim inwards, the label once they reach
+  // it. Even acceleration over SPIN_UP turns it SPEED × SPIN_UP / 2 radians.
+  gsap.set(record, { autoAlpha: 0, scale: 0.94 });
+  tl.to(record, { autoAlpha: 1, scale: 1, duration: 0.4, ease: 'power2.out' }, 0)
+    .to(pose, { cut: 1, duration: 0.9, ease: 'none' }, 0.1)
+    .to(pose, { spin: (SPEED * SPIN_UP) / 2, duration: SPIN_UP, ease: 'power2.in' }, 0.1)
+    .to(pose, { spin: `+=${SPEED}`, duration: 1, ease: 'none' }, 0.1 + SPIN_UP)
     .to(
-      level,
+      rpm,
       {
-        percent: 100,
-        duration: 1.25,
-        ease: 'power1.inOut',
+        now: RPM,
+        duration: SPIN_UP,
+        ease: 'none',
         onUpdate: () => {
-          charge.textContent = `${String(Math.round(level.percent)).padStart(3, '0')}%`;
+          speed.textContent = `${rpm.now.toFixed(1).padStart(4, '0')} rpm`;
         },
       },
-      0,
-    );
+      0.1,
+    )
+    .to(pose, { label: 1, duration: 0.25, ease: 'power1.out' }, 0.95);
   const steps: string[] = JSON.parse(log.dataset.log!).slice(1);
   steps.forEach((text, i) => {
-    const at = 0.45 + (0.7 * i) / Math.max(1, steps.length - 1);
+    const at = 0.35 + (0.75 * i) / Math.max(1, steps.length - 1);
     tl.to(log, { scrambleText: { text, chars: '01' }, duration: 0.4 }, at);
   });
 
-  // Powered: the battery fills, then the bike rides off and the cover goes
-  // with it, its edge trailing the back wheel.
+  // Roll off, the cover's edge trailing it.
   gsap.set(cover, { clipPath: 'inset(0% 0% 0% 0%)' });
-  tl.to(bike.querySelector('.pack'), { fillOpacity: 1, duration: 0.2 }, 1.15)
-    .to(bike, { x: rideOff, duration: 0.8, ease: 'power2.in' }, 1.35)
+  tl.to(pose, { x: rollOff, duration: 0.8, ease: 'power2.in' }, 1.35)
     .to(cover, { clipPath: 'inset(0% 0% 0% 100%)', duration: 0.8, ease: 'power2.in' }, 1.42);
-  spin(tl, bike, rideOff, [0, 1], { duration: 0.8, ease: 'power2.in' }, 1.35);
 
   // The hero builds in behind it. Splits are reverted when the intro ends.
   const name = SplitText.create('.hero-name', { type: 'lines, chars', mask: 'lines', linesClass: 'line' });
@@ -103,7 +89,6 @@ function timeline(cover: HTMLElement) {
   gsap.set('.hero .ruled', { clipPath: 'inset(0% 100% 0% 0%)' });
   gsap.set(topbar, { y: -16, autoAlpha: 0 });
   gsap.set(pitch.lines, { yPercent: 120 });
-  gsap.set(heroBike, { x: -rollIn });
   gsap.set(facts, { y: 14, autoAlpha: 0 });
 
   tl.to(name.chars, { yPercent: 0, duration: 1, ease: 'expo.out', stagger: 0.03 }, 1.7)
@@ -115,48 +100,43 @@ function timeline(cover: HTMLElement) {
     // clearProps, or an inline opacity outlives the intro and kills a:hover.
     .to(topbar, { y: 0, autoAlpha: 1, duration: 0.6, ease: 'power3.out', stagger: 0.04, clearProps: 'all' }, 1.85)
     .to(pitch.lines, { yPercent: 0, duration: 0.8, ease: 'power3.out', stagger: 0.08 }, 1.9)
-    .to(heroBike, { x: 0, duration: 1.2, ease: 'power3.out' }, 1.9)
     .to(facts, { y: 0, autoAlpha: 1, duration: 0.6, ease: 'power2.out', stagger: 0.06, clearProps: 'all' }, 2.2);
-  spin(tl, heroBike, rollIn, [-1, 0], { duration: 1.2, ease: 'power3.out' }, 1.9);
 
+  frame();
   return { tl, splits: [name, pitch] };
 }
 
-// Resolves once the intro has finished or been skipped, with the cover gone
-// and the hero as it is without motion; at once when there is none to play.
-export function intro(): Promise<void> {
+export function intro() {
   const root = document.documentElement;
   const cover = document.querySelector<HTMLElement>('.intro');
-  if (!cover || !root.classList.contains('has-intro')) return Promise.resolve();
+  if (!cover || !root.classList.contains('has-intro')) return;
   // The script has the cover now, so the CSS failsafe stands down.
   cover.style.animation = 'none';
 
-  return new Promise((resolve) => {
-    let played: ReturnType<typeof timeline> | undefined;
-    let finished = false;
+  let played: ReturnType<typeof timeline> | undefined;
+  let finished = false;
 
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      SKIP.forEach((type) => removeEventListener(type, finish));
-      played?.tl.progress(1).kill();
-      played?.splits.forEach((split) => split.revert());
-      cover.remove();
-      root.classList.remove('has-intro');
-      resolve();
-    };
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    SKIP.forEach((type) => removeEventListener(type, finish));
+    played?.tl.progress(1).kill();
+    played?.splits.forEach((split) => split.revert());
+    cover.remove();
+    root.classList.remove('has-intro');
+  };
 
-    SKIP.forEach((type) => addEventListener(type, finish, { passive: true }));
-    // Reloaded part way down: the browser restores the scroll, perhaps before
-    // the listener above was there to hear it.
+  SKIP.forEach((type) => addEventListener(type, finish, { passive: true }));
+  // Reloaded part way down: the browser restores the scroll, perhaps before
+  // the listener above was there to hear it.
+  if (scrollY > 0) return finish();
+
+  // The hero's text splits by line and the label is lettered, both of which
+  // need the real fonts.
+  document.fonts.ready.then(() => {
+    if (finished) return;
     if (scrollY > 0) return finish();
-
-    // The hero's text splits by line, which needs the real fonts.
-    document.fonts.ready.then(() => {
-      if (finished) return;
-      if (scrollY > 0) return finish();
-      played = timeline(cover);
-      played.tl.eventCallback('onComplete', finish);
-    });
+    played = timeline(cover);
+    played.tl.eventCallback('onComplete', finish);
   });
 }

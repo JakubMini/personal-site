@@ -144,8 +144,17 @@ ul {
 }
 
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 600;
   text-decoration: none;
+}
+
+/* The green record, the same file as the favicon. */
+.wordmark img {
+  width: 28px;
+  height: 28px;
 }
 
 .nav {
@@ -1060,16 +1069,15 @@ ul {
   }
 }
 
-/* Hidden until the script undraws it, or it flashes up whole first. */
-.intro-bike {
-  width: clamp(240px, 36vw, 520px);
-  height: auto;
+/* scripts/vinyl.ts draws the record at this size, at the screen's density. */
+.intro-record {
+  width: clamp(200px, min(30vw, 52vh), 420px);
+  aspect-ratio: 1;
   margin-bottom: 4vh;
-  visibility: hidden;
 }
 
 .intro-log,
-.intro-charge {
+.intro-speed {
   position: absolute;
   bottom: 28px;
 }
@@ -1078,7 +1086,7 @@ ul {
   left: var(--gutter);
 }
 
-.intro-charge {
+.intro-speed {
   right: var(--gutter);
   font-variant-numeric: tabular-nums;
 }

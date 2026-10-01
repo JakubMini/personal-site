@@ -57,10 +57,12 @@ export const hero = {
   education: 'PhD, Imperial College London',
 };
 
-// The startup animation's boot log, one line after another while the bike
-// draws itself (components/Intro.astro). The last shows as the battery fills.
+// The startup animation (components/Intro.astro). The log runs one line after
+// another while the record is cut and spins up; the label is lettered round
+// the top, round the bottom, and with the monogram above the spindle hole.
 export const intro = {
-  log: ['power on', 'motor controller: first boot', 'ready'],
+  log: ['power on', 'cutting grooves', 'needle down'],
+  label: { top: person.name, bottom: 'Side A  ·  33⅓ rpm', monogram: 'JS' },
 };
 
 export const about = {

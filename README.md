@@ -22,7 +22,8 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 | Layout | `src/pages/index.astro` |
 | Colours, type, spacing | `src/styles/global.css`, tokens at the top |
 | Scroll motion | `src/scripts/motion.ts` |
-| The intro on load | `src/scripts/intro.ts`, `src/components/Intro.astro` |
+| The intro on load | `src/scripts/intro.ts`, `src/components/Intro.astro`; the record is `src/scripts/vinyl.ts` |
+| The icon and logo mark | `public/favicon.svg` (also the mark beside the name) |
 | The line drawings | `src/components/Machine.astro` |
 
 **Photos.** Put the file in `src/assets/photos/`, import it at the top of
@@ -51,6 +52,14 @@ the slot is blank; delete a chapter's `snippet` to remove the slot.
 
 **Stack.** Every item is backed by Jakub's own commits or his CV. Colleagues'
 repositories in the same organisations are not claimed.
+
+**Icons.** `public/favicon.svg`, a green vinyl record, is the favicon and the
+mark beside the name in the top bar. The home-screen icon is that record on
+ink; after changing the SVG, regenerate it:
+
+```bash
+node -e "const s=require('sharp');s('public/favicon.svg',{density:288}).resize(144,144).png().toBuffer().then(d=>s({create:{width:180,height:180,channels:4,background:'#0b0f0c'}}).composite([{input:d,left:18,top:18}]).png({compressionLevel:9}).toFile('public/apple-touch-icon.png'))"
+```
 
 ## Before it goes live
 
@@ -98,9 +107,11 @@ check `pnpm wrangler whoami` shows the personal account first.
   scrubbed by the scroll or plays once on entry. Without JavaScript the page is
   complete and static.
 - **One exception: the intro** (`components/Intro.astro`, `scripts/intro.ts`),
-  about three seconds on every load, after wodniack.dev. The hero's e-bike
-  boots on an ink cover, rides off and uncovers the page. It never locks the
-  scroll: any scroll, key, click or touch finishes it at once. It is skipped
+  about three seconds on every load, after wodniack.dev. On an ink cover a
+  glossy black record is cut, spins up to 33⅓ rpm and rolls off, uncovering
+  the page. It is drawn in a 2D canvas (`scripts/vinyl.ts`), not three.js, so
+  the first load carries no extra library. It never locks the scroll: any
+  scroll, key, click or touch finishes it at once. It is skipped
   under reduced motion, without JavaScript, and when the address names a
   section (`/#contact`). If the script never arrives, the cover fades by itself
   after six seconds.
@@ -126,5 +137,7 @@ Where the build departs from the mockup, on purpose:
 - A battery's cells fill as it crosses; the drone's rotors spin; the last
   bike's signal arcs appear as it rides.
 - Links with nowhere to go yet (CV, papers) are not rendered as links.
-- The page opens with an intro the mockup doesn't have: the hero's bike
-  draws itself on ink, rides off, and the hero builds in behind it.
+- The page opens with an intro the mockup doesn't have: a vinyl record is cut
+  and spun up on ink, rolls off, and the hero builds in behind it.
+- The favicon is a green vinyl record instead of the bike, and the same record
+  sits beside the name in the top bar.

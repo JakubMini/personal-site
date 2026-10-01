@@ -1,11 +1,11 @@
 ---
-// The startup animation's cover: an ink screen where the hero's e-bike boots,
-// then rides off and uncovers the page. scripts/intro.ts plays it.
+// The startup animation's cover: an ink screen where a vinyl record is cut,
+// spins up and rolls off to uncover the page. scripts/intro.ts plays it and
+// scripts/vinyl.ts draws the record.
 //
 // The inline script runs before the hero is parsed, so the cover is up from
 // the first paint. Without JavaScript, under reduced motion, or when the
 // address names a section, it never sets has-intro and the cover stays hidden.
-import Machine from './Machine.astro';
 import { intro } from '../data/site';
 ---
 
@@ -15,7 +15,7 @@ import { intro } from '../data/site';
   }
 </script>
 <div class="intro" aria-hidden="true">
-  <Machine kind="ebike" class="intro-bike" />
+  <canvas class="intro-record" width="2" height="2" data-label={JSON.stringify(intro.label)}></canvas>
   <p class="intro-log">› <span data-log={JSON.stringify(intro.log)}>{intro.log[0]}</span></p>
-  <p class="intro-charge">000%</p>
+  <p class="intro-speed">00.0 rpm</p>
 </div>
