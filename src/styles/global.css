@@ -1,0 +1,726 @@
+/* One stylesheet for one page. Values are lifted from the desktop mockup
+   (design/desktop-mockup-2026-10-01.pdf), drawn at 1440px wide. */
+
+:root {
+  --green: #2ff27c;
+  --paper: #f3f2ec;
+  --ink: #0b0f0c;
+  --text: #3c403a;
+  --muted: #5a5e58;
+  --slot: #e2e1da;
+  --rule: rgba(11, 15, 12, 0.25);
+  --year: rgba(11, 15, 12, 0.07);
+
+  --display: 'Funnel Display Variable', 'Helvetica Neue', sans-serif;
+  --sans: 'Funnel Sans Variable', 'Helvetica Neue', sans-serif;
+
+  --gutter: clamp(20px, 3.9vw, 56px);
+  --gap: 24px;
+  --band: 300px;
+  --band-line: 56px;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 18px;
+  line-height: 1.5;
+  /* Drawings and sliding rows start outside the viewport; clip, not hidden,
+     so no scroll container is created and pinning keeps working. */
+  overflow-x: clip;
+}
+
+a {
+  color: inherit;
+}
+
+a:hover {
+  opacity: 0.7;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+p,
+h1,
+h2,
+h3,
+ul,
+figure {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- Layout ---------------------------------------------------------- */
+
+.wrap {
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.ruled {
+  border-top: 1.5px solid var(--ink);
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.display {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(56px, 8.4vw, 120px);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.section-head {
+  padding-top: 28px;
+}
+
+.section-head .label {
+  grid-column: 1 / span 3;
+}
+
+.section-head .display {
+  grid-column: 4 / span 9;
+  margin-top: 64px;
+}
+
+/* ---- Hero ------------------------------------------------------------ */
+
+.hero {
+  background: var(--green);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding-top: 28px;
+  font-size: 15px;
+}
+
+.wordmark {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+}
+
+.nav a {
+  text-decoration: none;
+}
+
+.nav .nav-contact {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.pitch {
+  max-width: 560px;
+  padding: 150px 0 36px;
+  font-size: 24px;
+  line-height: 1.35;
+}
+
+.hero-name {
+  padding-inline: calc(var(--gutter) - 12px);
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(56px, 12.4vw, 184px);
+  line-height: 0.88;
+  letter-spacing: -0.055em;
+}
+
+.hero-road {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+}
+
+.hero-bike {
+  position: absolute;
+  right: 12%;
+  bottom: 0;
+  width: 240px;
+}
+
+.hero-facts {
+  padding-top: 24px;
+  padding-bottom: 40px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.fact-label {
+  opacity: 0.6;
+}
+
+.fact-now {
+  grid-column: 1 / span 3;
+}
+
+.fact-previously {
+  grid-column: 4 / span 4;
+}
+
+.fact-education {
+  grid-column: 8 / span 2;
+}
+
+.fact-links {
+  grid-column: 10 / span 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-weight: 600;
+}
+
+.fact-links a {
+  text-decoration: none;
+}
+
+/* ---- About ----------------------------------------------------------- */
+
+.about {
+  padding-top: 140px;
+  padding-bottom: 140px;
+}
+
+.about-side {
+  grid-column: 1 / span 3;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.draft {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.about-main {
+  grid-column: 5 / span 8;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.lead {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(32px, 3.6vw, 52px);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+}
+
+.about-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+  color: var(--text);
+}
+
+/* ---- Photos ---------------------------------------------------------- */
+
+.photo img,
+.photo-slot {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--slot);
+}
+
+.photo-portrait img,
+.photo-portrait .photo-slot {
+  aspect-ratio: 3 / 4;
+}
+
+.photo-slot {
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.photo figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---- Journey: bands -------------------------------------------------- */
+
+#journey .section-head {
+  padding-bottom: 96px;
+}
+
+.band {
+  position: relative;
+  height: var(--band);
+  overflow: hidden;
+  background: var(--green);
+  color: var(--ink);
+}
+
+.band-year {
+  position: absolute;
+  right: -24px;
+  bottom: -64px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(180px, 23.6vw, 340px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: var(--year);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.year-left .band-year {
+  right: auto;
+  left: -24px;
+}
+
+.band-label {
+  position: absolute;
+  left: var(--gutter);
+  top: 24px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.band-line {
+  position: absolute;
+  inset-inline: 0;
+  bottom: var(--band-line);
+  border-top: 1.5px solid currentColor;
+}
+
+.band .machine {
+  position: absolute;
+  left: var(--at);
+  bottom: var(--band-line);
+  height: auto;
+}
+
+.band .machine-drone {
+  width: 260px;
+  bottom: calc(var(--band-line) + 40px);
+}
+
+.band .machine-ebike,
+.band .machine-connected-ebike {
+  width: 280px;
+}
+
+.band .machine-battery {
+  width: 260px;
+}
+
+.band .machine-cargo {
+  width: 330px;
+}
+
+.band-ink {
+  background: var(--ink);
+  color: var(--paper);
+  --year: rgba(243, 242, 236, 0.06);
+}
+
+.band-ink .band-line,
+.band-ink .machine {
+  color: var(--green);
+}
+
+.spokes {
+  stroke-width: 1.5;
+  stroke-opacity: 0.45;
+}
+
+/* ---- Journey: roles -------------------------------------------------- */
+
+.role {
+  padding-top: 64px;
+  padding-bottom: 112px;
+}
+
+.role-last {
+  padding-bottom: 140px;
+}
+
+.role-meta {
+  grid-column: 1 / span 3;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.role-body {
+  grid-column: 4 / span 5;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.role-title {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(32px, 3.1vw, 44px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+.role-summary {
+  color: var(--text);
+}
+
+.role-tags {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.role-photo {
+  grid-column: 10 / span 3;
+}
+
+/* ---- Rows: stack and publications ------------------------------------ */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--rule);
+}
+
+.rows > li {
+  border-top: 1px solid var(--rule);
+}
+
+.row-key {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.row-title {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+#stack {
+  padding-bottom: 140px;
+}
+
+.stack {
+  margin-top: 56px;
+}
+
+.stack .row {
+  align-items: baseline;
+  padding: 22px 0;
+}
+
+.stack .row-key {
+  grid-column: 1 / span 3;
+}
+
+.stack .row-title {
+  grid-column: 4 / span 3;
+  font-size: 30px;
+}
+
+.stack .row-detail {
+  grid-column: 7 / span 6;
+  color: var(--text);
+}
+
+.education,
+.publications {
+  padding-top: 28px;
+  padding-bottom: 140px;
+}
+
+.education .label,
+.publications .label {
+  grid-column: 1 / span 3;
+}
+
+.degree {
+  grid-column: 4 / span 4;
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.degree + .degree {
+  grid-column: 9 / span 4;
+}
+
+.degree-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(96px, 9.7vw, 140px);
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+}
+
+.degree-field {
+  margin-top: 16px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+}
+
+.degree-where {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.degree-detail {
+  color: var(--text);
+}
+
+.pubs {
+  grid-column: 4 / span 9;
+  margin-top: 64px;
+}
+
+.pub {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: var(--gap);
+  align-items: baseline;
+  padding: 24px 0;
+  text-decoration: none;
+}
+
+.pub .row-key {
+  grid-column: 1 / span 2;
+}
+
+.pub .row-title {
+  grid-column: 3 / span 6;
+  font-size: 28px;
+}
+
+.row-arrow {
+  grid-column: 9 / span 1;
+  text-align: right;
+  font-weight: 600;
+}
+
+/* ---- Contact --------------------------------------------------------- */
+
+.contact {
+  background: var(--green);
+  padding-top: 28px;
+  padding-bottom: 40px;
+}
+
+.contact-title {
+  margin: 120px 0 64px;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(56px, 10vw, 150px);
+  line-height: 0.88;
+  letter-spacing: -0.055em;
+}
+
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 48px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(22px, 2.2vw, 32px);
+  letter-spacing: -0.02em;
+}
+
+.contact-links a,
+.underline {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
+
+.colophon {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 140px;
+  padding-top: 20px;
+  border-top: 1.5px solid var(--ink);
+  font-size: 15px;
+}
+
+/* ---- Motion ---------------------------------------------------------- */
+
+/* SplitText clips each line in a .line-mask while it rises. Display type sets
+   line-height under 1, so extend the clip downwards or descenders are cut. */
+.line-mask {
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+/* ---- 404 ------------------------------------------------------------- */
+
+.not-found {
+  min-height: 100vh;
+  padding-top: 28px;
+  background: var(--green);
+}
+
+.not-found .display {
+  margin: 120px 0 48px;
+}
+
+.not-found p:last-child {
+  font-family: var(--display);
+  font-size: 28px;
+}
+
+/* ---- Narrow screens -------------------------------------------------- */
+/* The mockup is desktop only. Below 900px every grid stacks to one column
+   until a mobile design exists. */
+
+@media (max-width: 899px) {
+  :root {
+    --band: 220px;
+    --band-line: 40px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grid > *,
+  .degree + .degree,
+  .pub > * {
+    grid-column: 1 / -1;
+  }
+
+  .pitch {
+    padding-top: 72px;
+    font-size: 20px;
+  }
+
+  .hero-name {
+    font-size: 19vw;
+  }
+
+  .hero-road {
+    height: 110px;
+  }
+
+  .hero-bike {
+    width: 180px;
+  }
+
+  .fact-links {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 24px;
+  }
+
+  .about {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  .about-side {
+    max-width: 320px;
+  }
+
+  .about-body {
+    grid-template-columns: 1fr;
+  }
+
+  .section-head .display,
+  .degree {
+    margin-top: 32px;
+  }
+
+  #journey .section-head {
+    padding-bottom: 56px;
+  }
+
+  .band .machine {
+    scale: 0.7;
+    transform-origin: left bottom;
+  }
+
+  .role {
+    padding-top: 40px;
+    padding-bottom: 72px;
+    row-gap: 16px;
+  }
+
+  .stack .row,
+  .pub {
+    gap: 4px;
+  }
+
+  .pub {
+    grid-template-columns: 1fr;
+  }
+
+  .row-arrow {
+    display: none;
+  }
+
+  .contact-title {
+    margin: 72px 0 40px;
+  }
+
+  .colophon {
+    margin-top: 80px;
+  }
+}

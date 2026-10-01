@@ -1,0 +1,116 @@
+---
+// The line drawings from the design, one per chapter. Stroke is currentColor,
+// so whatever contains the drawing sets its colour.
+// data-wheel="cx cy r" (viewBox units) is what scripts/motion.ts rolls.
+import type { Machine } from '../data/site';
+
+interface Props {
+  kind: Machine;
+  class?: string;
+}
+
+const { kind, class: className } = Astro.props;
+
+const viewBox: Record<Machine, string> = {
+  drone: '0 0 320 150',
+  ebike: '0 0 380 190',
+  'connected-ebike': '0 0 380 190',
+  battery: '0 0 320 160',
+  cargo: '0 0 420 200',
+};
+
+// Column by column, top cell first, so a stagger fills the pack left to right.
+const cells = [52, 92, 132, 172, 212, 252].flatMap((cx) => [cx, cx]).map((cx, i) => ({
+  cx,
+  cy: i % 2 === 0 ? 58 : 98,
+}));
+
+const isBike = kind === 'ebike' || kind === 'connected-ebike';
+---
+
+<svg
+  class:list={['machine', `machine-${kind}`, className]}
+  viewBox={viewBox[kind]}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    kind === 'drone' && (
+      <Fragment>
+        <ellipse class="rotor" cx="50" cy="30" rx="42" ry="7" />
+        <ellipse class="rotor" cx="270" cy="30" rx="42" ry="7" />
+        <path d="M50 30 V48 M270 30 V48 M50 48 L120 68 H200 L270 48" />
+        <rect x="120" y="58" width="80" height="34" rx="10" />
+        <circle cx="160" cy="104" r="10" />
+        <path d="M132 92 L118 128 M188 92 L202 128 M104 128 H130 M190 128 H216" />
+      </Fragment>
+    )
+  }
+  {
+    isBike && (
+      <Fragment>
+        <g data-wheel="80 140 46">
+          <circle cx="80" cy="140" r="46" />
+          <circle cx="80" cy="140" r="14" />
+          <path class="spokes" d="M80 126 V94 M92.1 147 L119.8 163 M67.9 147 L40.2 163" />
+        </g>
+        <g data-wheel="300 140 46">
+          <circle cx="300" cy="140" r="46" />
+          <circle cx="300" cy="140" r="4" />
+          <path class="spokes" d="M300 136 V94 M303.5 142 L339.8 163 M296.5 142 L260.2 163" />
+        </g>
+        <path d="M80 140 L175 144 L155 66 Z M175 144 L150 50 M134 48 H166 M155 68 L262 62 M175 144 L268 86 M262 54 L270 86 L300 140 M262 54 L258 42 L282 38" />
+        <rect x="188" y="100" width="70" height="14" rx="6" transform="rotate(-31 223 107)" />
+        <circle cx="175" cy="144" r="9" />
+        <path d="M175 144 L188 160" />
+      </Fragment>
+    )
+  }
+  {
+    kind === 'connected-ebike' && (
+      <Fragment>
+        <path class="signal" d="M286 24 A16 16 0 0 1 302 40" />
+        <path class="signal" d="M286 10 A30 30 0 0 1 316 40" />
+      </Fragment>
+    )
+  }
+  {
+    kind === 'battery' && (
+      <Fragment>
+        <rect x="14" y="24" width="270" height="130" rx="12" />
+        {cells.map(({ cx, cy }) => (
+          <circle class="cell" cx={cx} cy={cy} r="14" fill="currentColor" fill-opacity="0" />
+        ))}
+        <path d="M38 134 H266 M60 24 V8 H120 V24" />
+        <rect x="284" y="56" width="18" height="22" rx="3" />
+        <rect x="284" y="100" width="18" height="22" rx="3" />
+      </Fragment>
+    )
+  }
+  {
+    kind === 'cargo' && (
+      <Fragment>
+        <circle cx="104" cy="162" r="30" stroke-opacity="0.4" />
+        <circle cx="334" cy="162" r="30" stroke-opacity="0.4" />
+        <g data-wheel="90 168 30">
+          <circle cx="90" cy="168" r="30" />
+          <circle cx="90" cy="168" r="4" />
+          <path class="spokes" d="M90 164 V138 M93.5 170 L116 183 M86.5 170 L64 183" />
+        </g>
+        <g data-wheel="320 168 30">
+          <circle cx="320" cy="168" r="30" />
+          <circle cx="320" cy="168" r="4" />
+          <path class="spokes" d="M320 164 V138 M323.5 170 L346 183 M316.5 170 L294 183" />
+        </g>
+        <path d="M60 150 H392" />
+        <rect x="212" y="46" width="180" height="104" rx="6" />
+        <path d="M232 72 H372 M232 98 H372 M96 150 L112 34 H204 V150 M150 110 H186 L192 92 M112 84 L96 82" />
+      </Fragment>
+    )
+  }
+</svg>

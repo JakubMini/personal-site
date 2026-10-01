@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { person } from '../data/site';
+---
+
+<Layout title={`Not found — ${person.name}`}>
+  <main class="not-found">
+    <div class="wrap">
+      <p class="label">404</p>
+      <h1 class="display">Wrong turn.</h1>
+      <p><a class="underline" href="/">Back to the start</a></p>
+    </div>
+  </main>
+</Layout>

@@ -1,0 +1,185 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Machine from '../components/Machine.astro';
+import Photo from '../components/Photo.astro';
+import { about, education, hero, journey, person, publications, stack } from '../data/site';
+
+const sections = [
+  ['about', 'About'],
+  ['journey', 'Journey'],
+  ['stack', 'Stack'],
+  ['education', 'Education'],
+  ['publications', 'Publications'],
+];
+const mail = `mailto:${person.email}`;
+const year = new Date().getFullYear();
+---
+
+<Layout>
+  <header class="hero" id="top">
+    <div class="wrap topbar">
+      <a class="wordmark" href="#top">{person.name}</a>
+      <nav class="nav" aria-label="Sections">
+        {sections.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
+        <a class="nav-contact" href="#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="wrap">
+      <p class="pitch">{hero.pitch}</p>
+    </div>
+    <h1 class="hero-name">{person.name}</h1>
+    <div class="hero-road">
+      <Machine kind="ebike" class="hero-bike" />
+    </div>
+    <div class="ruled">
+      <div class="wrap grid hero-facts">
+        <div class="fact-now"><div class="fact-label">Now</div>{hero.now}</div>
+        <div class="fact-previously"><div class="fact-label">Previously</div>{hero.previously}</div>
+        <div class="fact-education"><div class="fact-label">Education</div>{hero.education}</div>
+        <div class="fact-links">
+          <a href={mail}>Email ↗</a>
+          <a href={person.linkedin} rel="me">LinkedIn ↗</a>
+          {person.cv && <a href={person.cv} download>CV ↓</a>}
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="about" class="wrap grid about" aria-labelledby="about-label">
+      <div class="about-side">
+        <h2 class="label" id="about-label">About{about.draft && <span class="draft"> (draft)</span>}</h2>
+        <Photo photo={about.portrait} portrait />
+      </div>
+      <div class="about-main">
+        <p class="lead" data-lines>{about.lead}</p>
+        <div class="about-body">
+          {about.body.map((p) => <p data-rise>{p}</p>)}
+        </div>
+      </div>
+    </section>
+
+    <section id="journey" aria-labelledby="journey-title">
+      <div class="ruled">
+        <div class="wrap grid section-head">
+          <p class="label">Journey</p>
+          <h2 class="display" id="journey-title" data-lines>Five machines,<br />all electric.</h2>
+        </div>
+      </div>
+
+      {
+        journey.map((c, i) => {
+          const n = String(i + 1).padStart(2, '0');
+          const last = i === journey.length - 1;
+          return (
+            <article class="chapter" aria-labelledby={`role-${n}`}>
+              <div
+                class:list={['band', { 'band-ink': last, 'year-left': i % 2 === 1 }]}
+                data-heading={c.heading}
+                style={`--at: ${c.at}`}
+              >
+                <p class="band-year" aria-hidden="true">{c.year}</p>
+                <p class="band-label">{n} — {c.label}</p>
+                <div class="band-line" />
+                <Machine kind={c.machine} />
+              </div>
+              <div class:list={['wrap grid role', { 'role-last': last }]}>
+                <p class="role-meta" data-rise>
+                  {c.dates}<br />{c.where}
+                </p>
+                <div class="role-body">
+                  <h3 class="role-title" id={`role-${n}`} data-lines>{c.role}</h3>
+                  <p class="role-summary" data-lines>{c.summary}</p>
+                  <p class="role-tags" data-rise>{c.tags.join(' / ')}</p>
+                </div>
+                <div class="role-photo" data-rise>
+                  <Photo photo={c.photo} />
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+    </section>
+
+    <section id="stack" class="ruled" aria-labelledby="stack-title">
+      <div class="wrap grid section-head">
+        <p class="label">Stack</p>
+        <h2 class="display" id="stack-title" data-lines>Silicon to cloud.</h2>
+      </div>
+      <div class="wrap">
+        <ul class="rows stack">
+          {
+            stack.map((s) => (
+              <li class="grid row" data-slide>
+                <span class="row-key">{s.n}</span>
+                <span class="row-title">{s.layer}</span>
+                <span class="row-detail">{s.items}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section id="education" class="ruled" aria-labelledby="education-label">
+      <div class="wrap grid education">
+        <h2 class="label" id="education-label">Education</h2>
+        {
+          education.map((e) => (
+            <div class="degree">
+              <p class="degree-name" data-lines>{e.degree}</p>
+              <h3 class="degree-field" data-rise>{e.field}</h3>
+              <p class="degree-where" data-rise>{e.where}</p>
+              <p class="degree-detail" data-rise>{e.detail}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section id="publications" class="ruled" aria-labelledby="publications-label">
+      <div class="wrap grid publications">
+        <h2 class="label" id="publications-label">Patents &amp; publications</h2>
+        <ul class="rows pubs">
+          {
+            publications.map((p) => {
+              const inner = (
+                <Fragment>
+                  <span class="row-key">{p.venue}</span>
+                  <span class="row-title">{p.title ?? '[Paper title]'}</span>
+                  <span class="row-arrow" aria-hidden="true">{p.href ? '↗' : ''}</span>
+                </Fragment>
+              );
+              return (
+                <li data-rise>
+                  {p.href ? <a class="pub" href={p.href}>{inner}</a> : <div class="pub">{inner}</div>}
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact" class="contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <p class="label">Contact</p>
+      <h2 class="contact-title" id="contact-title" data-lines>Let's build something that moves.</h2>
+      <p class="contact-links" data-rise>
+        <a href={mail}>{person.email}</a>
+        <a href={person.linkedin} rel="me">LinkedIn</a>
+        {person.cv && <a href={person.cv} download>Download CV</a>}
+      </p>
+      <div class="colophon">
+        <span>© {year} {person.name}</span>
+        <span>{person.location}</span>
+      </div>
+    </div>
+  </footer>
+</Layout>
+
+<script>
+  import '../scripts/motion';
+</script>

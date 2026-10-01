@@ -1,0 +1,24 @@
+---
+// A photo slot: the image once one is set in data/site.ts, a grey box until then.
+import { Image } from 'astro:assets';
+import type { Photo } from '../data/site';
+
+interface Props {
+  photo: Photo;
+  // The portrait carries its label inside the box; chapter photos caption below.
+  portrait?: boolean;
+}
+
+const { photo, portrait = false } = Astro.props;
+---
+
+<figure class:list={['photo', { 'photo-portrait': portrait }]}>
+  {
+    photo.src ? (
+      <Image src={photo.src} alt={photo.alt} widths={[400, 800]} sizes="(min-width: 900px) 25vw, 100vw" />
+    ) : (
+      <div class="photo-slot">{portrait && <span>{photo.caption}</span>}</div>
+    )
+  }
+  {!portrait && <figcaption>{photo.caption}</figcaption>}
+</figure>
