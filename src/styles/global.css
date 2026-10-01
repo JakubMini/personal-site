@@ -470,6 +470,12 @@ ul {
   overflow-x: auto;
 }
 
+.snippet-note {
+  max-width: 62ch;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
 .snippet-blank {
   display: flex;
   flex-direction: column;

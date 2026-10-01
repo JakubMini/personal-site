@@ -25,6 +25,8 @@ export interface Snippet {
   // A Shiki language id: 'c', 'cpp', 'python', 'sql', 'ts', 'yaml', ...
   lang?: string;
   code?: string;
+  // The problem the code solves, in a sentence or two, shown above it.
+  note?: string;
 }
 
 export const person = {
