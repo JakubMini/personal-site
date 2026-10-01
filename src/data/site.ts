@@ -263,6 +263,10 @@ export const education = [
     where: 'Imperial College London, 2017 – 2021',
     detail:
       'Thesis on memristor-enabled reconfigurable analogue systems. Graduate Teaching Assistant in EE labs, amplifier design and FPGA.',
+    link: {
+      label: 'Read the thesis',
+      href: 'https://spiral.imperial.ac.uk/entities/publication/a6fcdfcd-2b67-4008-8dc3-40a7eb30e746',
+    },
   },
   {
     degree: 'MEng',
@@ -280,7 +284,16 @@ export const publications: { venue: string; title: string | null; href: string |
     title: 'US11421527B2, co-inventor',
     href: 'https://patents.google.com/patent/US11421527B2',
   },
+  {
+    venue: 'PhD thesis, 2021',
+    title: 'Memristor enabled reconfigurable analogue systems',
+    href: 'https://spiral.imperial.ac.uk/entities/publication/a6fcdfcd-2b67-4008-8dc3-40a7eb30e746',
+  },
+  {
+    venue: 'IEEE ICEIC, 2020',
+    title: 'Memristor-enabled reconfigurable integrated circuits',
+    href: 'https://spiral.imperial.ac.uk/entities/publication/12b492f5-dc43-497a-aed7-2d24a2bce300',
+  },
   { venue: 'IEEE MEMRISYS', title: null, href: null },
   { venue: 'IEEE CAS', title: null, href: null },
-  { venue: 'IEEE', title: null, href: null },
 ];

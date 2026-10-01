@@ -165,6 +165,11 @@ const year = new Date().getFullYear();
               <h3 class="degree-field" data-rise>{e.field}</h3>
               <p class="degree-where" data-rise>{e.where}</p>
               <p class="degree-detail" data-rise>{e.detail}</p>
+              {e.link && (
+                <p class="degree-link" data-rise>
+                  <a class="underline" href={e.link.href}>{e.link.label} <span aria-hidden="true">↗</span></a>
+                </p>
+              )}
             </div>
           ))
         }
