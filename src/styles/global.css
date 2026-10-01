@@ -1093,6 +1093,189 @@ ul {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---- Fleet architecture figure ------------------------------------- */
+
+.fleet-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px 24px;
+  margin-bottom: 14px;
+}
+
+.fleet:not(.is-live) .fleet-bar {
+  display: none;
+}
+
+.fleet-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fleet-tab,
+.fleet-btn {
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 7px 16px;
+  cursor: pointer;
+}
+
+.fleet-tab:hover,
+.fleet-btn:hover {
+  border-color: var(--ink);
+}
+
+.fleet-tab[aria-selected='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--green);
+  font-weight: 600;
+}
+
+.fleet-tab:focus-visible,
+.fleet-btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.fleet-ctl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fleet-btn {
+  padding: 7px 12px;
+  min-width: 44px;
+}
+
+.fleet-play {
+  min-width: 72px;
+}
+
+.fleet-count {
+  min-width: 5ch;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.fleet-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--sans);
+}
+
+.fleet-svg text { fill: var(--ink); }
+.fz rect { fill: rgba(250, 249, 245, 0.7); stroke: var(--rule); }
+.fleet-svg .fz text { fill: var(--muted); font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
+.fz-tcu { fill: none; stroke: var(--ink); stroke-width: 1.2; }
+.fleet-svg .fz-tcu-label, .fleet-svg .fbus-label { fill: var(--muted); font-family: var(--mono); font-size: 12px; }
+
+.fe { fill: none; stroke: rgba(11, 15, 12, 0.3); stroke-width: 1.5; stroke-linejoin: round; }
+.fe.is-on { stroke: #146b37; stroke-width: 2.6; }
+.fbus { stroke: var(--ink); stroke-width: 2; }
+.fbus.is-on { stroke: #146b37; }
+
+.fp { cursor: pointer; }
+.fp:focus { outline: none; }
+.fp-box { fill: #faf9f5; stroke: var(--rule); stroke-width: 1.2; transition: fill 0.25s, stroke 0.25s; }
+.fp-chip-box, .fp-chip .fp-box { fill: #fff; }
+.fp:hover .fp-box { stroke: var(--ink); }
+.fp:focus-visible .fp-box { stroke: #1d6a86; stroke-width: 3; }
+.fp.is-on .fp-box { fill: #dffbe9; stroke: #146b37; stroke-width: 2; }
+.fp.is-selected .fp-box { stroke: var(--ink); stroke-width: 2.6; }
+
+.fleet-svg .fp-title { font-size: 16px; font-weight: 600; }
+.fleet-svg .fp-sub { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
+.fleet-svg .fp-chip { font-size: 12.5px; }
+.fleet-svg .fp-ecu { font-family: var(--mono); font-size: 11px; font-weight: 600; }
+.fp-slot { fill: var(--slot); }
+.fleet-svg .fp-slot-t { font-family: var(--mono); font-size: 9.5px; fill: var(--muted); }
+.fp-slot.is-filling { animation: fleet-slot-fill 1.4s ease forwards; }
+.fp-slot.is-new { fill: var(--green); }
+
+@keyframes fleet-slot-fill {
+  from { fill: var(--slot); }
+  to { fill: var(--green); }
+}
+
+.fpkt circle { fill: var(--green); stroke: #146b37; stroke-width: 2; }
+.fpkt-tag { fill: var(--ink); }
+.fleet-svg .fpkt text { fill: var(--green); font-family: var(--mono); font-size: 11px; font-weight: 600; }
+
+.fleet-foot {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--gap);
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.fleet:not(.is-live) .fleet-foot {
+  display: none;
+}
+
+.fleet-caption {
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.fleet-detail-title {
+  font-weight: 600;
+}
+
+.fleet-detail-body {
+  font-size: 15px;
+  color: var(--text);
+}
+
+.fleet-detail-tags {
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Without JS: each flow as a written list under the map. */
+.fleet-static {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap);
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.fleet.is-live .fleet-static {
+  display: none;
+}
+
+.fleet-static-title {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.fleet-static ol {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-slot.is-filling { animation: none; fill: var(--green); }
+  .fp-box { transition: none; }
+}
+
 /* ---- Motion ---------------------------------------------------------- */
 
 /* SplitText clips each line in a .line-mask while it rises. Display type sets
@@ -1206,6 +1389,19 @@ ul {
 
   .tftp-host {
     overflow-x: auto;
+  }
+
+  .fleet-scroll {
+    overflow-x: auto;
+  }
+
+  .fleet-svg {
+    min-width: 900px;
+  }
+
+  .fleet-foot,
+  .fleet-static {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .tftp-figure {

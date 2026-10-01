@@ -35,9 +35,9 @@ export interface Snippet {
   note?: string;
   // The note's heading; 'The problem' unless set.
   noteLabel?: string;
-  // An animated figure: 'lean' beside the note (components/LeanFigure.astro),
-  // 'tftp' full width under it (components/TftpFigure.astro).
-  figure?: 'lean' | 'tftp';
+  // An animated figure: 'lean' beside the note (components/LeanFigure.astro);
+  // 'tftp' and 'fleet' full width under it (TftpFigure.astro, FleetFigure.astro).
+  figure?: 'lean' | 'tftp' | 'fleet';
 }
 
 export const person = {
@@ -215,7 +215,12 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
       'Firmware and fleet software for an electric cargo vehicle: STM32 body-control, sound, immobiliser and DC-DC ECUs, VESC motor-control work, and a Raspberry Pi telematics stack on balenaOS. Built the CAN bootloader and signed over-the-air updates for 30+ connected vehicles, plus the CI that took builds from half a day to under ten minutes and releases from monthly to weekly. Refactored the core ECUs to MISRA C with GoogleTest, cutting static-analysis findings by 90%, and mentored two engineers.',
     tags: ['STM32', 'CAN', 'Fleet OTA', 'balenaOS', 'MISRA C', 'EN ISO 13849-1'],
     photo: { alt: 'Electric cargo vehicle fleet', caption: 'Cargo fleet' },
-    snippet: { caption: '[Code snippet]' },
+    snippet: {
+      caption: 'The fleet architecture, from a git tag to a flashed ECU. Pick a flow, or select any part.',
+      noteLabel: 'The architecture',
+      note: 'Six ECUs, each with its own bootloader and application, share two CAN buses with a Raspberry Pi TCU running balenaOS, which bridges the vehicle to AWS. A firmware release is tagged once, built and signed in CI, pinned in a fleet manifest and sent out as an `IoT Job`; each TCU fetches the images, verifies them and flashes its ECUs over CAN. The TCU itself updates through balenaCloud, and every vehicle reports telemetry, logs and health back.',
+      figure: 'fleet',
+    },
   },
   {
     label: 'Back on e-bikes',

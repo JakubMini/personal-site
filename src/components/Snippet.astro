@@ -7,6 +7,7 @@ import { Code } from 'astro:components';
 import type { Snippet } from '../data/site';
 import LeanFigure from './LeanFigure.astro';
 import TftpFigure from './TftpFigure.astro';
+import FleetFigure from './FleetFigure.astro';
 
 interface Props {
   snippet: Snippet;
@@ -40,7 +41,7 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
 <figure class="snippet">
   {
     snippet.note && (
-      <div class:list={['snippet-head', { 'snippet-head-wide': snippet.figure === 'tftp' }]}>
+      <div class:list={['snippet-head', { 'snippet-head-wide': snippet.figure === 'tftp' || snippet.figure === 'fleet' }]}>
         <div class="snippet-explain">
           <p class="snippet-label">{snippet.noteLabel ?? 'The problem'}</p>
           <p class="snippet-note">{noteParts.map((part, i) => (i % 2 ? <code>{part}</code> : part))}</p>
@@ -50,6 +51,13 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
           snippet.figure === 'tftp' && (
             <div class="tftp-host">
               <TftpFigure />
+            </div>
+          )
+        }
+        {
+          snippet.figure === 'fleet' && (
+            <div class="tftp-host">
+              <FleetFigure />
             </div>
           )
         }
