@@ -40,7 +40,7 @@ const blankLines = Array.from({ length: 8 }, (_, i) => String(i + 1).padStart(2,
   {
     snippet.note && (
       <div class="snippet-head">
-        <div>
+        <div class="snippet-explain">
           <p class="snippet-label">The problem</p>
           <p class="snippet-note">{noteParts.map((part, i) => (i % 2 ? <code>{part}</code> : part))}</p>
         </div>

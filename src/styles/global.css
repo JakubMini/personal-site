@@ -415,14 +415,17 @@ ul {
   padding-bottom: 140px;
 }
 
+/* Dates and place sit above the title rather than in a column of their own,
+   so the role text, photo and snippet use the full width of the page. */
 .role-meta {
-  grid-column: 1 / span 3;
+  margin-bottom: -8px;
   font-size: 15px;
   color: var(--muted);
 }
 
 .role-body {
-  grid-column: 4 / span 5;
+  grid-column: 1 / span 7;
+  padding-right: var(--gap);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -437,6 +440,7 @@ ul {
 }
 
 .role-summary {
+  max-width: 66ch;
   color: var(--text);
 }
 
@@ -446,12 +450,12 @@ ul {
 }
 
 .role-photo {
-  grid-column: 10 / span 3;
+  grid-column: 8 / span 5;
 }
 
 .role-snippet {
-  grid-column: 4 / span 9;
-  margin-top: 40px;
+  grid-column: 1 / -1;
+  margin-top: 48px;
 }
 
 /* ---- Code snippets --------------------------------------------------- */
@@ -697,10 +701,18 @@ ul {
 
 /* ---- Snippet head: the problem, its figure, then the fix -------------- */
 
+/* The figure's legend and readout leave its block (display: contents) and sit
+   in the left column under the note, level with the figure's bottom edge. */
 .snippet-head {
   display: grid;
-  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
-  gap: var(--gap);
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-areas:
+    'note    figure'
+    '.       figure'
+    'legend  figure'
+    'readout figure';
+  grid-template-rows: auto 1fr auto auto;
+  column-gap: var(--gap);
   align-items: start;
   padding: 20px 0 28px;
   border-top: 1px solid var(--rule);
@@ -765,6 +777,12 @@ ul {
 .lean-figure .lf-t-upright { fill: #146b37; font-weight: 600; }
 .lean-figure .lf-t-guide { fill: var(--muted); }
 
+.snippet-explain { grid-area: note; }
+.lean-block { display: contents; }
+.lean-host { grid-area: figure; }
+.lean-legend { grid-area: legend; }
+.lean-readout { grid-area: readout; }
+
 /* The still and the 3D render share one box; the render fades in over the still. */
 .lean-host {
   position: relative;
@@ -817,9 +835,9 @@ ul {
 
 .lean-legend {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 18px;
-  margin-top: 12px;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 24px;
   font-size: 13px;
   color: var(--muted);
 }
@@ -847,8 +865,10 @@ ul {
 .lg-upright { --swatch: #146b37; }
 
 .lean-readout {
-  margin-top: 8px;
-  font-size: 15px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-size: 17px;
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
@@ -979,6 +999,8 @@ ul {
 
   .snippet-head {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'note' 'figure' 'legend' 'readout';
+    grid-template-rows: none;
   }
 
   .pub {

@@ -86,10 +86,10 @@ const year = new Date().getFullYear();
                 <Machine kind={c.machine} />
               </div>
               <div class:list={['wrap grid role', { 'role-last': last }]}>
-                <p class="role-meta" data-rise>
-                  {c.dates}<br />{c.where}
-                </p>
                 <div class="role-body">
+                  <p class="role-meta" data-rise>
+                    {c.dates} · {c.where}
+                  </p>
                   <h3 class="role-title" id={`role-${n}`} data-lines>{c.role}</h3>
                   <p class="role-summary" data-lines>{c.summary}</p>
                   <p class="role-tags" data-rise>{c.tags.join(' / ')}</p>
