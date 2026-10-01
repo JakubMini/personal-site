@@ -2,6 +2,7 @@
 // Placeholders still to fill are listed under "Before it goes live" in README.md.
 
 import type { ImageMetadata } from 'astro';
+import portrait from '../assets/photos/portrait.jpg';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
@@ -44,7 +45,7 @@ export const about = {
     'I design the boards, write the firmware, and build the pipelines that keep machines updated long after they leave the factory.',
     'Before industry, a PhD at Imperial on reconfigurable analogue circuits. Away from the desk: cycling and touring, Formula 1, photography.',
   ],
-  portrait: { alt: 'Jakub Szypicyn', caption: 'Portrait' } as Photo,
+  portrait: { src: portrait, alt: 'Jakub Szypicyn, smiling, in a white shirt and striped tie', caption: 'Portrait' } as Photo,
 };
 
 export type Machine = 'drone' | 'ebike' | 'battery' | 'cargo' | 'connected-ebike';

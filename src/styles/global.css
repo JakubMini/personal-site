@@ -287,6 +287,13 @@ ul {
   aspect-ratio: 3 / 4;
 }
 
+/* Rounded on the figure, not the img, so the image can scale inside the
+   corners while it fades in (scripts/motion.ts). */
+.photo-portrait {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
 .photo-slot {
   display: flex;
   align-items: flex-end;

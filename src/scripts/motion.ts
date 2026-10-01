@@ -133,6 +133,17 @@ function reveals() {
     });
   });
 
+  // The portrait fades up from slightly zoomed in, settling inside its corners.
+  gsap.utils.toArray<HTMLElement>('.photo-portrait img').forEach((img) => {
+    gsap.from(img, {
+      autoAlpha: 0,
+      scale: 1.08,
+      duration: 1.6,
+      ease: 'power2.out',
+      scrollTrigger: { trigger: img, start: 'top 85%', once: true },
+    });
+  });
+
   // Stack rows come in from alternating sides.
   gsap.utils.toArray<HTMLElement>('[data-slide]').forEach((el, i) => {
     gsap.from(el, {
