@@ -4,7 +4,7 @@ import { defineConfig } from 'astro/config';
 // serves as Workers static assets (wrangler.jsonc). No adapter, no server.
 export default defineConfig({
   // Turns on the canonical link and og:url.
-  site: 'https://jakubszypicyn.dev',
+  site: 'https://jakubszypicyn.com',
   // The 3D lean figure's chunk (three.js) is over Vite's default warning size.
   // It loads only when the figure nears the viewport, so the warning is noise.
   vite: {

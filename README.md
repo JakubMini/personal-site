@@ -68,7 +68,6 @@ node -e "const s=require('sharp');s('public/favicon.svg',{density:288}).resize(1
 - [ ] Code for the snippet slots, or delete the ones not wanted
 - [ ] A CV cut for the public site (no phone number)
 - [ ] Rewrite the About draft, then set `about.draft` to `false`
-- [ ] Buy `jakubszypicyn.dev` (`site` in `astro.config.mjs` already points at it)
 - [ ] A mobile design: below 900px the page is a stacked fallback, not a designed layout
 
 ## Hosting
@@ -82,7 +81,7 @@ integration, so no Cloudflare token is stored in GitHub. One-time setup:
    `wrangler.jsonc`, or the build fails.
 2. Build command `pnpm build`, deploy command `npx wrangler deploy`,
    production branch `main`.
-3. Domain: `jakubszypicyn.dev`, bought with Cloudflare Registrar (no markup on
+3. Domain: `jakubszypicyn.com`, bought with Cloudflare Registrar (no markup on
    renewal). On the Worker: Settings → Domains & Routes → Add custom domain.
 
 After that a push to `main` deploys, and other branches get preview URLs.

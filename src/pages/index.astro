@@ -16,9 +16,19 @@ const sections = [
 ];
 const mail = `mailto:${person.email}`;
 const year = new Date().getFullYear();
+// Tells search engines whose page this is, for a search on the name.
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: person.name,
+  url: Astro.site?.href,
+  description: hero.pitch,
+  sameAs: [person.linkedin],
+};
 ---
 
 <Layout>
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(personLd)} />
   <Intro />
   <header class="hero" id="top">
     <div class="wrap topbar">
