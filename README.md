@@ -36,7 +36,9 @@ Until then the slot is a grey box with its caption.
 
 **Photographs** (`photography.photos`) are shown whole, in justified rows at
 each photo's own shape, in the order listed; add one by importing it and
-adding a line with its alt text and caption. A white frame baked into an
+adding a line with its alt text and caption. Every row fills the width, the
+last one too, so keep the count one that ends on a full row (three or four
+to a row on a desktop). A white frame baked into an
 export should be cut off first (`sharp(file).trim()`); the files are kept at
 about 2000px on the long edge, as Instagram exports them.
 

@@ -1786,19 +1786,14 @@ ul {
 
 /* Justified rows: each photo keeps its own shape (--ar, width over height)
    and the row's photos grow in proportion to it, so they share one height
-   and fill the width. --row is the height a row aims for; the last row keeps
-   it rather than stretching, which is what the ::after is for. */
+   and fill the width, the last row included. --row is the height a row
+   starts from before it grows. */
 .ph-grid {
   --row: 420px;
   display: flex;
   flex-wrap: wrap;
   gap: 40px var(--gap);
   padding-block: 48px 140px;
-}
-
-.ph-grid::after {
-  content: '';
-  flex-grow: 1000000;
 }
 
 .shot {

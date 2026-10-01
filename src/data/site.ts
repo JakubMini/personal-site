@@ -25,6 +25,7 @@ import bollards from '../assets/photos/bollards.jpg';
 import throughTheWindow from '../assets/photos/through-the-window.jpg';
 import underTheBridge from '../assets/photos/under-the-bridge.jpg';
 import piccadillyCircus from '../assets/photos/piccadilly-circus.jpg';
+import cliftonBridge from '../assets/photos/clifton-suspension-bridge.jpg';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
@@ -458,6 +459,8 @@ export const vinyls = {
 
 // The photography page: the photos in this order, in justified rows at each
 // photo's own shape (nothing is cropped), with a short caption under each.
+// Every row fills the width, the last one too, so keep the count one that
+// ends on a full row (three or four to a row on a desktop).
 // Without `src` a photo is a grey slot (Photo.astro).
 export const photography = {
   eyebrow: 'Away from the desk',
@@ -465,8 +468,8 @@ export const photography = {
   lead: '[What you shoot, on what, and since when. One line, two at most.]',
   handle: '@jakub_m_s.jpeg',
   photos: [
-    { src: milkyWay, alt: 'The Milky Way across a dark sky, with the streak of a meteor at the lower left', caption: 'A meteor through the Milky Way' },
-    { src: makingFire, alt: 'A Maasai man in red, crouching and blowing on a bundle of smoking kindling', caption: 'Making fire' },
+    { src: milkyWay, alt: 'The Milky Way across a dark sky, with the streak of a satellite at the lower left', caption: 'A satellite through the Milky Way' },
+    { src: makingFire, alt: 'A Maasai man in red, crouching and blowing on a bundle of smoking kindling', caption: 'Maasai fire' },
     { src: balconyShadow, alt: 'Black and white: a wrought-iron balcony throws a slatted shadow across a white wall and a sash window with flower boxes', caption: 'Balcony shadow' },
     { src: buffalo, alt: 'A Cape buffalo standing in tall golden grass, the herd grazing behind it', caption: 'Buffalo in the long grass' },
     { src: lionCub, alt: 'A lion cub from behind, walking towards tall grass, with hazy mountains and a lone acacia beyond', caption: 'A lion cub, heading for the grass' },
@@ -481,5 +484,6 @@ export const photography = {
     { src: piccadillyCircus, alt: 'A woman coming up the steps of Piccadilly Circus station, seen through the brass handrails', caption: 'Piccadilly Circus, London' },
     { src: pavementArtist, alt: 'A pavement artist in headphones kneeling over a chalk portrait, boxes of pastels around him', caption: 'Pastels on the pavement' },
     { src: yellow, alt: 'A bright yellow timber structure of curved walls against a deep blue sky', caption: 'Yellow on blue' },
+    { src: cliftonBridge, alt: 'The Clifton Suspension Bridge from above the gorge, its deck and cables running away to the far tower, with the cliffs below', caption: 'Clifton Suspension Bridge, Bristol' },
   ] as Photo[],
 };
