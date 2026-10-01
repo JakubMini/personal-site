@@ -185,3 +185,7 @@ export const SCREENS: Screen[] = [
 
 // Where the click-through starts.
 export const START = 'overview';
+
+// Under the window: who sees what, and how riders' data is kept.
+export const NOTE =
+  'Staff see the fleet through scopes (telemetry viewer, support, manufacturing, super admin) enforced in the database itself: a rider’s name and location stay masked unless the scope needs them, location is recorded only with the rider’s consent, admin changes need a second factor, and deleting an account erases the rider’s data. Every person and bike shown here is made up.';

@@ -12,7 +12,6 @@ export function initDash(root: HTMLElement) {
   const view = root.querySelector<HTMLElement>('[data-dash-view]')!;
   const path = root.querySelector('[data-dash-path]')!;
   const more = root.querySelector<HTMLElement>('[data-dash-more]')!;
-  const caption = root.querySelector('[data-dash-caption]')!;
   const back = root.querySelector<HTMLButtonElement>('[data-dash-back]')!;
   const history: string[] = [];
   let current = [...screens].find(([, s]) => !s.hidden)![0];
@@ -36,7 +35,6 @@ export function initDash(root: HTMLElement) {
     current = id;
     view.scrollTop = 0;
     path.textContent = next.dataset.path!;
-    caption.textContent = next.dataset.caption!;
     more.hidden = !('tall' in next.dataset);
     back.disabled = history.length === 0;
   };

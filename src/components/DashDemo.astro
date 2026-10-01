@@ -3,7 +3,7 @@
 // with the sidebar, rows and tabs clickable where they are on the page
 // (scripts/dash-demo.ts). Without JS: the first screen, as a picture.
 import { Image } from 'astro:assets';
-import { SCREENS, START, WIDTH } from '../data/dashboard';
+import { NOTE, SCREENS, START, WIDTH } from '../data/dashboard';
 
 const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
 const first = SCREENS.find((s) => s.id === START)!;
@@ -25,7 +25,6 @@ const HOST = 'localhost:5181';
             class="dash-screen"
             data-screen={s.id}
             data-path={HOST + s.path}
-            data-caption={s.caption}
             data-tall={s.height > 900 ? '' : undefined}
             hidden={s.id !== START}
             style={`aspect-ratio: ${WIDTH} / ${s.height}`}
@@ -45,10 +44,7 @@ const HOST = 'localhost:5181';
       }
     </div>
   </div>
-  <figcaption class="dash-caption">
-    <span data-dash-caption aria-live="polite">{first.caption}</span>
-    <span class="dash-hint">Try the sidebar, rows and tabs. Demo data, from a local copy of the platform.</span>
-  </figcaption>
+  <figcaption class="dash-caption">{NOTE}</figcaption>
 </figure>
 
 <script>

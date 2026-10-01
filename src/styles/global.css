@@ -510,7 +510,7 @@ ul {
    bottom: the view keeps its 1440 x 900 shape, so its width follows the
    height left over. */
 .dash {
-  max-width: calc((100svh - 150px) * 1440 / 900);
+  max-width: calc((100svh - 190px) * 1440 / 900);
   margin: 0 auto;
 }
 
@@ -660,23 +660,14 @@ ul {
 }
 
 .dash:not(.is-live) .dash-spot,
-.dash:not(.is-live) .dash-back,
-.dash:not(.is-live) .dash-hint {
+.dash:not(.is-live) .dash-back {
   display: none;
 }
 
 .dash-caption {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 4px 24px;
   margin-top: 10px;
   font-size: 13px;
   color: var(--muted);
-}
-
-.dash-caption [data-dash-caption] {
-  color: var(--text);
 }
 
 /* ---- Code snippets --------------------------------------------------- */
