@@ -71,7 +71,7 @@ export const about = {
   lead: "I want my engineering to cut carbon. For seven years I've built the electronics, firmware and cloud behind battery labs, e-bikes and electric cargo vehicles, from first boot to fleets in the field.",
   body: [
     'I design the boards, write the firmware and build the pipelines that keep products updated and measured long after they ship. Batteries, power conversion and connected fleets run through all of it, and they carry over to anything electric: storage, charging, heating, the grid.',
-    'Before industry, a PhD at Imperial on reconfigurable analogue circuits. Away from the desk: cycling and touring, Formula 1, photography.',
+    'Before industry, a PhD at Imperial on reconfigurable analogue circuits. Away from the desk: collecting vinyls, touring, Formula 1, photography.',
   ],
   portrait: { src: portrait, alt: 'Jakub Szypicyn, smiling, in a white shirt and striped tie', caption: 'Portrait' } as Photo,
 };
