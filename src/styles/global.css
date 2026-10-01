@@ -1143,30 +1143,59 @@ ul {
 }
 
 .fleet-svg text { fill: var(--ink); }
+.fleet-svg .fh { font-family: var(--mono); font-size: 12px; font-weight: 700; fill: var(--muted); }
+.fleet-svg .fh-tcu { font-size: 10px; font-weight: 400; }
+.fleet-svg .ft { font-size: 15px; font-weight: 600; }
+.fleet-svg .ft-small { font-size: 13px; }
+.fleet-svg .ft-tile { font-size: 10.5px; }
+.fleet-svg .fsub { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.fleet-svg .fsub-small { font-size: 10px; }
 
-.fb-box { fill: #faf9f5; stroke: var(--rule); stroke-width: 1.2; transition: fill 0.3s, stroke 0.3s; }
-.fb.is-on .fb-box { fill: #dffbe9; stroke: #146b37; stroke-width: 2; }
-.fleet-svg .fb-title { font-size: 19px; font-weight: 600; }
-.fleet-svg .fb-sub { font-size: 13px; fill: var(--muted); }
+.fp-box { fill: #faf9f5; stroke: var(--rule); stroke-width: 1.2; transition: fill 0.3s, stroke 0.3s; }
+.fp-chip .fp-box { fill: #fff; }
+.fp.is-on > .fp-box { fill: #dcf7e6; stroke: #146b37; stroke-width: 2; }
+.fp-frame { fill: none; stroke: var(--ink); stroke-width: 1.4; }
 
-.fs rect { fill: var(--slot); transition: fill 0.4s; }
-.fleet-svg .fs text { font-family: var(--mono); font-size: 13px; fill: var(--muted); }
-.fs.is-on rect { fill: #c9f5d7; }
-.fs.is-new rect { fill: var(--green); }
-.fleet-svg .fs.is-new text { fill: var(--ink); font-weight: 600; }
+.fi path { fill: none; stroke: var(--ink); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.3s; }
+.fi .fi-fill { fill: var(--ink); stroke: none; }
+.fp.is-on .fi path { stroke: #146b37; }
+.fp.is-on .fi .fi-fill { fill: #146b37; }
 
-.fe { fill: none; stroke: rgba(11, 15, 12, 0.35); stroke-width: 2; }
-.fe.is-on { stroke: #146b37; stroke-width: 3; }
-.fleet-svg .fe-label { font-family: var(--mono); font-size: 12px; fill: var(--muted); }
+.fpill rect { fill: none; stroke: var(--rule); transition: stroke 0.3s; }
+.fleet-svg .fpill text { font-size: 12px; }
+.fp.is-on .fpill rect { stroke: #146b37; }
+
+/* Wires: grey until a step uses them. */
+.fw-line { fill: none; stroke: rgba(11, 15, 12, 0.4); stroke-width: 1.4; }
+.fw-head { fill: rgba(11, 15, 12, 0.4); }
+.fw-knock { fill: var(--paper); }
+.fleet-svg .fwl { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); }
+.fw.is-on .fw-line { stroke: #146b37; stroke-width: 2.6; }
+.fw.is-on .fw-head { fill: #146b37; }
+.fleet-svg .fw.is-on .fwl { fill: #146b37; font-weight: 700; }
+
+.fbus-line { fill: none; stroke: var(--ink); stroke-width: 2.2; }
+.fbus circle { fill: var(--ink); }
+.fbus.is-on .fbus-line { stroke: #146b37; stroke-width: 3; }
+.fbus.is-on circle { fill: #146b37; }
+
+/* An ECU's flash: bootloader, application, download slot. */
+.fbar rect { fill: var(--slot); transition: fill 0.4s; }
+.fleet-svg .fbar text { font-family: var(--mono); font-size: 11px; }
+.fleet-tall .fbar text { font-size: 10.5px; }
+.fbar.is-on rect { fill: #c9f5d7; }
+.fbar-app.is-new rect { fill: var(--green); }
+.fleet-svg .fbar-app.is-new text { font-weight: 700; }
+.fbar .fbar-fill { fill: var(--green); fill-opacity: 0.55; transition: none; }
+.fleet-svg .fbar-dl text { fill: var(--muted); }
+.fleet-svg .fbar-dl.is-filling text { fill: var(--ink); }
 
 .fpkt-tag { fill: var(--ink); }
-.fleet-svg .fpkt text { fill: var(--green); font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.fleet-svg .fpkt text { fill: var(--green); font-family: var(--mono); font-size: 12px; font-weight: 700; }
+.fpkt-dot { fill: var(--green); stroke: #146b37; stroke-width: 2; }
 
+/* What the step shows, under the drawing. */
 .fleet-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 24px;
   margin-top: 14px;
   padding-top: 14px;
   border-top: 1px solid var(--rule);
@@ -1176,54 +1205,14 @@ ul {
   display: none;
 }
 
-.fleet-dots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.fleet-dot,
-.fleet-play {
-  font: inherit;
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--ink);
-  background: none;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  min-width: 34px;
-  height: 34px;
-  cursor: pointer;
-}
-
-.fleet-dot[aria-current='true'] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--green);
-}
-
-.fleet-play {
-  padding: 0 14px;
-  margin-left: 6px;
-}
-
-.fleet-dot:hover,
-.fleet-play:hover {
-  border-color: var(--ink);
-}
-
-.fleet-dot:focus-visible,
-.fleet-play:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-
 .fleet-caption {
-  flex: 1 1 360px;
+  margin: 0;
   font-size: 18px;
+  line-height: 1.5;
+  min-height: calc(2 * 1.5em);
 }
 
-/* Without JS: the steps as a list under the blocks. */
+/* Without JS, or under reduced motion: the steps as a list under the drawing. */
 .fleet-static {
   margin: 16px 0 0;
   padding-left: 20px;
@@ -1233,10 +1222,6 @@ ul {
 
 .fleet.is-live .fleet-static {
   display: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fb-box, .fs rect { transition: none; }
 }
 
 /* ---- Motion ---------------------------------------------------------- */
@@ -1557,16 +1542,10 @@ ul {
     display: none;
   }
 
-  /* Seven steps and Play on one line at 375px. */
-  .fleet-dot {
-    min-width: 32px;
-    height: 32px;
-  }
-
-  .fleet-play {
-    height: 32px;
-    padding: 0 12px;
-    margin-left: 0;
+  /* Room for the longest step, so the page under it holds still. */
+  .fleet-caption {
+    font-size: 16px;
+    min-height: calc(4 * 1.5em);
   }
 
   .contact-title {

@@ -216,9 +216,9 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
     tags: ['STM32', 'CAN', 'Fleet OTA', 'balenaOS', 'MISRA C', 'EN ISO 13849-1'],
     photo: { alt: 'Electric cargo vehicle fleet', caption: 'Cargo fleet' },
     snippet: {
-      caption: 'One firmware release through the fleet, step by step.',
+      caption: 'A release out to the fleet, and the data back.',
       noteLabel: 'The architecture',
-      note: 'Six ECUs, each with its own bootloader and application, share CAN with a Raspberry Pi TCU on balenaOS. A release is built and signed in CI, pinned in a manifest and sent out as an `AWS IoT Job`; the TCU flashes the ECUs over CAN and reports back.',
+      note: 'The ECUs, each with its own bootloader and application, share CAN with a Raspberry Pi TCU on balenaOS. A release is built and signed in CI, pinned in a manifest and sent out as an `AWS IoT Job`; the TCU flashes the ECUs over CAN, and telemetry and logs come back to AWS.',
       figure: 'fleet',
     },
   },
