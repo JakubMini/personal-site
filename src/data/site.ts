@@ -452,6 +452,8 @@ export const vinyls = {
   title: 'Needle down.',
   lead: 'A hundred and sixty-one records on the shelf. These twelve are the favourites, oldest first. Scroll, and the needle tracks across the side.',
   count: 161,
+  turntable: 'Teac TN-175, integrated preamp',
+  speakers: 'Edifier',
   records: [
     { artist: 'The Dave Brubeck Quartet', title: 'Gone with the Wind', year: 1959, label: 'Columbia', note: 'Original 1959 pressing', cover: coverBrubeck, scheme: 'paper' },
     { artist: 'Stan Getz & João Gilberto', title: 'Getz/Gilberto', year: 1964, label: 'Verve', note: '2016 pressing', cover: coverGetz, scheme: 'ink' },

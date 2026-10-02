@@ -44,9 +44,9 @@ const years = vinyls.records.map((r) => r.year);
       <div class="deck-facts">
         <div class="hobby-facts">
           <div><div class="fact-label">Records</div>{vinyls.count}</div>
-          <div><div class="fact-label">Favourites</div>{n}</div>
-          <div><div class="fact-label">Oldest</div>{Math.min(...years)}</div>
-          <div><div class="fact-label">Newest</div>{Math.max(...years)}</div>
+          <div><div class="fact-label">Turntable</div>{vinyls.turntable}</div>
+          <div><div class="fact-label">Speakers</div>{vinyls.speakers}</div>
+          <div><div class="fact-label">Favourites</div>{n}, {Math.min(...years)} – {Math.max(...years)}</div>
         </div>
       </div>
 
