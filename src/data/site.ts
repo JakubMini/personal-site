@@ -288,43 +288,13 @@ float32_t roadGradient(const vec3_t accel, const float32_t wheelAccel)
 ];
 
 // Only what Jakub's own commits or CV show; colleagues' repos are not claimed.
-// Top of the list is closest to the user, the bottom closest to the silicon.
+// Silicon first, the cloud last, numbered that way down the page.
 export const stack = [
   {
-    n: '08',
-    layer: 'AI',
+    n: '01',
+    layer: 'Power & hardware',
     items:
-      'Claude Code, agent and skill design, MCP servers, the Anthropic API, AI review on pull requests',
-  },
-  {
-    n: '07',
-    layer: 'App & cloud',
-    items:
-      'Supabase (PostgreSQL, row-level security, Auth with MFA, Deno edge functions), React Native and Expo / EAS, React and Vite, MapLibre, AWS IoT Core, IoT Jobs, S3 and CodeArtifact, Azure, Cloudflare, FastAPI',
-  },
-  {
-    n: '06',
-    layer: 'Edge & data',
-    items:
-      'Raspberry Pi gateways in Python, MQTT, cellular and GNSS over ModemManager, balenaOS fleets, Protobuf, gRPC, pandas, NumPy, Plotly, Streamlit, Simscape',
-  },
-  {
-    n: '05',
-    layer: 'OTA & release',
-    items:
-      'MCUboot with signed A/B images and rollback, Ed25519-signed CAN flashing, CAN and TFTP bootloaders, BLE firmware update, fleet manifests to AWS IoT Jobs, GitHub Actions, GitLab CI',
-  },
-  {
-    n: '04',
-    layer: 'Firmware',
-    items:
-      'C and C++, STM32 (F4, G0, L4, WB55), Nordic nRF52, FreeRTOS, ChibiOS, bare metal, VESC and LispBM, FOC, PID and Kalman estimation, CMake, PlatformIO',
-  },
-  {
-    n: '03',
-    layer: 'Test & quality',
-    items:
-      'GoogleTest, Ceedling with Unity and CMock, pytest, pgTAP, Jest, Renode and Robot Framework emulation, cppcheck and PC-lint Plus, gcov',
+      'BMS, DC-DC conversion, 48V motor drives, PCB design and bring-up, IMUs and encoders, production test and flashing rigs',
   },
   {
     n: '02',
@@ -333,10 +303,40 @@ export const stack = [
       'CAN and CAN FD, DBC tooling, UDS over ISO-TP, XCP, SocketCAN, BLE GATT as peripheral and central, NFC (ISO 14443A), SPI, I2C, I2S, UART, Ethernet',
   },
   {
-    n: '01',
-    layer: 'Power & hardware',
+    n: '03',
+    layer: 'Test & quality',
     items:
-      'BMS, DC-DC conversion, 48V motor drives, PCB design and bring-up, IMUs and encoders, production test and flashing rigs',
+      'GoogleTest, Ceedling with Unity and CMock, pytest, pgTAP, Jest, Renode and Robot Framework emulation, cppcheck and PC-lint Plus, gcov',
+  },
+  {
+    n: '04',
+    layer: 'Firmware',
+    items:
+      'C and C++, STM32 (F4, G0, L4, WB55), Nordic nRF52, FreeRTOS, ChibiOS, bare metal, VESC and LispBM, FOC, PID and Kalman estimation, CMake, PlatformIO',
+  },
+  {
+    n: '05',
+    layer: 'OTA & release',
+    items:
+      'MCUboot with signed A/B images and rollback, Ed25519-signed CAN flashing, CAN and TFTP bootloaders, BLE firmware update, fleet manifests to AWS IoT Jobs, GitHub Actions, GitLab CI',
+  },
+  {
+    n: '06',
+    layer: 'Edge & data',
+    items:
+      'Raspberry Pi gateways in Python, MQTT, cellular and GNSS over ModemManager, balenaOS fleets, Protobuf, gRPC, pandas, NumPy, Plotly, Streamlit, Simscape',
+  },
+  {
+    n: '07',
+    layer: 'App & cloud',
+    items:
+      'Supabase (PostgreSQL, row-level security, Auth with MFA, Deno edge functions), React Native and Expo / EAS, React and Vite, MapLibre, AWS IoT Core, IoT Jobs, S3 and CodeArtifact, Azure, Cloudflare, FastAPI',
+  },
+  {
+    n: '08',
+    layer: 'AI',
+    items:
+      'Claude Code, agent and skill design, MCP servers, the Anthropic API, AI review on pull requests',
   },
   {
     n: 'Compliance',
