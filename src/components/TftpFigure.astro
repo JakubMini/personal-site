@@ -35,8 +35,6 @@ const LOG: [string, string][] = [
 ];
 const LINE = 17; // log line spacing, as in scripts/tftp-figure.ts
 
-const STEPS = ['Request', 'Reboot', 'Network', 'Erase', 'Stream & verify', 'Swap & run'];
-
 const KEY: [string, string, string][] = [
   ['AT', 'is-at', 'command'],
   ['DHCP', 'is-dhcp', 'lease'],
@@ -59,7 +57,7 @@ const FINAL = 'The flags are rewritten, the board resets, finds a valid stack po
 const LAYOUTS = {
   wide: {
     width: 1200,
-    height: 560,
+    height: 500,
     pcHeight: 412,
     rows: LOG.length,
     mcuShift: null as string | null,
@@ -70,11 +68,10 @@ const LAYOUTS = {
     portTag: { x: 878, y: 342, anchor: 'end' },
     key: (i: number) => [362 + i * 104, 214],
     keyWhat: (_w: number) => [0, 26],
-    step: (i: number) => ({ x: 16 + i * 196, y: 458, w: 188 }),
   },
   tall: {
     width: 332,
-    height: 1176,
+    height: 1070,
     pcHeight: 240,
     rows: 10, // the log scrolls in a ten-line window
     mcuShift: 'translate(-868 420)',
@@ -85,7 +82,6 @@ const LAYOUTS = {
     portTag: { x: 236, y: 436, anchor: 'end' },
     key: (i: number) => [16 + (i % 2) * 154, 884 + Math.floor(i / 2) * 26],
     keyWhat: (w: number) => [w + 6, 4],
-    step: (i: number) => ({ x: 16 + (i % 2) * 154, y: 962 + Math.floor(i / 2) * 38, w: 146 }),
   },
 };
 const names = ['wide', 'tall'] as const;
@@ -253,21 +249,12 @@ const names = ['wide', 'tall'] as const;
           <text class="tf-val" x="964" y="404" data-k="bytes">319,288 B · CRC32 ok</text>
         </g>
 
-        {/* Steps */}
-        {STEPS.map((s, i) => {
-          const { x, y, w } = L.step(i);
-          return (
-            <g class="tf-step is-done" data-k={`step-${i}`}>
-              <rect x={x} y={y} width={w} height="30" rx="15" />
-              <text x={x + w / 2} y={y + 20} text-anchor="middle">{`${i + 1} · ${s}`}</text>
-            </g>
-          );
-        })}
-        {/* SVG text does not wrap, so in the narrow column the caption is HTML. */}
+        {/* What the moment shows, under the drawing. SVG text does not wrap, so in
+            the narrow column the caption is HTML. */}
         {wide ? (
-          <text class="tf-caption" x="16" y="526" data-k="caption">{FINAL}</text>
+          <text class="tf-caption" x="16" y="474" data-k="caption">{FINAL}</text>
         ) : (
-          <foreignObject x="16" y="1082" width="300" height="90">
+          <foreignObject x="16" y="962" width="300" height="90">
             <p class="tf-caption-html" data-k="caption">{FINAL}</p>
           </foreignObject>
         )}

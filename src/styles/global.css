@@ -1432,13 +1432,7 @@ ul {
 .tftp-figure .tf-key-row .tf-pkt .tf-key-what { font-family: var(--sans); font-size: 11.5px; font-weight: 400; fill: var(--muted); }
 .tftp-figure .tf-key-row text { font-size: 11px; }
 
-/* Steps. */
-.tf-step rect { fill: none; stroke: var(--rule); }
-.tftp-figure .tf-step text { fill: var(--muted); font-size: 13px; }
-.tf-step.is-done rect { stroke: var(--ink); }
-.tftp-figure .tf-step.is-done text { fill: var(--ink); }
-.tf-step.is-active rect { fill: var(--tag); stroke: var(--tag); }
-.tftp-figure .tf-step.is-active text { fill: var(--tag-text); font-weight: 600; }
+/* The caption under the drawing. */
 .tftp-figure .tf-caption { font-size: 15px; fill: var(--text); }
 
 /* ---- Intro ----------------------------------------------------------- */

@@ -49,12 +49,8 @@ export function tftpTimeline(svg: SVGSVGElement): gsap.core.Timeline {
   const tl = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 3 });
 
   // ---- helpers ---------------------------------------------------------
+  // The caption under the drawing says what this moment is.
   const setStep = (n: number) => () => {
-    for (let i = 0; i < 6; i++) {
-      const g = el(`step-${i}`);
-      g.classList.toggle('is-done', i < n);
-      g.classList.toggle('is-active', i === n);
-    }
     el('caption').textContent = CAPTIONS[n];
   };
   // A line appears; in a window shorter than the log, the lines scroll up to it.
@@ -135,7 +131,6 @@ export function tftpTimeline(svg: SVGSVGElement): gsap.core.Timeline {
     el('addr').textContent = hex(APP_BASE);
     el('fill').setAttribute('width', '0');
     el('old').setAttribute('width', (appW * 0.36).toFixed(1));
-    for (let i = 0; i < 6; i++) el(`step-${i}`).classList.remove('is-done');
   }, [], 0);
   tl.set(svg.querySelectorAll('[data-k^="log-"]:not([data-k="log-roll"])'), { opacity: 0 }, 0);
   tl.set(el('log-roll'), { y: 0 }, 0);
@@ -253,7 +248,6 @@ export function tftpTimeline(svg: SVGSVGElement): gsap.core.Timeline {
   tl.call(state(false), [], end + 5.4);
   tl.call(text('status', 'running new application'), [], end + 5.6);
   log(19, end + 5.6);
-  tl.call(() => el(`step-5`).classList.add('is-done'), [], end + 6.2);
   tl.to({}, { duration: 1.5 }, end + 6.2); // hold on the finished state
 
   return tl;
