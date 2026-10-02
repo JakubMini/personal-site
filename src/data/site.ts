@@ -350,37 +350,67 @@ export const stack = [
 // Each practice: what the agents do, then what that buys.
 export const ai = {
   title: 'AI in the loop.',
-  lead: 'AI agents do the reading, the checking and the first drafts. Engineers make the calls. More gets reviewed, less gets missed, and a small team ships like a larger one.',
+  lead: 'AI is part of the engineering system, not a tab beside it. Agents read, change, test and challenge the work inside scoped environments. Engineers set the constraints and make the calls; the machines supply parallelism, evidence and relentless follow-through.',
   practices: [
     {
       n: '01',
       title: 'One job each',
       detail:
-        'Architect, reviewer, database, research and red-team agents, each given only the tools its job needs. A reviewer cannot edit what it judges, so its verdict means something.',
+        'Specialist agents get narrow instructions, narrow context and only the tools they need. The agent judging a change cannot quietly become the agent making it.',
     },
     {
       n: '02',
       title: 'Argued both ways',
       detail:
-        'Schemas, keys, wire formats and the boot path get two agents: one makes the case, one tries to break it. The decision is written down with what would change it. Mistakes that are expensive to undo are caught before they are made.',
+        'Schemas, keys, protocols, migrations and boot paths get a proposer and an adversary. One builds the case; the other tries to break it before the decision becomes expensive.',
     },
     {
       n: '03',
-      title: 'Every pull request',
+      title: 'Proof, not confidence',
       detail:
-        'An AI reviewer reads every pull request, and an independent red-team pass tries to break every release. Confirmed findings block the merge. Nothing ships unreviewed, however busy the week.',
+        'A plausible answer is not a result. Agents run the tests, type-checks, linters, schema checks and targeted probes, and the evidence is reviewed alongside the diff.',
     },
     {
       n: '04',
-      title: 'Wired into the tools',
+      title: 'Work until green',
       detail:
-        'Every repo carries the instructions and skills an agent needs to work the way we do. Over MCP, agents reach Jira, Confluence and Basecamp, turn test-rig telemetry into range reports and flag tickets that no longer match reality. The routine reporting happens without anyone typing it up.',
+        'Failed checks feed a bounded repair loop: inspect, patch, rerun, re-review. The unit of AI work is a verified outcome, not a first draft.',
     },
     {
       n: '05',
+      title: 'Context is engineered',
+      detail:
+        'Repo maps, decision records, ownership, tickets, conventions and live telemetry are assembled around the task. The model gets the right context, not the whole company.',
+    },
+    {
+      n: '06',
+      title: 'Sandboxed by default',
+      detail:
+        'Long-running agents work in controlled workspaces with scoped credentials, tool and network boundaries, and approval gates around consequential actions. Autonomy without an unlimited blast radius.',
+    },
+    {
+      n: '07',
+      title: 'Wired into the work',
+      detail:
+        'Repo skills, plus Jira, Confluence and Basecamp over MCP; telemetry into range reports; stale work surfaced automatically. The agent works where the engineering record already lives.',
+    },
+    {
+      n: '08',
+      title: 'Measured, not trusted',
+      detail:
+        'AI review on every pull request, adversarial passes where the risk warrants it, and traces and evals around the agent workflows themselves. Prompt, model and tool changes are measured rather than trusted.',
+    },
+    {
+      n: '09',
+      title: 'Right model, right job',
+      detail:
+        'Fast, cheap models do the mechanical work; stronger reasoning is kept for ambiguity, architecture and review. Quality, latency and cost are engineering parameters, not defaults.',
+    },
+    {
+      n: '10',
       title: 'A model in the product',
       detail:
-        'A briefing agent on the Anthropic API. Deterministic rules decide first; the model only fills in strict JSON, with no tools and a prompt hardened against injection. It adds judgement where that helps and can do nothing else.',
+        'The briefing agent is deliberately less powerful than the engineering agents: rules first, typed output, no ambient tools, hostile-input handling and a tight evaluation set. Intelligence where it helps; capability only where it is required.',
     },
   ],
 };
