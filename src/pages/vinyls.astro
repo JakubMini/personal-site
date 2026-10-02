@@ -2,10 +2,12 @@
 // The record collection. The record on the right stays while the crate
 // scrolls past, and plays whichever record is under the needle
 // (scripts/crate.ts). Copy and records are in data/site.ts.
+import { Image } from 'astro:assets';
 import Hobby from '../layouts/Hobby.astro';
 import { intro, person, vinyls } from '../data/site';
 
 const n = vinyls.records.length;
+const years = vinyls.records.map((r) => r.year);
 ---
 
 <Hobby title="Vinyls" description={`${person.name}'s records, with the one under the needle.`} current="vinyls" ink>
@@ -41,10 +43,10 @@ const n = vinyls.records.length;
 
       <div class="deck-facts">
         <div class="hobby-facts">
-          <div><div class="fact-label">Records</div>{n}</div>
-          <div><div class="fact-label">Since</div>{vinyls.since}</div>
-          <div><div class="fact-label">Turntable</div>{vinyls.turntable}</div>
-          <div><div class="fact-label">Most played</div>{vinyls.mostPlayed}</div>
+          <div><div class="fact-label">Records</div>{vinyls.count}</div>
+          <div><div class="fact-label">Favourites</div>{n}</div>
+          <div><div class="fact-label">Oldest</div>{Math.min(...years)}</div>
+          <div><div class="fact-label">Newest</div>{Math.max(...years)}</div>
         </div>
       </div>
 
@@ -55,7 +57,7 @@ const n = vinyls.records.length;
         </div>
         <div class="crate-head" data-rise>
           <p class="label">The crate</p>
-          <p class="crate-count">{vinyls.draft ? 'Example records, until mine are in' : `${n} records`}</p>
+          <p class="crate-count">{n} favourites of {vinyls.count}</p>
         </div>
         <ol class="crate" data-crate>
           {
@@ -64,14 +66,15 @@ const n = vinyls.records.length;
                 <span class="rec-n">
                   <span>{String(i + 1).padStart(2, '0')}</span>
                 </span>
+                <span class="rec-sleeve">{r.cover && <Image src={r.cover} alt="" widths={[96, 192]} sizes="96px" />}</span>
                 <span class="rec-main">
                   <span class="rec-artist">{r.artist}</span>
                   <span class="rec-title">{r.title}</span>
+                  {r.note && <span class="rec-note">{r.note}</span>}
                 </span>
                 <span class="rec-meta">
                   {r.year} · {r.label}
                 </span>
-                {r.note && <span class="rec-note">{r.note}</span>}
               </li>
             ))
           }

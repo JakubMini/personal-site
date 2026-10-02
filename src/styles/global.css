@@ -1827,11 +1827,27 @@ ul {
 
 .rec {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) 180px;
+  grid-template-columns: 56px 88px minmax(0, 1fr) 180px;
   gap: 0 var(--gap);
-  align-items: baseline;
-  padding: 22px 0;
+  align-items: center;
+  padding: 20px 0;
   border-top: 1px solid var(--rule);
+}
+
+/* The sleeve: a square, with a hairline so a pale cover has an edge. */
+.rec-sleeve {
+  display: block;
+  aspect-ratio: 1;
+  background: var(--slot);
+}
+
+.rec-sleeve img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  outline: 1px solid var(--rule);
+  outline-offset: -1px;
 }
 
 .rec-n {
@@ -1876,8 +1892,8 @@ ul {
 }
 
 .rec-note {
-  grid-column: 2;
-  margin-top: 6px;
+  display: block;
+  margin-top: 4px;
   font-size: 15px;
   color: var(--muted);
 }
@@ -1900,7 +1916,7 @@ ul {
   text-decoration-thickness: 2px;
 }
 
-/* Phones only: a now-playing bar that sticks to the top over the list. */
+/* Under 900px: a now-playing bar that sticks to the top over the list. */
 .now-bar {
   display: none;
 }
@@ -2342,48 +2358,9 @@ ul {
 /* ---- Narrow screens: away from the desk ------------------------------- */
 
 @media (max-width: 899px) {
-  .deck-hero {
-    min-height: 440px;
-    padding-top: 48px;
-  }
-
-  .hobby-lead {
-    font-size: 19px;
-  }
-
-  .rec {
-    grid-template-columns: 40px minmax(0, 1fr) 140px;
-  }
-
-  .rec-title {
-    font-size: 26px;
-  }
-
-  .ph-hero > * {
-    grid-column: 1 / -1;
-  }
-
-  .ph-hero .display {
-    margin-top: 16px;
-  }
-
-  .ph-grid {
-    --row: 300px;
-  }
-
-  .hobby-foot .contact-links {
-    margin-bottom: 48px;
-  }
-}
-
-@media (max-width: 599px) {
-  /* The pages and Home in a row, not the main page's three-column index. */
-  .hobby .nav {
-    display: flex;
-    gap: 8px 24px;
-  }
-
-  /* The hero text, the record, then the facts, all on one ink band. */
+  /* Under 900px the deck stacks: the hero text, the record and the facts on
+     one ink band, then the crate at full width with the now-playing bar over
+     it (scripts/crate.ts reads the needle from the bar here). */
   .deck .grid {
     grid-template-rows: none;
   }
@@ -2392,29 +2369,23 @@ ul {
   .deck-side,
   .deck-facts,
   .deck-crate {
+    grid-column: 1 / -1;
     grid-row: auto;
   }
 
   .deck-hero {
     min-height: 0;
-    padding: 36px 0 28px;
+    padding: 40px 0 28px;
     gap: 24px;
   }
 
-  .hobby-title {
-    font-size: 14vw;
-  }
-
   .hobby-lead {
-    font-size: 18px;
+    font-size: 19px;
   }
 
   .deck-side {
     position: relative;
     padding: 0;
-  }
-
-  .deck-side {
     color-scheme: dark;
   }
 
@@ -2428,7 +2399,7 @@ ul {
 
   .player {
     position: static;
-    max-width: 264px;
+    max-width: 300px;
     margin-inline: auto;
   }
 
@@ -2436,37 +2407,12 @@ ul {
     padding: 28px 0 40px;
   }
 
-  .hobby-facts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: 16px;
-  }
-
   .deck-crate {
-    padding: 0 0 72px;
+    padding: 0 0 80px;
   }
 
   .crate-head {
     margin-top: 28px;
-  }
-
-  .rec {
-    grid-template-columns: 40px minmax(0, 1fr);
-    row-gap: 4px;
-  }
-
-  .rec-title {
-    font-size: 24px;
-  }
-
-  .rec-meta,
-  .rec-note {
-    grid-column: 2;
-    margin-top: 0;
-    text-align: left;
-  }
-
-  .crate-end {
-    font-size: 20px;
   }
 
   .now-bar {
@@ -2502,6 +2448,103 @@ ul {
     font-weight: 500;
     font-size: 17px;
     letter-spacing: -0.02em;
+  }
+
+  .rec {
+    grid-template-columns: 40px 72px minmax(0, 1fr) 140px;
+  }
+
+  .rec-title {
+    font-size: 26px;
+  }
+
+  .ph-hero > * {
+    grid-column: 1 / -1;
+  }
+
+  .ph-hero .display {
+    margin-top: 16px;
+  }
+
+  .ph-grid {
+    --row: 300px;
+  }
+
+  .hobby-foot .contact-links {
+    margin-bottom: 48px;
+  }
+}
+
+@media (max-width: 599px) {
+  /* The pages and Home in a row, not the main page's three-column index. */
+  .hobby .nav {
+    display: flex;
+    gap: 8px 24px;
+  }
+
+  .deck-hero {
+    padding-top: 36px;
+  }
+
+  .hobby-title {
+    font-size: 14vw;
+  }
+
+  .hobby-lead {
+    font-size: 18px;
+  }
+
+  .player {
+    max-width: 264px;
+  }
+
+  .hobby-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 16px;
+  }
+
+  .deck-crate {
+    padding-bottom: 72px;
+  }
+
+  /* The sleeve with its number under it, the words beside them. */
+  .rec {
+    grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-areas:
+      'sleeve main'
+      'n main'
+      'n meta';
+    gap: 6px 16px;
+    align-items: start;
+  }
+
+  .rec-sleeve {
+    grid-area: sleeve;
+  }
+
+  .rec-n {
+    grid-area: n;
+  }
+
+  .rec-n span {
+    margin-left: 0;
+  }
+
+  .rec-main {
+    grid-area: main;
+  }
+
+  .rec-title {
+    font-size: 24px;
+  }
+
+  .rec-meta {
+    grid-area: meta;
+    text-align: left;
+  }
+
+  .crate-end {
+    font-size: 20px;
   }
 
   .ph-hero {

@@ -3,7 +3,7 @@
 // record, the label changes to whichever record is under the stylus, and the
 // arm tracks from the rim to the lead-out across the list. The record turns at
 // 33⅓ while it is on screen and the tab is visible, and a scroll gives it a
-// flick. On phones the record sits in the hero and a now-playing bar with a
+// flick. Under 900px the record sits in the hero and a now-playing bar with a
 // small record sticks to the top over the list.
 //
 // Under reduced motion the record is drawn still, with the collection's label
@@ -11,7 +11,7 @@
 
 import { GROOVES, vinyl, type Label } from './vinyl';
 
-const PHONE = '(max-width: 599px)';
+const NARROW = '(max-width: 899px)';
 const RPM = 100 / 3;
 const SPEED = (RPM / 60) * Math.PI * 2; // radians a second
 
@@ -66,7 +66,7 @@ export function crate() {
       ? collection
       : { top: rows[i].dataset.artist!, bottom: rows[i].dataset.title!, monogram: rows[i].dataset.year!, scheme: rows[i].dataset.scheme as Label['scheme'] };
   const moving = matchMedia('(prefers-reduced-motion: no-preference)').matches;
-  const phone = matchMedia(PHONE);
+  const narrow = matchMedia(NARROW);
   const setArm = (rad: number) => arm.setAttribute('transform', `rotate(${(rad * 180) / Math.PI})`);
 
   let record: ReturnType<typeof vinyl> | null = null;
@@ -113,9 +113,9 @@ export function crate() {
   };
 
   // The line the stylus reads along, in the viewport: under the record's
-  // rim on wide screens, just under the now-playing bar on phones.
+  // rim on wide screens, just under the now-playing bar on narrow ones.
   const needle = () => {
-    if (phone.matches && bar) return bar.getBoundingClientRect().bottom + 40;
+    if (narrow.matches && bar) return bar.getBoundingClientRect().bottom + 40;
     const d = disc.getBoundingClientRect();
     return d.top + d.height * 0.7;
   };

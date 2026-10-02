@@ -26,6 +26,19 @@ import throughTheWindow from '../assets/photos/through-the-window.jpg';
 import underTheBridge from '../assets/photos/under-the-bridge.jpg';
 import piccadillyCircus from '../assets/photos/piccadilly-circus.jpg';
 import cliftonBridge from '../assets/photos/clifton-suspension-bridge.jpg';
+// The record covers (pages/vinyls.astro), 480px squares.
+import coverBrubeck from '../assets/covers/brubeck-gone-with-the-wind.jpg';
+import coverGetz from '../assets/covers/getz-gilberto.jpg';
+import coverSinatraJobim from '../assets/covers/sinatra-jobim.jpg';
+import coverCash from '../assets/covers/cash-at-san-quentin.jpg';
+import coverBowie from '../assets/covers/bowie-space-oddity.jpg';
+import coverSimonGarfunkel from '../assets/covers/simon-garfunkel-bridge.jpg';
+import coverPinkFloyd from '../assets/covers/pink-floyd-dark-side.jpg';
+import coverChopinProject from '../assets/covers/chopin-project.jpg';
+import coverRhye from '../assets/covers/rhye-blood.jpg';
+import coverMasecki from '../assets/covers/masecki-boleros.jpg';
+import coverMazolewski from '../assets/covers/mazolewski-solo.jpg';
+import coverJungle from '../assets/covers/jungle-sunshine.jpg';
 
 export interface Photo {
   // import photo from '../assets/photos/drive-system.jpg' and set it here;
@@ -420,39 +433,38 @@ export type LabelScheme = 'green' | 'paper' | 'ink';
 export interface Vinyl {
   artist: string;
   title: string;
+  // The year it came out; the pressing on the shelf goes in the note.
   year: number;
   label: string;
   // The pressing, or where it came from; shown under the title.
   note?: string;
+  // The sleeve, a square; import it from src/assets/covers/.
+  cover?: ImageMetadata;
   // Green unless set.
   scheme?: LabelScheme;
 }
 
-// The vinyls page. The record on the right plays through the crate as the
-// page scrolls (scripts/crate.ts), in the order the records are listed here.
+// The vinyls page. `count` is the whole shelf; `records` are the favourites,
+// oldest first, and the record on the right plays through them as the page
+// scrolls (scripts/crate.ts).
 export const vinyls = {
   eyebrow: 'Away from the desk',
   title: 'Needle down.',
-  lead: '[A line about the collection: what you dig for, where, and what the turntable sees most.] Scroll, and the needle tracks across the side.',
-  since: '[2016]',
-  turntable: '[Rega Planar 3]',
-  mostPlayed: '[Kind of Blue]',
-  // While true the crate says these are examples. Replace them with Jakub's
-  // own records and set it false.
-  draft: true,
+  lead: 'A hundred and sixty-one records on the shelf. These twelve are the favourites, oldest first. Scroll, and the needle tracks across the side.',
+  count: 161,
   records: [
-    { artist: 'Miles Davis', title: 'Kind of Blue', year: 1959, label: 'Columbia', note: 'Mono reissue, 180 g', scheme: 'paper' },
-    { artist: 'Nick Drake', title: 'Pink Moon', year: 1972, label: 'Island' },
-    { artist: 'Kraftwerk', title: 'Trans-Europe Express', year: 1977, label: 'Kling Klang', note: '2009 remaster', scheme: 'ink' },
-    { artist: 'Fleetwood Mac', title: 'Rumours', year: 1977, label: 'Warner Bros.', note: 'Original UK pressing', scheme: 'paper' },
-    { artist: 'Portishead', title: 'Dummy', year: 1994, label: 'Go! Beat' },
-    { artist: 'Boards of Canada', title: 'Music Has the Right to Children', year: 1998, label: 'Warp', note: '2 LP, gatefold', scheme: 'ink' },
-    { artist: 'Daft Punk', title: 'Discovery', year: 2001, label: 'Virgin', scheme: 'paper' },
-    { artist: 'Radiohead', title: 'In Rainbows', year: 2007, label: 'XL' },
-    { artist: 'Bonobo', title: 'Black Sands', year: 2010, label: 'Ninja Tune', scheme: 'ink' },
-    { artist: 'Jon Hopkins', title: 'Immunity', year: 2013, label: 'Domino', note: '2 LP', scheme: 'paper' },
-    { artist: 'Khruangbin', title: 'Con Todo El Mundo', year: 2018, label: 'Dead Oceans' },
-    { artist: 'Nils Frahm', title: 'All Melody', year: 2018, label: 'Erased Tapes', note: '2 LP, clear vinyl', scheme: 'ink' },
+    { artist: 'The Dave Brubeck Quartet', title: 'Gone with the Wind', year: 1959, label: 'Columbia', note: 'Original 1959 pressing', cover: coverBrubeck, scheme: 'paper' },
+    { artist: 'Stan Getz & João Gilberto', title: 'Getz/Gilberto', year: 1964, label: 'Verve', note: '2016 pressing', cover: coverGetz, scheme: 'ink' },
+    { artist: 'Frank Sinatra & Antônio Carlos Jobim', title: 'Francis Albert Sinatra & Antonio Carlos Jobim', year: 1967, label: 'Reprise', note: 'Original 1967 pressing', cover: coverSinatraJobim, scheme: 'green' },
+    { artist: 'Johnny Cash', title: 'At San Quentin', year: 1969, label: 'CBS', note: 'Original UK pressing', cover: coverCash, scheme: 'paper' },
+    { artist: 'David Bowie', title: 'David Bowie', year: 1969, label: 'Philips', note: 'The one known as Space Oddity · 2015 pressing', cover: coverBowie, scheme: 'ink' },
+    { artist: 'Simon & Garfunkel', title: 'Bridge over Troubled Water', year: 1970, label: 'Columbia', cover: coverSimonGarfunkel, scheme: 'green' },
+    { artist: 'Pink Floyd', title: 'The Dark Side of the Moon', year: 1973, label: 'Harvest', note: '1977 pressing', cover: coverPinkFloyd, scheme: 'ink' },
+    { artist: 'Alice Sara Ott & Ólafur Arnalds', title: 'The Chopin Project', year: 2015, label: 'Mercury Classics', cover: coverChopinProject, scheme: 'paper' },
+    { artist: 'Rhye', title: 'Blood', year: 2018, label: 'Loma Vista', cover: coverRhye, scheme: 'green' },
+    { artist: 'Marcin Masecki', title: 'Boleros y más', year: 2023, label: 'Toinen', cover: coverMasecki, scheme: 'paper' },
+    { artist: 'Wojtek Mazolewski', title: 'Solo', year: 2025, label: 'WMQ', cover: coverMazolewski, scheme: 'ink' },
+    { artist: 'Jungle', title: 'Sunshine', year: 2026, label: 'Caiola', cover: coverJungle, scheme: 'green' },
   ] as Vinyl[],
 };
 

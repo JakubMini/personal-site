@@ -35,6 +35,11 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 `site.ts`, and set it as that photo's `src`. Astro resizes it at build time.
 Until then the slot is a grey box with its caption.
 
+**Records** (`vinyls.records`) are the favourites, oldest first, with the
+whole shelf's `count` above them. Each has a square `cover` in
+`src/assets/covers/`, 480px, taken from the iTunes catalogue at thumbnail
+size to identify the record; a photo of the sleeve itself would do as well.
+
 **Photographs** (`photography.photos`) are shown whole, in justified rows at
 each photo's own shape, in the order listed; add one by importing it and
 adding a line with its alt text and caption. Every row fills the width, the
@@ -79,8 +84,6 @@ node -e "const s=require('sharp');s('public/favicon.svg',{density:288}).resize(1
 - [ ] Portrait and the five chapter photos
 - [ ] Code for the snippet slots, or delete the ones not wanted
 - [ ] A CV cut for the public site (no phone number)
-- [ ] The records (`vinyls.records` in `site.ts`, then `draft: false`), the
-      line about the collection, and the facts under it
 - [ ] Places and years for the photographs' captions (`photography.photos`)
 
 ## Hosting
@@ -224,9 +227,10 @@ in the mockup:
 - **The dashboard screenshots** (Skarper, 2026) are of a local copy of the
   platform on its own ports, loaded with demo data: `DEMO-` serials,
   example.com riders, laps of a park. Never the hosted project.
-- **The vinyls page** on phones puts the hero text, the record and the facts
+- **The vinyls page** under 900px puts the hero text, the record and the facts
   on one ink band, and a now-playing bar with a small record sticks to the
-  top while the crate scrolls. The photographs run one to a row.
+  top while the crate scrolls; on phones each record's number sits under its
+  sleeve. The photographs run one to a row.
 - **Code** swipes sideways on touch screens, and the hint reads "tap to
   scroll".
 - Above 1440px, the hero name and the band labels line up with the centred
