@@ -1819,6 +1819,12 @@ ul {
   border-bottom: 1px solid var(--rule);
 }
 
+/* The rule sits on the row itself, so a focus ring is not cut by it. */
+.crate > li {
+  list-style: none;
+}
+
+/* A row is a link to the album on Spotify when the data has one. */
 .rec {
   display: grid;
   grid-template-columns: 56px 88px minmax(0, 1fr) 180px;
@@ -1826,6 +1832,30 @@ ul {
   align-items: center;
   padding: 20px 0;
   border-top: 1px solid var(--rule);
+  color: inherit;
+  text-decoration: none;
+}
+
+.rec-arrow {
+  margin-left: 6px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+@media (hover: hover) {
+  a.rec:hover {
+    opacity: 1;
+  }
+
+  a.rec:hover .rec-title {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1.5px;
+  }
+
+  a.rec:hover .rec-arrow {
+    color: var(--ink);
+  }
 }
 
 /* The sleeve: a square, with a hairline so a pale cover has an edge. */

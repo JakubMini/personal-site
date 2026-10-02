@@ -61,22 +61,44 @@ const years = vinyls.records.map((r) => r.year);
         </div>
         <ol class="crate" data-crate>
           {
-            vinyls.records.map((r, i) => (
-              <li class="rec" data-rise data-artist={r.artist} data-title={r.title} data-year={String(r.year)} data-scheme={r.scheme ?? 'green'}>
-                <span class="rec-n">
-                  <span>{String(i + 1).padStart(2, '0')}</span>
-                </span>
-                <span class="rec-sleeve">{r.cover && <Image src={r.cover} alt="" widths={[96, 192]} sizes="96px" />}</span>
-                <span class="rec-main">
-                  <span class="rec-artist">{r.artist}</span>
-                  <span class="rec-title">{r.title}</span>
-                  {r.note && <span class="rec-note">{r.note}</span>}
-                </span>
-                <span class="rec-meta">
-                  {r.year} · {r.label}
-                </span>
-              </li>
-            ))
+            vinyls.records.map((r, i) => {
+              const inner = (
+                <Fragment>
+                  <span class="rec-n">
+                    <span>{String(i + 1).padStart(2, '0')}</span>
+                  </span>
+                  <span class="rec-sleeve">{r.cover && <Image src={r.cover} alt="" widths={[96, 192]} sizes="96px" />}</span>
+                  <span class="rec-main">
+                    <span class="rec-artist">{r.artist}</span>
+                    <span class="rec-title">{r.title}</span>
+                    {r.note && <span class="rec-note">{r.note}</span>}
+                  </span>
+                  <span class="rec-meta">
+                    {r.year} · {r.label}
+                    {r.spotify && (
+                      <span class="rec-arrow">
+                        <span class="sr-only">, on Spotify</span>
+                        <span aria-hidden="true">↗</span>
+                      </span>
+                    )}
+                  </span>
+                </Fragment>
+              );
+              const data = { 'data-artist': r.artist, 'data-title': r.title, 'data-year': String(r.year), 'data-scheme': r.scheme ?? 'green' };
+              return (
+                <li data-rise>
+                  {r.spotify ? (
+                    <a class="rec" href={r.spotify} {...data}>
+                      {inner}
+                    </a>
+                  ) : (
+                    <div class="rec" {...data}>
+                      {inner}
+                    </div>
+                  )}
+                </li>
+              );
+            })
           }
         </ol>
         <p class="crate-end" data-rise><span>End of side.</span><a href="#top">Flip it over <span aria-hidden="true">↑</span></a></p>

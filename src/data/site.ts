@@ -347,39 +347,40 @@ export const stack = [
 ];
 
 // How AI is part of the engineering, stated without naming internals.
+// Each practice: what the agents do, then what that buys.
 export const ai = {
   title: 'AI in the loop.',
-  lead: 'AI agents are part of how I engineer: each with one job and only the tools that job needs, arguing over the decisions that are expensive to undo, and never trusted with the last word.',
+  lead: 'AI agents do the reading, the checking and the first drafts. Engineers make the calls. More gets reviewed, less gets missed, and a small team ships like a larger one.',
   practices: [
     {
       n: '01',
-      title: 'Agents with roles',
+      title: 'One job each',
       detail:
-        'Architect, reviewer, database, research and red-team agents, each fenced to its own tools. The ones that review cannot write what they judge.',
+        'Architect, reviewer, database, research and red-team agents, each given only the tools its job needs. A reviewer cannot edit what it judges, so its verdict means something.',
     },
     {
       n: '02',
-      title: 'Adversarial review',
+      title: 'Argued both ways',
       detail:
-        'Schema, keys, wire formats and the boot path get two agents in parallel, one making the case and one trying to break it. The decision is recorded with what would change it.',
+        'Schemas, keys, wire formats and the boot path get two agents: one makes the case, one tries to break it. The decision is written down with what would change it. Mistakes that are expensive to undo are caught before they are made.',
     },
     {
       n: '03',
-      title: 'Release gates',
+      title: 'Every pull request',
       detail:
-        'AI review on every pull request, and nothing reaches production until an independent red-team pass has tried to break it. Confirmed findings block the release.',
+        'An AI reviewer reads every pull request, and an independent red-team pass tries to break every release. Confirmed findings block the merge. Nothing ships unreviewed, however busy the week.',
     },
     {
       n: '04',
-      title: 'Skills and context',
+      title: 'Wired into the tools',
       detail:
-        'Agent instructions and skills written into firmware and platform repos; Claude skills that turn test-rig telemetry into range reports and flag tickets that no longer tell the truth; Jira and Confluence over MCP, and an MCP server I wrote for Basecamp.',
+        'Every repo carries the instructions and skills an agent needs to work the way we do. Over MCP, agents reach Jira, Confluence and Basecamp, turn test-rig telemetry into range reports and flag tickets that no longer match reality. The routine reporting happens without anyone typing it up.',
     },
     {
       n: '05',
-      title: 'Models in software',
+      title: 'A model in the product',
       detail:
-        'A briefing agent on the Anthropic API: deterministic rules first, the model only returns strict JSON with no tools, and the prompt is hardened against injection.',
+        'A briefing agent on the Anthropic API. Deterministic rules decide first; the model only fills in strict JSON, with no tools and a prompt hardened against injection. It adds judgement where that helps and can do nothing else.',
     },
   ],
 };
@@ -440,6 +441,8 @@ export interface Vinyl {
   note?: string;
   // The sleeve, a square; import it from src/assets/covers/.
   cover?: ImageMetadata;
+  // The album on Spotify; with it the row is a link.
+  spotify?: string;
   // Green unless set.
   scheme?: LabelScheme;
 }
@@ -455,18 +458,18 @@ export const vinyls = {
   turntable: 'Teac TN-175, integrated preamp',
   speakers: 'Edifier',
   records: [
-    { artist: 'The Dave Brubeck Quartet', title: 'Gone with the Wind', year: 1959, label: 'Columbia', note: 'Original 1959 pressing', cover: coverBrubeck, scheme: 'paper' },
-    { artist: 'Stan Getz & João Gilberto', title: 'Getz/Gilberto', year: 1964, label: 'Verve', note: '2016 pressing', cover: coverGetz, scheme: 'ink' },
-    { artist: 'Frank Sinatra & Antônio Carlos Jobim', title: 'Francis Albert Sinatra & Antonio Carlos Jobim', year: 1967, label: 'Reprise', note: 'Original 1967 pressing', cover: coverSinatraJobim, scheme: 'green' },
-    { artist: 'Johnny Cash', title: 'At San Quentin', year: 1969, label: 'CBS', note: 'Original UK pressing', cover: coverCash, scheme: 'paper' },
-    { artist: 'David Bowie', title: 'David Bowie', year: 1969, label: 'Philips', note: 'The one known as Space Oddity · 2015 pressing', cover: coverBowie, scheme: 'ink' },
-    { artist: 'Simon & Garfunkel', title: 'Bridge over Troubled Water', year: 1970, label: 'Columbia', cover: coverSimonGarfunkel, scheme: 'green' },
-    { artist: 'Pink Floyd', title: 'The Dark Side of the Moon', year: 1973, label: 'Harvest', note: '1977 pressing', cover: coverPinkFloyd, scheme: 'ink' },
-    { artist: 'Alice Sara Ott & Ólafur Arnalds', title: 'The Chopin Project', year: 2015, label: 'Mercury Classics', cover: coverChopinProject, scheme: 'paper' },
-    { artist: 'Rhye', title: 'Blood', year: 2018, label: 'Loma Vista', cover: coverRhye, scheme: 'green' },
-    { artist: 'Marcin Masecki', title: 'Boleros y más', year: 2023, label: 'Toinen', cover: coverMasecki, scheme: 'paper' },
-    { artist: 'Wojtek Mazolewski', title: 'Solo', year: 2025, label: 'WMQ', cover: coverMazolewski, scheme: 'ink' },
-    { artist: 'Jungle', title: 'Sunshine', year: 2026, label: 'Caiola', cover: coverJungle, scheme: 'green' },
+    { artist: 'The Dave Brubeck Quartet', title: 'Gone with the Wind', year: 1959, label: 'Columbia', note: 'Original 1959 pressing', cover: coverBrubeck, spotify: 'https://open.spotify.com/search/The%20Dave%20Brubeck%20Quartet%20Gone%20with%20the%20Wind/albums', scheme: 'paper' },
+    { artist: 'Stan Getz & João Gilberto', title: 'Getz/Gilberto', year: 1964, label: 'Verve', note: '2016 pressing', cover: coverGetz, spotify: 'https://open.spotify.com/album/3JvFflPIx7bB6lJ4qId2Er', scheme: 'ink' },
+    { artist: 'Frank Sinatra & Antônio Carlos Jobim', title: 'Francis Albert Sinatra & Antonio Carlos Jobim', year: 1967, label: 'Reprise', note: 'Original 1967 pressing', cover: coverSinatraJobim, spotify: 'https://open.spotify.com/album/3xN9KNcFz7zgjfNu6mQD6M', scheme: 'green' },
+    { artist: 'Johnny Cash', title: 'At San Quentin', year: 1969, label: 'CBS', note: 'Original UK pressing', cover: coverCash, spotify: 'https://open.spotify.com/album/7KOZivQqRbfrKEsd5Hx9Ir', scheme: 'paper' },
+    { artist: 'David Bowie', title: 'David Bowie', year: 1969, label: 'Philips', note: 'The one known as Space Oddity · 2015 pressing', cover: coverBowie, spotify: 'https://open.spotify.com/album/2LQYvrh5jOxAAZjiBX3f2b', scheme: 'ink' },
+    { artist: 'Simon & Garfunkel', title: 'Bridge over Troubled Water', year: 1970, label: 'Columbia', cover: coverSimonGarfunkel, spotify: 'https://open.spotify.com/album/0JwHz5SSvpYWuuCNbtYZoV', scheme: 'green' },
+    { artist: 'Pink Floyd', title: 'The Dark Side of the Moon', year: 1973, label: 'Harvest', note: '1977 pressing', cover: coverPinkFloyd, spotify: 'https://open.spotify.com/album/2WT1pbYjLJciAR26yMebkH', scheme: 'ink' },
+    { artist: 'Alice Sara Ott & Ólafur Arnalds', title: 'The Chopin Project', year: 2015, label: 'Mercury Classics', cover: coverChopinProject, spotify: 'https://open.spotify.com/album/3e9ZZe5qexHd61X9ucUNxh', scheme: 'paper' },
+    { artist: 'Rhye', title: 'Blood', year: 2018, label: 'Loma Vista', cover: coverRhye, spotify: 'https://open.spotify.com/album/6yoGOJsTjU7w2amKcUUX7S', scheme: 'green' },
+    { artist: 'Marcin Masecki', title: 'Boleros y más', year: 2023, label: 'Toinen', cover: coverMasecki, spotify: 'https://open.spotify.com/search/Marcin%20Masecki%20Boleros%20y%20m%C3%A1s/albums', scheme: 'paper' },
+    { artist: 'Wojtek Mazolewski', title: 'Solo', year: 2025, label: 'WMQ', cover: coverMazolewski, spotify: 'https://open.spotify.com/album/69UeK396124UsOTt3LPJON', scheme: 'ink' },
+    { artist: 'Jungle', title: 'Sunshine', year: 2026, label: 'Caiola', cover: coverJungle, spotify: 'https://open.spotify.com/album/6xvFXJsIgOC70xQMwho7do', scheme: 'green' },
   ] as Vinyl[],
 };
 
