@@ -588,7 +588,6 @@ export const projects = {
         you: 'Alexa, ask vinyl vault what my collection is worth.',
         echo: "Your 163 records are worth about {sum}. 12 of them haven't been priced yet, so the real total is higher.",
       },
-      caption: 'The example from the README, with the sum kept off the page.',
     },
     {
       name: 'This site',
