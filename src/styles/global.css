@@ -54,6 +54,8 @@
   --c-red: light-dark(#b0305c, #ef7fa3);
   --c-brown: light-dark(#8a4b14, #e0a060);
   --c-amber: light-dark(#c98a1b, #e8b24a);
+  /* A faint paper line round the record pile, so black records show on ink. */
+  --pile-glow: light-dark(rgba(243, 242, 236, 0), rgba(243, 242, 236, 0.45));
 
   --display: 'Funnel Display Variable', 'Helvetica Neue', sans-serif;
   --sans: 'Funnel Sans Variable', 'Helvetica Neue', sans-serif;
@@ -2257,7 +2259,7 @@ ul {
     line-height: 28px;
   }
 
-  .theme-toggle {
+  .topbar .theme-toggle {
     position: absolute;
     top: 28px;
     right: var(--gutter);
@@ -2589,5 +2591,854 @@ ul {
 
   .shot {
     flex-basis: 100%;
+  }
+}
+
+/* ---- Where to go: the record pile and the phone's bar ------------------ */
+/* components/SiteNav.astro, scripts/site-nav.ts. Both need JavaScript; without
+   it the top bar keeps every link at every width. */
+
+/* On a laptop: ten records lying in a pile in the top-right corner, seen from
+   a little above (each one tilted in CSS), once the top bar has gone. The
+   record under the pointer slides out flat, then stands up to face you with
+   the destination on its label. */
+.pile {
+  --D: 168px; /* a record face on, pulled */
+  --s: 0.42; /* its size in the pile: 70px across */
+  --py: calc(var(--D) / 2 - 10px);
+  position: fixed;
+  top: 18px;
+  right: 16px;
+  z-index: 40;
+  display: none;
+  width: 74px;
+  height: 80px;
+}
+
+@media (hover: hover) and (min-width: 900px) {
+  .has-js .pile {
+    display: block;
+  }
+}
+
+.pile-hit {
+  position: absolute;
+  inset: -10px -10px -10px -26px;
+}
+
+.pile.is-docked .pile-hit {
+  cursor: pointer;
+}
+
+.pile-list {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pile-rec {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: var(--D);
+  height: var(--D);
+  margin: calc(var(--D) / -2) 0 0 calc(var(--D) / -2);
+  border-radius: 50%;
+  translate: var(--jx) var(--y);
+  z-index: calc(20 - var(--i));
+  /* Each record's edge, a shade off its face, so every one in the pile shows. */
+  filter: drop-shadow(0 2px 0 var(--edge)) drop-shadow(0 0 1px var(--pile-glow));
+  pointer-events: none;
+  transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) 0.12s, opacity 0.3s;
+}
+
+.pile-rec[data-vinyl='green'] {
+  --edge: #0a7d3b;
+}
+
+.pile-rec[data-vinyl='black'] {
+  --edge: #3a403b;
+}
+
+.pile-rec[data-vinyl='white'] {
+  --edge: #b6b4aa;
+}
+
+.pile-rec a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.pile-rec canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transform: perspective(700px) rotateX(70deg) scale(var(--s));
+  transition: transform 0.26s ease-in;
+}
+
+/* The section you are in sticks out of the pile. */
+.pile-rec.is-current {
+  translate: calc(var(--jx) - 9px) var(--y);
+}
+
+.pile-rec.is-pulled {
+  z-index: 30;
+  translate: calc(var(--D) / -2 - 50px) var(--py);
+  pointer-events: auto;
+  transition: translate 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s;
+}
+
+.pile-rec.is-pulled canvas {
+  transform: perspective(700px) rotateX(0deg) scale(1);
+  transition: transform 0.46s cubic-bezier(0.2, 0.9, 0.25, 1.08) 0.1s;
+}
+
+/* Out of sight while the top bar is on screen; when it leaves, the records
+   land from above, the bottom one first. */
+.pile:not(.is-docked) .pile-rec {
+  translate: var(--jx) calc(var(--y) - 140px);
+  opacity: 0;
+  transition-delay: calc(var(--i) * 12ms);
+}
+
+.pile.is-landing .pile-rec {
+  transition:
+    translate 0.42s cubic-bezier(0.3, 1.35, 0.5, 1) calc((9 - var(--i)) * 40ms),
+    opacity 0.2s calc((9 - var(--i)) * 40ms);
+}
+
+/* A record played spins while the page goes there. */
+.pile-rec canvas.is-spinning {
+  animation: spin 0.9s cubic-bezier(0.35, 0, 0.2, 1);
+}
+
+@keyframes spin {
+  to {
+    rotate: 720deg;
+  }
+}
+
+/* On a phone or a tablet, or any screen without hover: a bar at the bottom,
+   in reach of the thumb, naming the section you are in, that grows into a
+   sheet of every link. Ink with paper on it, and paper with ink on the dark
+   page, so it stands off any surface. */
+.dock {
+  display: none;
+}
+
+@media (max-width: 899px), (hover: none) {
+  .has-js .dock {
+    display: block;
+  }
+
+  /* Room under the colophon for the bar. */
+  .has-js .contact,
+  .has-js .hobby-foot {
+    padding-bottom: 104px;
+  }
+}
+
+.dock {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.has-intro .dock {
+  visibility: hidden;
+}
+
+.dock-open {
+  overflow: hidden;
+}
+
+.dock-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 15, 12, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.dock.is-open .dock-scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dock-panel {
+  --bar: 56px;
+  --on-soft: color-mix(in srgb, var(--paper) 62%, transparent);
+  --on-rule: color-mix(in srgb, var(--paper) 20%, transparent);
+  position: absolute;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  width: 248px;
+  height: var(--bar);
+  overflow: hidden;
+  border-radius: 28px;
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--paper) 30%, transparent);
+  translate: -50% 0;
+  pointer-events: auto;
+  transition:
+    width 0.44s cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 0.44s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-radius 0.44s cubic-bezier(0.2, 0.8, 0.2, 1),
+    bottom 0.44s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dock.is-open .dock-panel {
+  width: var(--open-w, calc(100% - 16px));
+  height: var(--open-h, 600px);
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  border-radius: 26px;
+}
+
+.dock-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s, visibility 0s 0.18s;
+}
+
+.dock.is-open .dock-body {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.28s 0.14s;
+}
+
+.dock-inner {
+  width: var(--open-w, 354px);
+  padding: 20px 20px 8px;
+}
+
+.dock-k {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--on-soft);
+}
+
+.dock-list,
+.dock-tiles {
+  margin: 8px 0 20px;
+}
+
+.dock-list {
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--on-rule);
+}
+
+.dock-list a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-block: 7px;
+  border-top: 1px solid var(--on-rule);
+  text-decoration: none;
+}
+
+.dock-n {
+  flex: none;
+  width: 34px;
+  padding: 3px 0;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--on-rule);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  text-align: center;
+  color: var(--on-soft);
+}
+
+.dock-list a.is-current .dock-n {
+  background: var(--green);
+  box-shadow: none;
+  color: var(--ink-0);
+  font-weight: 600;
+}
+
+.dock-t {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 27px;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.dock-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dock-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.dock-tile[aria-current] span:last-child {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Each page a sleeve with its record half out. */
+.dock-art {
+  position: relative;
+  aspect-ratio: 1.45;
+}
+
+.dock-art canvas {
+  position: absolute;
+  left: 30%;
+  top: 4%;
+  width: 62%;
+  aspect-ratio: 1;
+  height: auto;
+}
+
+.dock-sleeve {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: flex-end;
+  width: 69%;
+  aspect-ratio: 1;
+  padding: 6px 7px;
+  border-radius: 3px;
+  background: var(--sl-bg);
+  color: var(--sl-fg);
+  box-shadow: 0 0 0 1px var(--on-rule);
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.dock-sleeve[data-scheme='paper'] {
+  --sl-bg: var(--paper);
+  --sl-fg: var(--ink);
+}
+
+.dock-sleeve[data-scheme='green'] {
+  --sl-bg: var(--green);
+  --sl-fg: var(--ink-0);
+}
+
+.dock-sleeve[data-scheme='ink'] {
+  --sl-bg: var(--ink);
+  --sl-fg: var(--paper);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--paper) 45%, transparent);
+}
+
+.dock-foot {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-block: 14px 6px;
+  border-top: 1px solid var(--on-rule);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.dock-foot a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.dock-foot .theme-toggle {
+  margin-left: auto;
+}
+
+.dock-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--bar);
+  padding: 0 8px 0 10px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dock.is-open .dock-bar {
+  border-top: 1px solid var(--on-rule);
+}
+
+.dock-bar:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: -4px;
+  border-radius: 28px;
+}
+
+/* The intro's record, turning at 33⅓. */
+.dock-mini {
+  flex: none;
+  width: 38px;
+  height: 38px;
+}
+
+.dock-now {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dock-pill {
+  flex: none;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--green);
+  color: var(--ink-0);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.dock-ic {
+  position: relative;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--paper) 12%, transparent);
+}
+
+.dock-ic i {
+  position: absolute;
+  left: 11px;
+  top: 18.25px;
+  width: 16px;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dock-ic i:first-child {
+  transform: translateY(-3.5px);
+}
+
+.dock-ic i:last-child {
+  transform: translateY(3.5px);
+}
+
+.dock.is-open .dock-ic i:first-child {
+  transform: rotate(45deg);
+}
+
+.dock.is-open .dock-ic i:last-child {
+  transform: rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dock-mini {
+    animation: turn 1.8s linear infinite;
+  }
+
+  .dock-name.is-new {
+    animation: rise-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+@keyframes turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pile-rec,
+  .pile-rec canvas,
+  .pile.is-landing .pile-rec,
+  .dock-panel,
+  .dock-body,
+  .dock-scrim,
+  .dock-ic i {
+    transition-duration: 0.01s !important;
+    transition-delay: 0s !important;
+  }
+
+  .pile-rec canvas.is-spinning {
+    animation: none;
+  }
+}
+
+/* With the bar to carry the links, a phone's or a tablet's top bar is one
+   line: the name, and the light-or-dark switch. */
+@media (max-width: 899px) {
+  .has-js .topbar {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .has-js .nav {
+    display: flex;
+    margin-top: 0;
+  }
+
+  .has-js .nav > a,
+  .has-js .nav-pages {
+    display: none;
+  }
+
+  .has-js .topbar .theme-toggle {
+    position: static;
+  }
+}
+
+/* ---- The projects page --------------------------------------------------- */
+/* pages/projects.astro: the photography page's hero, then a ruled entry for
+   each project, its text in the middle columns and its figure on the right. */
+
+.pj-hero {
+  padding-block: 40px 56px;
+  row-gap: 28px;
+}
+
+.pj-hero .label {
+  grid-column: 1 / span 3;
+}
+
+.pj-hero .display {
+  grid-column: 4 / span 9;
+  margin-top: 40px;
+}
+
+.pj-lead {
+  grid-column: 4 / span 6;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.pj-summary {
+  grid-column: 4 / span 9;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+  padding-top: 18px;
+  border-top: 1.5px solid var(--ink);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.pj-summary a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pj {
+  align-items: start;
+  padding-block: 36px 72px;
+  border-top: 1.5px solid var(--ink);
+}
+
+.pj-side {
+  grid-column: 1 / span 3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pj-n {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.pj-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.pj-status::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 1.5px var(--ink);
+}
+
+.pj-main {
+  grid-column: 4 / span 5;
+}
+
+.pj-wide .pj-main {
+  grid-column: 4 / span 8;
+}
+
+.pj-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(36px, 4.2vw, 60px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.pj-sum {
+  max-width: 36em;
+  margin-top: 18px;
+  color: var(--text);
+}
+
+.pj-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+  margin: 24px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.pj-facts dt {
+  color: var(--muted);
+}
+
+.pj-facts dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.pj-tags {
+  margin-top: 18px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.pj-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin-top: 18px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.pj-links a {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+}
+
+.pj-fig {
+  grid-column: 9 / span 4;
+}
+
+.pj-fig figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pj-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.pj-node {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.pj-worker {
+  fill: var(--green);
+}
+
+.pj-wire {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.pj-tunnel {
+  stroke-dasharray: 4 4;
+}
+
+.pj-arrowhead {
+  fill: var(--ink);
+}
+
+.pj-diagram text {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-anchor: middle;
+  fill: var(--ink);
+}
+
+.pj-diagram .pj-sub {
+  font-size: 10.5px;
+  font-weight: 400;
+  fill: var(--muted);
+}
+
+.pj-diagram .pj-on-green {
+  fill: var(--ink-0);
+}
+
+.pj-diagram .pj-on-green.pj-sub {
+  fill: #2d4a37;
+}
+
+.pj-say {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pj-say p {
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 19px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.pj-who {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.pj-you {
+  margin-right: 12%;
+  border: 1.5px solid var(--ink);
+  border-bottom-left-radius: 3px;
+}
+
+.pj-echo {
+  margin-left: 12%;
+  border-bottom-right-radius: 3px;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.pj-echo .pj-who {
+  color: color-mix(in srgb, var(--paper) 70%, transparent);
+}
+
+/* A sum kept off the page, blacked out as on a released document. */
+.pj-redact {
+  display: inline-block;
+  width: 3.4em;
+  height: 0.9em;
+  border-radius: 2px;
+  background: currentColor;
+  vertical-align: -0.1em;
+}
+
+/* The Echo's light ring. */
+.pj-ring {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px var(--green);
+}
+
+@media (max-width: 899px) {
+  .pj-hero > *,
+  .pj > * {
+    grid-column: 1 / -1;
+  }
+
+  .pj-hero .display {
+    margin-top: 16px;
+  }
+
+  .pj {
+    row-gap: 24px;
+  }
+
+  .pj-side {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pj-n {
+    font-size: 32px;
+  }
+
+  .pj-fig {
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 599px) {
+  .pj-hero {
+    padding-block: 28px 40px;
+    row-gap: 20px;
+  }
+
+  .pj-summary,
+  .pj-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 12px;
+  }
+
+  .pj-summary > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .pj-say p {
+    font-size: 17px;
   }
 }

@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 
-// The page and the two away from the desk. Submitted to Google Search Console.
-const pages = ['/', '/vinyls', '/photography'];
+// The main page and the three of their own. Submitted to Google Search Console.
+const pages = ['/', '/projects', '/vinyls', '/photography'];
 
 export const GET: APIRoute = ({ site }) =>
   new Response(

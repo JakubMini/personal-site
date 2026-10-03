@@ -533,3 +533,106 @@ export const photography = {
     { src: cliftonBridge, alt: 'The Clifton Suspension Bridge from above the gorge, its deck and cables running away to the far tower, with the cliffs below', caption: 'Clifton Suspension Bridge, Bristol' },
   ] as Photo[],
 };
+
+// ---- Personal projects: pages/projects.astro ----
+
+// A project's figure: the vault's architecture drawn in SVG
+// (components/VaultDiagram.astro), or a spoken exchange. `{sum}` in the
+// exchange is a sum of money kept off the page, drawn as a redaction bar.
+export interface Project {
+  name: string;
+  status: string;
+  summary: string;
+  facts: [string, string][];
+  tags: string[];
+  links: { label: string; href: string }[];
+  diagram?: 'vault';
+  say?: { you: string; echo: string };
+  caption?: string;
+}
+
+export const projects = {
+  eyebrow: 'Personal projects',
+  title: 'After hours.',
+  lead: 'Small things I build for myself, end to end and in the open. Each one is running, and each one is on GitHub.',
+  github: 'https://github.com/JakubMini',
+  items: [
+    {
+      name: 'Vinyl Value Vault',
+      status: 'Live since 2 Oct 2026',
+      summary:
+        'Every record I own, what it is worth today, and how that has changed. It follows my Discogs collection, re-prices anything more than a day old from the Discogs market, and keeps every price, so each record and the whole shelf have a history. A React dashboard sits behind a Cloudflare Access login.',
+      facts: [
+        ['Records', '163'],
+        ['Prices', 'Daily, from Discogs'],
+        ['Running cost', '£0'],
+      ],
+      tags: ['Cloudflare Workers', 'D1', 'Cron Triggers', 'Hono', 'Zod', 'React 19', 'Vitest'],
+      links: [{ label: 'GitHub', href: 'https://github.com/JakubMini/vinyl-value-vault' }],
+      diagram: 'vault',
+      caption: 'One Worker, two entry points: the API, and the pricing job.',
+    },
+    {
+      name: 'Vinyl Vault for Alexa',
+      status: 'Live since 2 Oct 2026, private skill',
+      summary:
+        'The voice front end for the vault. Ask an Echo what the collection is worth, which record is the most valuable, what has gained the most this month, or whether a record is on the shelf. It says when records are not priced yet instead of rounding them away.',
+      facts: [
+        ['Questions', '4 live, 1 next'],
+        ['Reaches the vault', 'Service binding'],
+        ['Running cost', '£0'],
+      ],
+      tags: ['Cloudflare Workers', 'TypeScript', 'Alexa Skills Kit', 'Request signing'],
+      links: [{ label: 'GitHub', href: 'https://github.com/JakubMini/vinyl-vault-alexa' }],
+      say: {
+        you: 'Alexa, ask vinyl vault what my collection is worth.',
+        echo: "Your 163 records are worth about {sum}. 12 of them haven't been priced yet, so the real total is higher.",
+      },
+      caption: 'The example from the README, with the sum kept off the page.',
+    },
+    {
+      name: 'This site',
+      status: 'Live, and you are on it',
+      summary:
+        'Astro, static, served by Cloudflare. The record, the signal chain and the figures are drawn in canvas and SVG rather than shipped as images; GSAP runs the motion and three.js the lean figure. Light and dark, phone to desktop.',
+      facts: [],
+      tags: ['Astro', 'TypeScript', 'Canvas', 'GSAP', 'three.js', 'Cloudflare'],
+      links: [{ label: 'GitHub', href: 'https://github.com/JakubMini/personal-site' }],
+    },
+  ] as Project[],
+};
+
+// ---- Where to go: the top bar, the record pile and the phone's bar ----
+
+// Every destination is a record (components/SiteNav.astro, scripts/site-nav.ts).
+// Side A is the main page's sections in the order of the scroll, Side B the
+// pages of their own. `rim` is lettered round the label in small print, the
+// vinyl is the record's colour, and a page's `sleeve` is the colour of the
+// sleeve it is half out of in the phone's sheet.
+export type Lacquer = 'green' | 'black' | 'white';
+
+export interface Destination {
+  id: string;
+  track: string;
+  label: string;
+  rim: string;
+  vinyl: Lacquer;
+  href?: string;
+  sleeve?: LabelScheme;
+}
+
+export const sideA: Destination[] = [
+  { id: 'about', track: 'A1', label: 'About', rim: 'I want my engineering to cut carbon.', vinyl: 'green' },
+  { id: 'journey', track: 'A2', label: 'Journey', rim: 'Four products, all electric.', vinyl: 'black' },
+  { id: 'stack', track: 'A3', label: 'Stack', rim: 'Silicon to cloud.', vinyl: 'white' },
+  { id: 'ai', track: 'A4', label: 'AI', rim: ai.title, vinyl: 'green' },
+  { id: 'education', track: 'A5', label: 'Education', rim: 'PhD and MEng, Imperial', vinyl: 'black' },
+  { id: 'publications', track: 'A6', label: 'Publications', rim: 'Patents and publications', vinyl: 'white' },
+  { id: 'contact', track: 'A7', label: 'Contact', rim: "Let's build something cleaner.", vinyl: 'green' },
+];
+
+export const sideB: Destination[] = [
+  { id: 'projects', track: 'B1', label: 'Projects', rim: projects.title, vinyl: 'black', href: '/projects', sleeve: 'green' },
+  { id: 'vinyls', track: 'B2', label: 'Vinyls', rim: vinyls.title, vinyl: 'white', href: '/vinyls', sleeve: 'ink' },
+  { id: 'photography', track: 'B3', label: 'Photography', rim: photography.title, vinyl: 'green', href: '/photography', sleeve: 'paper' },
+];

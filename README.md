@@ -28,7 +28,8 @@ Node 22.12 or later (`.node-version` pins 24 for Cloudflare's build).
 | The hero's signal chain | `src/scripts/signal-chain.ts`; `motion.ts` runs its loop and hands it the pointer |
 | The icon and logo mark | `public/favicon.svg` (also the mark beside the name) |
 | The line drawings | `src/components/Machine.astro`; wheels and the e-bikes' rear drive are `MachineWheel.astro` and `MachineDrive.astro` |
-| The vinyls and photography pages | `src/pages/vinyls.astro` and `photography.astro` on `src/layouts/Hobby.astro`; their copy, records and photos are `vinyls` and `photography` in `site.ts` |
+| The projects, vinyls and photography pages | `src/pages/projects.astro`, `vinyls.astro` and `photography.astro` on `src/layouts/Hobby.astro`; their copy, projects, records and photos are `projects`, `vinyls` and `photography` in `site.ts`; the vault's drawing is `src/components/VaultDiagram.astro` |
+| Where the links go once the top bar has scrolled away | `src/components/SiteNav.astro` and `src/scripts/site-nav.ts`: the record pile on a laptop, the bar and its sheet on a phone. Every destination, in the top bar too, is `sideA` (the main page's sections) or `sideB` (the pages) in `site.ts`; the records are drawn by `disc()` in `vinyl.ts` |
 | The vinyls page's turntable | `src/scripts/crate.ts`; the record itself is `vinyl.ts` |
 
 **Photos.** Put the file in `src/assets/photos/`, import it at the top of
@@ -85,6 +86,7 @@ node -e "const s=require('sharp');s('public/favicon.svg',{density:288}).resize(1
 - [ ] Code for the snippet slots, or delete the ones not wanted
 - [ ] A CV cut for the public site (no phone number)
 - [ ] Places and years for the photographs' captions (`photography.photos`)
+- [ ] The projects page's title and lead in Jakub's words (`projects.title`, `projects.lead`)
 
 ## Hosting
 
@@ -120,7 +122,8 @@ check `pnpm wrangler whoami` shows the personal account first.
   build time stands in. Labels are HTML (CSS2DRenderer), so they stay sharp.
 - **No motion under `prefers-reduced-motion`, and no timers.** Every tween is
   scrubbed by the scroll or plays once on entry. Without JavaScript the page is
-  complete and static. Three exceptions follow.
+  complete and static. The exceptions: the intro, the hero's chain and the
+  turntable, below, and the record turning in the phone's bar.
 - **The intro** (`components/Intro.astro`, `scripts/intro.ts`),
   about three seconds on every load, after wodniack.dev. On an ink cover a
   glossy black record is cut, spins up to 33⅓ rpm and rolls off, uncovering
@@ -150,9 +153,31 @@ check `pnpm wrangler whoami` shows the personal account first.
   the tab is visible, and a scroll gives it a flick. Under reduced motion it
   is drawn still with the collection's label; without JavaScript a plain CSS
   record stands in.
-- **The hobbies are pages, not sections.** `/vinyls` and `/photography` are
-  linked from the top bar (after the sections, past a hairline), the About
-  paragraph and the colophon, so the main page's scroll is unchanged. Photography links the Instagram feed; the page is the edit.
+- **The projects and hobbies are pages, not sections.** `/projects`,
+  `/vinyls` and `/photography` are linked from the top bar (after the
+  sections, past a hairline), the colophon, and Side B of the record pile and
+  the phone's sheet; the hobbies from the About paragraph too. The main
+  page's scroll is unchanged. Photography links the Instagram feed; the page
+  is the edit.
+- **Where to go once the top bar has gone** (`components/SiteNav.astro`,
+  `scripts/site-nav.ts`). The top bar stays at the top of the page as text.
+  On a laptop (a pointer that hovers, 900px and wider), once it has scrolled
+  away, its links land in the top-right corner as a pile of ten records, one
+  for each destination, tilted in CSS and drawn once in a 2D canvas
+  (`disc()` in `vinyl.ts`): green, black and white vinyl in turn, the
+  section you are in sticking out. Nothing opens: the record under the
+  pointer slides out, flat, then stands up to face you with the destination
+  on its label (the name, its track, A1–A7 for the main page and B1–B3 for
+  the pages, and the section's headline in small print round the rim); a
+  click spins it while the page goes there. The pile is split into ten equal
+  bands for the pointer, since a record's edge is thinner than a pointer is
+  precise, and Tab pulls each record in turn. Everywhere else the top bar is
+  one line, the name and the switch, and a bar at the bottom names the
+  section you are in, beside the intro's record turning at 33⅓ (a CSS
+  animation, stopped under reduced motion); it opens into a sheet of every
+  link, with the page behind it inert. Without JavaScript neither appears and
+  the top bar keeps every link at every width. The mockup, approved on
+  3 Oct 2026, is private: https://claude.ai/artifact/QTRncbusPtNeeCQBLqFu69
 - **Dark mode is the same three colours the other way up.** Every colour
   token is a `light-dark()` pair: `--paper` is the page and `--ink` what is
   drawn on it, and on the dark page they swap. Green stays green but goes

@@ -1,0 +1,91 @@
+---
+// Where to go once the top bar has scrolled away (scripts/site-nav.ts).
+// On a laptop, a pile of records in the top-right corner: point at one and it
+// slides out with its destination on the label. On a phone or a tablet, a bar
+// at the bottom that opens into a sheet of every link. Side A is the main
+// page's sections, Side B the pages of their own: sideA and sideB in
+// data/site.ts. Both need JavaScript; without it the top bar keeps every link.
+import ThemeToggle from './ThemeToggle.astro';
+import { person, sideA, sideB, type Destination } from '../data/site';
+
+interface Props {
+  here: 'main' | 'projects' | 'vinyls' | 'photography';
+}
+
+const { here } = Astro.props;
+const onMain = here === 'main';
+const href = (d: Destination) => d.href ?? (onMain ? `#${d.id}` : `/#${d.id}`);
+const records = [...sideA, ...sideB];
+// A pile is never quite square: each record sits a few pixels off the line.
+const offsets = [0, 3, -2, 4, -3, 2, -2, 3, -3, 1];
+const mail = `mailto:${person.email}`;
+---
+
+<nav class="pile" aria-label="Sections and pages" data-pile data-here={here} inert>
+  <span class="pile-hit" aria-hidden="true"></span>
+  <ul class="pile-list">
+    {
+      records.map((d, i) => (
+        <li class="pile-rec" data-vinyl={d.vinyl} style={`--i: ${i}; --jx: ${offsets[i % offsets.length]}px; --y: ${12 + i * 6}px`}>
+          <a href={href(d)} data-id={d.id} aria-label={`${d.track}, ${d.label}`} aria-current={d.id === here ? 'page' : undefined}>
+            <canvas width="2" height="2" data-disc={JSON.stringify({ lacquer: d.vinyl, name: d.label, track: d.track, rim: d.rim })} />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<div class="dock" data-dock>
+  <div class="dock-scrim" data-dock-scrim></div>
+  <div class="dock-panel">
+    <div class="dock-body" id="dock-sheet">
+      <div class="dock-inner" data-dock-inner>
+        <p class="dock-k">Side A · {onMain ? 'this page' : 'the main page'}</p>
+        <ol class="dock-list">
+          {
+            sideA.map((d) => (
+              <li>
+                <a href={href(d)} data-id={d.id}>
+                  <span class="dock-n">{d.track}</span>
+                  <span class="dock-t">{d.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="dock-k">Side B · pages</p>
+        <ul class="dock-tiles">
+          {
+            sideB.map((d) => (
+              <li>
+                <a class="dock-tile" href={d.href} data-id={d.id} aria-current={d.id === here ? 'page' : undefined}>
+                  <span class="dock-art" aria-hidden="true">
+                    <canvas width="2" height="2" data-disc={JSON.stringify({ lacquer: d.vinyl })} />
+                    <span class="dock-sleeve" data-scheme={d.sleeve}>{d.track}</span>
+                  </span>
+                  <span>{d.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="dock-foot">
+          <a href={mail}>Email</a>
+          <a href={person.linkedin} rel="me">LinkedIn</a>
+          {!onMain && <a href="/">Home</a>}
+          <ThemeToggle />
+        </div>
+      </div>
+    </div>
+    <button class="dock-bar" type="button" aria-expanded="false" aria-controls="dock-sheet" aria-label="Menu" data-dock-bar>
+      <canvas class="dock-mini" width="2" height="2" aria-hidden="true"></canvas>
+      <span class="dock-now" aria-hidden="true"><span class="dock-pill" data-dock-pill hidden></span><span class="dock-name" data-dock-name>Menu</span></span>
+      <span class="dock-ic" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+</div>
+
+<script>
+  import '../scripts/site-nav';
+</script>

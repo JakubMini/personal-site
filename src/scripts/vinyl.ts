@@ -29,6 +29,38 @@ const VINYL = {
   sheen: 0.3,
 };
 
+// The records of the pile and the phone's bar (disc(), below) also come in
+// the favicon's green and in white. Each wears a label of its own, and the
+// coloured ones an ink line round the edge, without which white would vanish
+// on paper.
+export type Lacquer = 'black' | 'green' | 'white';
+type Palette = typeof VINYL;
+const LACQUERS: Record<Lacquer, Palette & { label: LabelScheme; line: string | null }> = {
+  black: { ...VINYL, label: 'paper', line: null },
+  green: {
+    centre: '#5cffa2',
+    edge: '#0c9446',
+    light: 'rgba(255, 255, 255, 0.2)',
+    dark: 'rgba(0, 50, 20, 0.28)',
+    gap: 'rgba(0, 50, 20, 0.5)',
+    lip: 'rgba(255, 255, 255, 0.5)',
+    sheen: 0.16,
+    label: 'ink',
+    line: 'rgba(11, 15, 12, 0.6)',
+  },
+  white: {
+    centre: '#ffffff',
+    edge: '#d9d8cf',
+    light: 'rgba(255, 255, 255, 0.6)',
+    dark: 'rgba(11, 15, 12, 0.06)',
+    gap: 'rgba(11, 15, 12, 0.16)',
+    lip: 'rgba(11, 15, 12, 0.18)',
+    sheen: 0.1,
+    label: 'green',
+    line: 'rgba(11, 15, 12, 0.6)',
+  },
+};
+
 // The label's colour: the intro's green, paper, or ink with green lettering.
 export type LabelScheme = 'green' | 'paper' | 'ink';
 
@@ -59,16 +91,16 @@ function seeded(seed: number) {
   return () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 }
 
-function lacquer(g: CanvasRenderingContext2D, r: number) {
+function lacquer(g: CanvasRenderingContext2D, r: number, v: Palette = VINYL) {
   const fill = g.createRadialGradient(0, 0, r * 0.3, 0, 0, r);
-  fill.addColorStop(0, VINYL.centre);
-  fill.addColorStop(1, VINYL.edge);
+  fill.addColorStop(0, v.centre);
+  fill.addColorStop(1, v.edge);
   g.fillStyle = fill;
   g.beginPath();
   g.arc(0, 0, r, 0, TAU);
   g.fill();
   // The raised lip at the edge.
-  g.strokeStyle = VINYL.lip;
+  g.strokeStyle = v.lip;
   g.lineWidth = Math.max(1, r * 0.012);
   g.beginPath();
   g.arc(0, 0, r * 0.982, 0, TAU);
@@ -77,13 +109,13 @@ function lacquer(g: CanvasRenderingContext2D, r: number) {
 
 // Rings a device pixel or so apart, each a little lighter or darker than the
 // last, with four smooth bands between the tracks.
-function grooves(g: CanvasRenderingContext2D, r: number) {
+function grooves(g: CanvasRenderingContext2D, r: number, v: Palette = VINYL, inner = GROOVES_IN) {
   const random = seeded(11);
   const step = Math.max(0.55, r / 320);
-  for (let at = r * GROOVES_OUT; at > r * GROOVES_IN; at -= step) {
+  for (let at = r * GROOVES_OUT; at > r * inner; at -= step) {
     const gap = TRACK_GAPS.some((f) => Math.abs(f * r - at) < r * 0.007);
     g.globalAlpha = gap ? 1 : 0.3 + random() * 0.7;
-    g.strokeStyle = gap ? VINYL.gap : random() < 0.5 ? VINYL.light : VINYL.dark;
+    g.strokeStyle = gap ? v.gap : random() < 0.5 ? v.light : v.dark;
     g.lineWidth = gap ? step * 1.3 : Math.max(0.45, r / 480);
     g.beginPath();
     g.arc(0, 0, at, 0, TAU);
@@ -128,20 +160,23 @@ function round(g: CanvasRenderingContext2D, text: string, r: number, top: boolea
   });
 }
 
-function label(g: CanvasRenderingContext2D, r: number, text: Label, css: CSSStyleDeclaration) {
-  const rl = r * LABEL;
+// Each label scheme: its colour lit and plain, its lettering, and a rim where
+// the label would otherwise vanish into the record. The colours themselves,
+// not the page's: a paper label stays paper on a dark page.
+function schemes(css: CSSStyleDeclaration) {
   const green = css.getPropertyValue('--green').trim();
-  // The colours themselves, not the page's: a paper label stays paper on a dark page.
   const ink = css.getPropertyValue('--ink-0').trim();
   const paper = css.getPropertyValue('--paper-0').trim();
-  // Each scheme: the label's colour lit and plain, its lettering, and a rim
-  // where the label would otherwise vanish into the record.
-  const schemes = {
+  return {
     green: { fill: ['#8affbb', green], text: ink, rim: null },
     paper: { fill: ['#ffffff', paper], text: ink, rim: null },
     ink: { fill: ['#2b312d', ink], text: green, rim: 'rgba(243, 242, 236, 0.55)' },
   } as const;
-  const scheme = schemes[text.scheme ?? 'green'];
+}
+
+// The label's disc, its rim and the fine ring inside it; leaves the fill
+// style set to the lettering's colour.
+function labelDisc(g: CanvasRenderingContext2D, rl: number, scheme: ReturnType<typeof schemes>[LabelScheme]) {
   const fill = g.createRadialGradient(-rl * 0.35, -rl * 0.35, rl * 0.1, 0, 0, rl);
   fill.addColorStop(0, scheme.fill[0]);
   fill.addColorStop(1, scheme.fill[1]);
@@ -164,7 +199,11 @@ function label(g: CanvasRenderingContext2D, r: number, text: Label, css: CSSStyl
   g.arc(0, 0, rl * 0.9, 0, TAU);
   g.stroke();
   g.globalAlpha = 1;
+}
 
+function label(g: CanvasRenderingContext2D, r: number, text: Label, css: CSSStyleDeclaration) {
+  const rl = r * LABEL;
+  labelDisc(g, rl, schemes(css)[text.scheme ?? 'green']);
   const sans = css.getPropertyValue('--sans');
   round(g, text.top.toUpperCase(), rl * 0.72, true, 600, sans, rl * 0.15, rl * 0.035, 3.2);
   round(g, text.bottom.toUpperCase(), rl * 0.74, false, 400, sans, rl * 0.11, rl * 0.02, 2.9);
@@ -293,4 +332,94 @@ export function vinyl(canvas: HTMLCanvasElement, text: Label) {
   };
 
   return { frame, setLabel };
+}
+
+// A record that keeps still, for the record pile and the phone's bar
+// (scripts/site-nav.ts): any lacquer, and a label half the record across so
+// its name reads at 168px, with the track under the spindle and small print
+// round the rim. Without a name it is the colours alone, for a small one.
+// Sizes the canvas to its layout width, which a CSS transform leaves alone.
+export interface Disc {
+  lacquer: Lacquer;
+  scheme?: LabelScheme;
+  name?: string;
+  track?: string;
+  rim?: string;
+}
+
+export function disc(canvas: HTMLCanvasElement, d: Disc, labelSize = 0.5) {
+  const size = Math.max(2, Math.round(canvas.offsetWidth * Math.min(2, devicePixelRatio || 1)));
+  canvas.width = canvas.height = size;
+  const r = size / 2;
+  const v = LACQUERS[d.lacquer];
+  const css = getComputedStyle(document.documentElement);
+  const g = canvas.getContext('2d')!;
+  g.setTransform(1, 0, 0, 1, r, r);
+  lacquer(g, r, v);
+  grooves(g, r, v, labelSize + 0.03);
+  g.save();
+  g.beginPath();
+  g.arc(0, 0, r * GROOVES_OUT, 0, TAU);
+  g.arc(0, 0, r * (labelSize + 0.03), 0, TAU, true);
+  g.clip();
+  g.globalCompositeOperation = 'screen';
+  sheen(g, r, v.sheen);
+  g.restore();
+
+  const rl = r * labelSize;
+  labelDisc(g, rl, schemes(css)[d.scheme ?? v.label]);
+  if (d.name && d.track) {
+    const display = css.getPropertyValue('--display');
+    const sans = css.getPropertyValue('--sans');
+    let at = rl * 0.34;
+    g.font = `600 ${at}px ${display}`;
+    const room = rl * 1.42;
+    const w = g.measureText(d.name).width;
+    if (w > room) {
+      at *= room / w;
+      g.font = `600 ${at}px ${display}`;
+    }
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText(d.name, 0, -rl * 0.33);
+    g.font = `600 ${rl * 0.2}px ${sans}`;
+    g.fillText(d.track, 0, rl * 0.3);
+    round(g, `SIDE ${d.track[0]}  ·  33⅓ RPM`, rl * 0.76, true, 500, sans, rl * 0.1, rl * 0.03, 2.4);
+    if (d.rim) round(g, d.rim.toUpperCase(), rl * 0.77, false, 500, sans, rl * 0.1, rl * 0.02, 2.7);
+  }
+
+  // The gloss and the two rim lights, as on the turning record.
+  g.save();
+  g.beginPath();
+  g.arc(0, 0, r, 0, TAU);
+  g.clip();
+  g.globalCompositeOperation = 'screen';
+  const gloss = g.createRadialGradient(-r * 0.45, -r * 0.5, 0, -r * 0.45, -r * 0.5, r * 1.1);
+  gloss.addColorStop(0, 'rgba(255, 255, 255, 0.11)');
+  gloss.addColorStop(0.5, 'rgba(255, 255, 255, 0.03)');
+  gloss.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  g.fillStyle = gloss;
+  g.fillRect(-r, -r, size, size);
+  g.lineWidth = Math.max(1, r * 0.012);
+  g.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+  g.beginPath();
+  g.arc(0, 0, r * 0.99, -Math.PI * 0.95, -Math.PI * 0.45);
+  g.stroke();
+  g.strokeStyle = 'rgba(47, 242, 124, 0.5)';
+  g.beginPath();
+  g.arc(0, 0, r * 0.99, Math.PI * 0.05, Math.PI * 0.55);
+  g.stroke();
+  g.restore();
+  if (v.line) {
+    g.strokeStyle = v.line;
+    g.lineWidth = Math.max(1, r * 0.016);
+    g.beginPath();
+    g.arc(0, 0, r - g.lineWidth / 2, 0, TAU);
+    g.stroke();
+  }
+  g.globalCompositeOperation = 'destination-out';
+  g.beginPath();
+  g.arc(0, 0, Math.max(1.2, r * HOLE), 0, TAU);
+  g.fill();
+  g.globalCompositeOperation = 'source-over';
 }

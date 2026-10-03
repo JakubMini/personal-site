@@ -5,17 +5,12 @@ import Machine from '../components/Machine.astro';
 import Photo from '../components/Photo.astro';
 import DashDemo from '../components/DashDemo.astro';
 import Snippet from '../components/Snippet.astro';
+import SiteNav from '../components/SiteNav.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
-import { about, ai, education, hero, journey, person, publications, stack } from '../data/site';
+import { about, ai, education, hero, journey, person, publications, sideA, sideB, stack } from '../data/site';
 
-const sections = [
-  ['about', 'About'],
-  ['journey', 'Journey'],
-  ['stack', 'Stack'],
-  ['ai', 'AI'],
-  ['education', 'Education'],
-  ['publications', 'Publications'],
-];
+// The top bar's sections; Contact has a link of its own at the end.
+const sections = sideA.filter((d) => d.id !== 'contact');
 const mail = `mailto:${person.email}`;
 const year = new Date().getFullYear();
 // [text](href) in a paragraph of copy renders as a link.
@@ -38,10 +33,9 @@ const personLd = {
     <div class="wrap topbar">
       <a class="wordmark" href="#top"><img src="/favicon.svg" alt="" width="28" height="28" />{person.name}</a>
       <nav class="nav" aria-label="Sections and pages">
-        {sections.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
+        {sections.map((d) => <a href={`#${d.id}`}>{d.label}</a>)}
         <span class="nav-pages">
-          <a href="/vinyls">Vinyls</a>
-          <a href="/photography">Photography</a>
+          {sideB.map((d) => <a href={d.href}>{d.label}</a>)}
         </span>
         <a class="nav-contact" href="#contact">Contact</a>
         <ThemeToggle />
@@ -236,14 +230,19 @@ const personLd = {
       <div class="colophon">
         <span>© {year} {person.name}</span>
         <span class="colophon-links">
-          <a href="/vinyls">Vinyls</a>
-          <span aria-hidden="true">·</span>
-          <a href="/photography">Photography</a>
+          {sideB.map((d, i) => (
+            <Fragment>
+              {i > 0 && <span aria-hidden="true">·</span>}
+              <a href={d.href}>{d.label}</a>
+            </Fragment>
+          ))}
         </span>
         <span>{person.location}</span>
       </div>
     </div>
   </footer>
+
+  <SiteNav here="main" />
 
   <script>
     import '../scripts/motion';

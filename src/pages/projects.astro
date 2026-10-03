@@ -1,0 +1,79 @@
+---
+// The personal projects: what each one does, what it runs on, a figure for
+// how it works, and the links. Copy is `projects` in data/site.ts.
+import Hobby from '../layouts/Hobby.astro';
+import VaultDiagram from '../components/VaultDiagram.astro';
+import { person, projects } from '../data/site';
+
+const n = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+<Hobby title="Projects" description={`${person.name}'s personal projects, each running and on GitHub.`} current="projects">
+  <header class="wrap grid pj-hero" aria-labelledby="projects-title">
+    <p class="label hobby-eyebrow">{projects.eyebrow}</p>
+    <h1 class="display" id="projects-title" data-lines>{projects.title}</h1>
+    <p class="pj-lead" data-lines>{projects.lead}</p>
+    <div class="pj-summary" data-rise>
+      <div><div class="fact-label">Projects</div>{projects.items.length}</div>
+      <div><div class="fact-label">Running</div>All {projects.items.length === 3 ? 'three' : projects.items.length}</div>
+      <div><div class="fact-label">Code</div><a href={projects.github} rel="me">{projects.github.replace('https://', '')} <span aria-hidden="true">↗</span></a></div>
+    </div>
+  </header>
+
+  {
+    projects.items.map((p, i) => {
+      const figure = p.diagram || p.say;
+      return (
+        <article class:list={['wrap grid pj', { 'pj-wide': !figure }]} aria-labelledby={`project-${n(i)}`}>
+          <div class="pj-side" data-rise>
+            <p class="pj-n">{n(i)}</p>
+            <p class="pj-status">{p.status}</p>
+          </div>
+          <div class="pj-main">
+            <h2 class="pj-title" id={`project-${n(i)}`} data-lines>{p.name}</h2>
+            <p class="pj-sum" data-rise>{p.summary}</p>
+            {p.facts.length > 0 && (
+              <dl class="pj-facts" data-rise>
+                {p.facts.map(([k, v]) => (
+                  <div>
+                    <dt>{k}</dt>
+                    <dd>{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            <p class="pj-tags" data-rise>{p.tags.join(' / ')}</p>
+            <p class="pj-links" data-rise>
+              {p.links.map((l) => (
+                <a href={l.href}>{l.label} <span aria-hidden="true">↗</span></a>
+              ))}
+            </p>
+          </div>
+          {figure && (
+            <figure class="pj-fig" data-rise>
+              {p.diagram === 'vault' && <VaultDiagram />}
+              {p.say && (
+                <div class="pj-say">
+                  <p class="pj-you"><span class="pj-who">You</span>“{p.say.you}”</p>
+                  <p class="pj-echo">
+                    <span class="pj-who"><span class="pj-ring" aria-hidden="true"></span>Echo</span>“
+                    {p.say.echo.split('{sum}').map((part, k) => (
+                      <Fragment>
+                        {k > 0 && <span class="pj-redact" role="img" aria-label="a sum kept private"></span>}
+                        {part}
+                      </Fragment>
+                    ))}”
+                  </p>
+                </div>
+              )}
+              {p.caption && <figcaption>{p.caption}</figcaption>}
+            </figure>
+          )}
+        </article>
+      );
+    })
+  }
+
+  <a slot="elsewhere" href={projects.github} rel="me">GitHub <span aria-hidden="true">↗</span></a>
+  <a slot="elsewhere" href="/vinyls">Vinyls</a>
+</Hobby>

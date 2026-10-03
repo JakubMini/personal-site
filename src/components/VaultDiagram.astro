@@ -1,0 +1,34 @@
+---
+// Vinyl Value Vault, as built (pages/projects.astro): the dashboard behind
+// Cloudflare Access and a cron trigger both reach one Worker, which keeps
+// every price in D1 and asks Discogs through a tunnel. Drawn in the page's
+// ink, paper and green, so it follows the theme.
+---
+
+<svg class="pj-diagram" viewBox="0 0 400 276" role="img" aria-label="The dashboard, behind Cloudflare Access, and a cron trigger every minute both reach one Worker. The Worker reads and writes D1, which keeps every price, and asks the Discogs API for prices through a tunnel.">
+  <defs>
+    <marker id="pj-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="pj-arrowhead" d="M0 0L10 5L0 10Z"></path>
+    </marker>
+  </defs>
+  <path class="pj-wire" d="M80 62 L160 116" marker-end="url(#pj-head)"></path>
+  <path class="pj-wire" d="M320 62 L240 116" marker-end="url(#pj-head)"></path>
+  <path class="pj-wire" d="M160 172 L118 204" marker-start="url(#pj-head)" marker-end="url(#pj-head)"></path>
+  <path class="pj-wire pj-tunnel" d="M240 172 L290 212" marker-end="url(#pj-head)"></path>
+  <rect class="pj-node" x="18" y="18" width="128" height="44" rx="22"></rect>
+  <text x="82" y="37">Dashboard</text>
+  <text class="pj-sub" x="82" y="52">behind Access</text>
+  <rect class="pj-node" x="254" y="18" width="128" height="44" rx="22"></rect>
+  <text x="318" y="37">Cron</text>
+  <text class="pj-sub" x="318" y="52">every minute</text>
+  <rect class="pj-node pj-worker" x="110" y="116" width="180" height="56" rx="6"></rect>
+  <text class="pj-on-green" x="200" y="140">One Worker</text>
+  <text class="pj-on-green pj-sub" x="200" y="157">fetch · scheduled</text>
+  <path class="pj-node" d="M34 216 a66 9 0 0 1 132 0 v40 a66 9 0 0 1 -132 0 z"></path>
+  <ellipse class="pj-node" cx="100" cy="216" rx="66" ry="9"></ellipse>
+  <text x="100" y="242">D1 · SQLite</text>
+  <text class="pj-sub" x="100" y="257">every price, kept</text>
+  <rect class="pj-node" x="236" y="214" width="146" height="44" rx="6"></rect>
+  <text x="309" y="233">Discogs API</text>
+  <text class="pj-sub" x="309" y="248">through a Tunnel</text>
+</svg>

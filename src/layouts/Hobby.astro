@@ -1,23 +1,21 @@
 ---
-// A page away from the desk (pages/vinyls.astro, pages/photography.astro):
-// the top bar with the hobby pages and Home, the page, and a short green
-// footer. `ink` sets the top bar on ink, for a page whose hero is.
+// A page of its own (pages/projects.astro, vinyls.astro, photography.astro):
+// the top bar with the pages and Home, the page, a short green footer, and the
+// record pile and phone bar for once the top bar has gone. `ink` sets the top
+// bar on ink, for a page whose hero is.
 import Layout from './Layout.astro';
+import SiteNav from '../components/SiteNav.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
-import { person } from '../data/site';
+import { person, sideB } from '../data/site';
 
 interface Props {
   title: string;
   description: string;
-  current: 'vinyls' | 'photography';
+  current: 'projects' | 'vinyls' | 'photography';
   ink?: boolean;
 }
 
 const { title, description, current, ink = false } = Astro.props;
-const pages = [
-  ['vinyls', 'Vinyls', '/vinyls'],
-  ['photography', 'Photography', '/photography'],
-] as const;
 const mail = `mailto:${person.email}`;
 const year = new Date().getFullYear();
 ---
@@ -28,7 +26,7 @@ const year = new Date().getFullYear();
       <div class="wrap topbar">
         <a class="wordmark" href="/"><img src="/favicon.svg" alt="" width="28" height="28" />{person.name}</a>
         <nav class="nav" aria-label="Pages">
-          {pages.map(([id, label, href]) => <a href={href} aria-current={id === current ? 'page' : undefined}>{label}</a>)}
+          {sideB.map((d) => <a href={d.href} aria-current={d.id === current ? 'page' : undefined}>{d.label}</a>)}
           <a href="/">Home</a>
           <ThemeToggle />
         </nav>
@@ -52,6 +50,7 @@ const year = new Date().getFullYear();
       </div>
     </footer>
   </div>
+  <SiteNav here={current} />
   <script>
     import '../scripts/motion';
   </script>
