@@ -556,7 +556,7 @@ export interface Project {
 export const projects = {
   eyebrow: 'Personal projects',
   title: 'After hours.',
-  lead: 'Small things I build for myself, end to end and in the open. Each one is on GitHub.',
+  lead: 'Small things I build for myself, end to end and in the open. Each one is running, and each one is on GitHub.',
   github: 'https://github.com/JakubMini',
   items: [
     {
@@ -593,7 +593,7 @@ export const projects = {
     },
     {
       name: 'Vinyl Vault Screen',
-      status: 'Working on my desk since 16 Oct 2026',
+      status: 'Live since 16 Oct 2026',
       summary:
         'A 4" touchscreen next to the turntable that browses the vault. Covers ride a wheel you drag and fling; tap one for its value, how it has moved, and the price at every grade, then grade the record and sleeve with your thumb. It logs in like a TV app, with a QR code and an Approve on the phone, so no password or key ever reaches the board. It keeps its own copy of the collection and becomes a record clock when left alone.',
       facts: [
@@ -606,7 +606,7 @@ export const projects = {
     },
     {
       name: 'Now Playing stand',
-      status: 'Designed, not printed yet',
+      status: 'Live, next to the turntable',
       summary:
         'A 3D-printed stand for the record on the turntable. Drop the sleeve in the groove, an NFC reader behind the groove wall reads the tag on it, and a 4" touchscreen shows the record, its value and play count. The geometry is code: a Python script builds the four parts, checks the screen, reader and back plate for clearance, and writes the STLs.',
       facts: [

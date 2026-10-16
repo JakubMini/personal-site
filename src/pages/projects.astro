@@ -11,7 +11,7 @@ const n = (i: number) => String(i + 1).padStart(2, '0');
 const live = projects.items.filter((p) => p.status.startsWith('Live')).length;
 ---
 
-<Hobby title="Projects" description={`${person.name}'s personal projects, each one on GitHub.`} current="projects">
+<Hobby title="Projects" description={`${person.name}'s personal projects, each running and on GitHub.`} current="projects">
   <header class="wrap grid pj-hero" aria-labelledby="projects-title">
     <p class="label hobby-eyebrow">{projects.eyebrow}</p>
     <h1 class="display" id="projects-title" data-lines>{projects.title}</h1>
