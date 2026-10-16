@@ -3272,6 +3272,12 @@ ul {
   grid-column: 9 / span 4;
 }
 
+.pj-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .pj-fig figcaption {
   margin-top: 8px;
   font-size: 13px;

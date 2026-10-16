@@ -3,6 +3,7 @@
 
 import type { ImageMetadata } from 'astro';
 import portrait from '../assets/photos/portrait.jpg';
+import nowPlayingStand from '../assets/photos/now-playing-stand.png';
 import propellerRigPoster from '../assets/photos/propeller-rig-poster.jpg';
 import propellerRig from '../assets/video/propeller-rig.mp4';
 import driveUnit from '../assets/photos/skarper-drive-unit.jpg';
@@ -537,7 +538,7 @@ export const photography = {
 // ---- Personal projects: pages/projects.astro ----
 
 // A project's figure: the vault's architecture drawn in SVG
-// (components/VaultDiagram.astro), or a spoken exchange. `{sum}` in the
+// (components/VaultDiagram.astro), a spoken exchange, or an image. `{sum}` in the
 // exchange is a sum of money kept off the page, drawn as a redaction bar.
 export interface Project {
   name: string;
@@ -548,13 +549,14 @@ export interface Project {
   links: { label: string; href: string }[];
   diagram?: 'vault';
   say?: { you: string; echo: string };
+  image?: { src: ImageMetadata; alt: string };
   caption?: string;
 }
 
 export const projects = {
   eyebrow: 'Personal projects',
   title: 'After hours.',
-  lead: 'Small things I build for myself, end to end and in the open. Each one is running, and each one is on GitHub.',
+  lead: 'Small things I build for myself, end to end and in the open. Each one is on GitHub.',
   github: 'https://github.com/JakubMini',
   items: [
     {
@@ -588,6 +590,37 @@ export const projects = {
         you: 'Alexa, ask vinyl vault what my collection is worth.',
         echo: "Your 163 records are worth about {sum}. 12 of them haven't been priced yet, so the real total is higher.",
       },
+    },
+    {
+      name: 'Vinyl Vault Screen',
+      status: 'Working on my desk since 16 Oct 2026',
+      summary:
+        'A 4" touchscreen next to the turntable that browses the vault. Covers ride a wheel you drag and fling; tap one for its value, how it has moved, and the price at every grade, then grade the record and sleeve with your thumb. It logs in like a TV app, with a QR code and an Approve on the phone, so no password or key ever reaches the board. It keeps its own copy of the collection and becomes a record clock when left alone.',
+      facts: [
+        ['Wheel', 'About 35 fps, drawn by hand'],
+        ['Login', 'OAuth device flow'],
+        ['Reaches the vault', 'Gateway Worker'],
+      ],
+      tags: ['ESP32-S3', 'LVGL 9', 'PlatformIO', 'C++', 'Cloudflare Workers', 'TypeScript'],
+      links: [{ label: 'GitHub', href: 'https://github.com/JakubMini/vinyl-vault-screen' }],
+    },
+    {
+      name: 'Now Playing stand',
+      status: 'Designed, not printed yet',
+      summary:
+        'A 3D-printed stand for the record on the turntable. Drop the sleeve in the groove, an NFC reader behind the groove wall reads the tag on it, and a 4" touchscreen shows the record, its value and play count. The geometry is code: a Python script builds the four parts, checks the screen, reader and back plate for clearance, and writes the STLs.',
+      facts: [
+        ['Parts', '4, one plate, no supports'],
+        ['Print', 'About 7 h 40 m'],
+        ['Reader', 'PN532, NTAG215 tags'],
+      ],
+      tags: ['ESP32-S3', 'PN532 NFC', 'Python', 'manifold3d', '3D printing'],
+      links: [{ label: 'GitHub', href: 'https://github.com/JakubMini/now-playing-stand' }],
+      image: {
+        src: nowPlayingStand,
+        alt: 'A render of a grey sloped stand holding a record sleeve upright, its touchscreen showing the record, a price and grade buttons',
+      },
+      caption: 'A render: the record and price on screen are made up.',
     },
     {
       name: 'This site',

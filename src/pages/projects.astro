@@ -2,27 +2,30 @@
 // The personal projects: what each one does, what it runs on, a figure for
 // how it works, and the links. Copy is `projects` in data/site.ts.
 import Hobby from '../layouts/Hobby.astro';
+import { Image } from 'astro:assets';
 import VaultDiagram from '../components/VaultDiagram.astro';
 import { person, projects } from '../data/site';
 
 const n = (i: number) => String(i + 1).padStart(2, '0');
+// shortcut: "live" is read off the status line; add a field if statuses stop starting with "Live"
+const live = projects.items.filter((p) => p.status.startsWith('Live')).length;
 ---
 
-<Hobby title="Projects" description={`${person.name}'s personal projects, each running and on GitHub.`} current="projects">
+<Hobby title="Projects" description={`${person.name}'s personal projects, each one on GitHub.`} current="projects">
   <header class="wrap grid pj-hero" aria-labelledby="projects-title">
     <p class="label hobby-eyebrow">{projects.eyebrow}</p>
     <h1 class="display" id="projects-title" data-lines>{projects.title}</h1>
     <p class="pj-lead" data-lines>{projects.lead}</p>
     <div class="pj-summary" data-rise>
       <div><div class="fact-label">Projects</div>{projects.items.length}</div>
-      <div><div class="fact-label">Running</div>All {projects.items.length === 3 ? 'three' : projects.items.length}</div>
+      <div><div class="fact-label">Live</div>{live} of {projects.items.length}</div>
       <div><div class="fact-label">Code</div><a href={projects.github} rel="me">{projects.github.replace('https://', '')} <span aria-hidden="true">↗</span></a></div>
     </div>
   </header>
 
   {
     projects.items.map((p, i) => {
-      const figure = p.diagram || p.say;
+      const figure = p.diagram || p.say || p.image;
       return (
         <article class:list={['wrap grid pj', { 'pj-wide': !figure }]} aria-labelledby={`project-${n(i)}`}>
           <div class="pj-side" data-rise>
@@ -52,6 +55,7 @@ const n = (i: number) => String(i + 1).padStart(2, '0');
           {figure && (
             <figure class="pj-fig" data-rise>
               {p.diagram === 'vault' && <VaultDiagram />}
+              {p.image && <Image class="pj-img" src={p.image.src} alt={p.image.alt} widths={[480, 960]} sizes="(min-width: 900px) 33vw, 480px" />}
               {p.say && (
                 <div class="pj-say">
                   <p class="pj-you"><span class="pj-who">You</span>“{p.say.you}”</p>
