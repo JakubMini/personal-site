@@ -3278,6 +3278,33 @@ ul {
   height: auto;
 }
 
+.pj-screen {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pj-bezel {
+  fill: #050706;
+  stroke: #3c403a;
+}
+
+.pj-screen text {
+  font-family: var(--sans);
+  font-size: 16px;
+}
+
+.pj-screen .pj-s30 {
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.pj-screen .pj-m14 {
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
 .pj-fig figcaption {
   margin-top: 8px;
   font-size: 13px;

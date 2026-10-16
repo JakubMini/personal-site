@@ -1,0 +1,79 @@
+---
+// Vinyl Vault Screen's crate (pages/projects.astro), laid out as the firmware
+// lays it out (vinyl-vault-screen, firmware/src/ui.cpp open_wheel and
+// include/wheel.h): a 480 x 480 panel, covers on the rim of a wheel in the
+// rows 56-290, the front record's text under it, the needle across the crate.
+// The screen is always dark, whatever the page's theme. The value is kept
+// off the page, drawn as a redaction bar.
+import { getImage } from 'astro:assets';
+import { vinyls } from '../data/site';
+
+// wheel.h
+const CX = 240, CY = 162, R = 260, STEP = 0.5, FRONT = 180;
+const slot = (d: number) => ({
+  x: CX + R * Math.sin(d * STEP),
+  y: CY + R * (1 - Math.cos(d * STEP)),
+  size: FRONT * Math.max(0.35, 1 - 0.22 * Math.abs(d)),
+  fade: 1 - Math.max(0, 255 - 80 * Math.abs(d)) / 255,
+});
+
+// Seven on the wheel as on the board, Pink Floyd at the front; furthest drawn first.
+const front = vinyls.records.findIndex((r) => r.title === 'The Dark Side of the Moon');
+const covers = await Promise.all(
+  [-3, -2, -1, 0, 1, 2, 3]
+    .sort((a, b) => Math.abs(b) - Math.abs(a))
+    .map(async (d) => {
+      const r = vinyls.records[front + d];
+      const s = slot(d);
+      const img = await getImage({ src: r.cover!, width: 360, format: 'webp' });
+      return { ...s, href: img.src, key: d };
+    }),
+);
+const r = vinyls.records[front];
+
+// "024 / 163", and the needle that far across the crate (ui.cpp count_text, update_front).
+const n = 163, at = 23;
+const needle = 16 + (448 * at) / (n - 1);
+const count = `${String(at + 1).padStart(String(n).length, '0')} / ${n}`;
+---
+
+<svg class="pj-screen" viewBox="0 0 528 528" role="img" aria-label={`The screen's crate: record covers on the rim of a wheel, ${r.artist}'s ${r.title} at the front, its value, its grade, VG+, and a needle showing how far through the ${n} records it is.`}>
+  <defs>
+    <clipPath id="pj-band"><rect x="0" y="56" width="480" height="234"></rect></clipPath>
+  </defs>
+  <rect class="pj-bezel" x="1" y="1" width="526" height="526" rx="20"></rect>
+  <g transform="translate(24 24)">
+    <rect width="480" height="480" fill="#0B0F0C"></rect>
+
+    <text class="pj-s16" x="16" y="34" fill="#1CB35A">The crate</text>
+    <circle cx="444" cy="28" r="19.5" fill="none" stroke="#454844"></circle>
+    <path d="M451 23 A9 9 0 1 0 452 33" fill="none" stroke="#F3F2EC" stroke-width="2.4" stroke-linecap="round"></path>
+    <path d="M447 17 L452 23 L445 25.5 Z" fill="#F3F2EC"></path>
+
+    <g clip-path="url(#pj-band)">
+      {
+        covers.map((c) => (
+          <g>
+            <image href={c.href} x={c.x - c.size / 2} y={c.y - c.size / 2} width={c.size} height={c.size} preserveAspectRatio="xMidYMid slice"></image>
+            {c.fade > 0 && <rect x={c.x - c.size / 2} y={c.y - c.size / 2} width={c.size} height={c.size} fill="#0B0F0C" opacity={c.fade}></rect>}
+          </g>
+        ))
+      }
+    </g>
+
+    <text class="pj-s30" x="16" y="328" fill="#F3F2EC">{r.artist}</text>
+    <text class="pj-s16" x="16" y="354" fill="#9A9E98">{r.title}</text>
+    <rect x="16" y="369" width="84" height="25" rx="2" fill="#2FF27C"></rect>
+    <rect x="112.5" y="368.5" width="52" height="27" rx="13.5" fill="none" stroke="#454844"></rect>
+    <text class="pj-s16" x="138.5" y="387" fill="#C5C7C1" text-anchor="middle">VG+</text>
+    <text class="pj-s16" x="16" y="420" fill="#5FD98F">↑</text>
+    <rect x="34" y="407" width="34" height="15" rx="2" fill="#5FD98F"></rect>
+    <text class="pj-s16" x="74" y="420" fill="#5FD98F">in 30 days</text>
+
+    <rect x="16" y="440" width="448" height="1" fill="#454844"></rect>
+    <rect x="16" y="439" width={needle - 16} height="3" fill="#2FF27C"></rect>
+    <circle cx={needle + 0.5} cy="440.5" r="4.5" fill="#2FF27C"></circle>
+    <text class="pj-m14" x="16" y="466" fill="#9A9E98">updated 12 min ago</text>
+    <text class="pj-m14" x="464" y="466" fill="#9A9E98" text-anchor="end">{count}</text>
+  </g>
+</svg>

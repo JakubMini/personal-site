@@ -4,6 +4,7 @@
 import Hobby from '../layouts/Hobby.astro';
 import { Image } from 'astro:assets';
 import VaultDiagram from '../components/VaultDiagram.astro';
+import ScreenMock from '../components/ScreenMock.astro';
 import { person, projects } from '../data/site';
 
 const n = (i: number) => String(i + 1).padStart(2, '0');
@@ -55,6 +56,7 @@ const live = projects.items.filter((p) => p.status.startsWith('Live')).length;
           {figure && (
             <figure class="pj-fig" data-rise>
               {p.diagram === 'vault' && <VaultDiagram />}
+              {p.diagram === 'screen' && <ScreenMock />}
               {p.image && <Image class="pj-img" src={p.image.src} alt={p.image.alt} widths={[480, 960]} sizes="(min-width: 900px) 33vw, 480px" />}
               {p.say && (
                 <div class="pj-say">

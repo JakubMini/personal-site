@@ -538,7 +538,8 @@ export const photography = {
 // ---- Personal projects: pages/projects.astro ----
 
 // A project's figure: the vault's architecture drawn in SVG
-// (components/VaultDiagram.astro), a spoken exchange, or an image. `{sum}` in the
+// (components/VaultDiagram.astro), the screen's crate (components/ScreenMock.astro),
+// a spoken exchange, or an image. `{sum}` in the
 // exchange is a sum of money kept off the page, drawn as a redaction bar.
 export interface Project {
   name: string;
@@ -547,7 +548,7 @@ export interface Project {
   facts: [string, string][];
   tags: string[];
   links: { label: string; href: string }[];
-  diagram?: 'vault';
+  diagram?: 'vault' | 'screen';
   say?: { you: string; echo: string };
   image?: { src: ImageMetadata; alt: string };
   caption?: string;
@@ -603,6 +604,8 @@ export const projects = {
       ],
       tags: ['ESP32-S3', 'LVGL 9', 'PlatformIO', 'C++', 'Cloudflare Workers', 'TypeScript'],
       links: [{ label: 'GitHub', href: 'https://github.com/JakubMini/vinyl-vault-screen' }],
+      diagram: 'screen',
+      caption: 'The crate, laid out as the firmware draws it. Drag the wheel, tap the front cover.',
     },
     {
       name: 'Now Playing stand',
